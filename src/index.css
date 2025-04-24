@@ -2,6 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Global Styles */
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+  -webkit-overflow-scrolling: touch;
+}
+
+html,
+body,
+#root {
+  box-sizing: border-box;
+  background-color: #18181b;
+  height: 100%;
+}
+
 /* Nohemi Font */
 
 @font-face {

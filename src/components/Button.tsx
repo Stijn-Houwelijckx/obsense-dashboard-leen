@@ -1,19 +1,19 @@
-import PropTypes from "prop-types";
+interface Props {
+  label: string;
+  type: "button" | "submit" | "reset";
+  onClick: () => void;
+}
 
-const Button = ({ label, type }) => {
+const Button = ({ label, type, onClick }: Props) => {
   return (
     <button
       className="w-full p-3.5 mt-10 font-bold rounded-lg text-neutral-950 bg-primary-500"
       type={type}
+      onClick={onClick}
     >
       {label}
     </button>
   );
-};
-
-Button.propTypes = {
-  label: PropTypes.string.isRequired,
-  type: PropTypes.string.isRequired,
 };
 
 export default Button;
