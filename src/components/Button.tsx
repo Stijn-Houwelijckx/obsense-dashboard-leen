@@ -1,7 +1,7 @@
 interface Props {
   label: string;
   type: "button" | "submit" | "reset";
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 const Button = ({ label, type, onClick }: Props) => {
