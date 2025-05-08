@@ -184,13 +184,13 @@ const SignUp = () => {
                   Welcome to OBSENSE!
                 </h2>
                 <Link
-                  to="/signup"
+                  to="/signin"
                   className="text-neutral-50 opacity-75 text-sm text-right"
                 >
                   <div className="flex flex-col items-end">
-                    <span>Don't have an account?</span>
+                    <span>Already have an account?</span>
                     <span className="font-bold text-primary-500 underline underline-offset-1.5">
-                      Sign up!
+                      Sign in!
                     </span>
                   </div>
                 </Link>
