@@ -86,117 +86,144 @@ const SignIn = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-secondary-900 px-4">
-      <div className="w-full max-w-[650px] border-0 lg:border-4 lg:border-primary-500 rounded-2xl bg-secondary-800 p-8">
-        <div className="flex justify-start items-center mb-6">
-          <div className="w-6" /> {/* Placeholder for back button if needed */}
+    <div className="min-h-screen flex items-center justify-center bg-secondary-900 px-4 relative overflow-hidden">
+      {/* Left half background color for lg and up */}
+      <div className="hidden lg:block absolute top-0 left-0 w-1/2 h-full bg-[#2B2B30] z-0" />
+
+      {/* Foreground content */}
+      <div className="relative z-10 w-full flex justify-center items-center">
+        <div className="hidden lg:block absolute top-0 left-0 w-1/2 h-full bg-[#2B2B30] z-0">
+          {/* Circle Small - Left Top */}
+          <img
+            src="src/assets/img/circle_small.png"
+            alt="Circle Small"
+            className="absolute top-4 left-[-90px] w-64 h-64 z-10"
+          />
         </div>
 
-        {/* DESKTOP ONLY - Welcome Back & Sign Up link */}
-        <div className="hidden lg:flex flex-row items-center justify-between mb-6">
-          <h2 className="font-title text-2xl text-neutral-50">
-            Welcome Back! 👋
-          </h2>
-          <Link
-            to="/signup"
-            className="text-neutral-50 opacity-75 text-sm text-right"
-          >
-            <div className="flex flex-col items-end">
-              <span>Don't have an account?</span>
-              <span className="font-bold text-primary-500 underline underline-offset-1.5">
-                Sign up!
-              </span>
-            </div>
-          </Link>
-        </div>
-
-        {/* Sign In title */}
-        <h1 className="font-title font-bold text-3xl lg:text-5xl tracking-wide text-neutral-50 mb-2">
-          Sign in
-        </h1>
-
-        {/* MOBILE ONLY - Welcome Back */}
-        <h2 className="font-title text-xl lg:hidden tracking-wide pb-2.5 text-neutral-50">
-          Welcome Back! 👋
-        </h2>
-
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <FormInput
-            label="Email"
-            name="email"
-            type="email"
-            placeholder="john.doe@outlook.com"
-            register={register}
-            errors={errors}
-            validation={{
-              required: "Email is required",
-              pattern: {
-                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                message: "Invalid email address",
-              },
-            }}
-            labelClassName="text-neutral-50"
-            inputClassName="text-neutral-50"
+        {/* Main form content */}
+        <div className="w-full max-w-[650px] border-0 lg:border-4 lg:border-primary-500 rounded-2xl bg-secondary-800 p-8 opacity-80 relative">
+          {/* Circle Big - Right Bottom */}
+          <img
+            src="src/assets/img/circle_big.png"
+            alt="Circle Big"
+            className="absolute bottom-4 right-[-550px] w-80 h-80 z-10"
           />
 
-          <FormInput
-            label="Password"
-            name="password"
-            type="password"
-            placeholder="••••••••••••"
-            register={register}
-            errors={errors}
-            validation={{ required: "Password is required" }}
-            labelClassName="text-neutral-50"
-            inputClassName="text-neutral-50"
-          />
-
-          <div className="flex justify-end text-sm text-primary-500 underline">
-            <a href="/forgot-password">Forgot password?</a>
+          {/* The rest of your sign-in form */}
+          <div className="flex justify-start items-center mb-6">
+            <div className="w-6" />{" "}
+            {/* Placeholder for back button if needed */}
           </div>
 
-          <Button
-            label="Sign in"
-            type="submit"
-            onClick={handleSubmit(onSubmit)}
-          />
-        </form>
+          {/* DESKTOP ONLY - Welcome Back & Sign Up link */}
+          <div className="hidden lg:flex flex-row items-center justify-between mb-6">
+            <h2 className="font-title text-2xl text-neutral-50">
+              Welcome Back! 👋
+            </h2>
+            <Link
+              to="/signup"
+              className="text-neutral-50 opacity-75 text-sm text-right"
+            >
+              <div className="flex flex-col items-end">
+                <span>Don't have an account?</span>
+                <span className="font-bold text-primary-500 underline underline-offset-1.5">
+                  Sign up!
+                </span>
+              </div>
+            </Link>
+          </div>
 
-        <div className="flex items-center py-6">
-          <div className="flex-1 h-px bg-neutral-300"></div>
-          <span className="px-2 text-xs text-neutral-200">or sign in with</span>
-          <div className="flex-1 h-px bg-neutral-300"></div>
-        </div>
+          {/* Sign In title */}
+          <h1 className="font-title font-bold text-3xl lg:text-5xl tracking-wide text-neutral-50 mb-2">
+            Sign in
+          </h1>
 
-        <div className="flex flex-col gap-3">
-          <LogoButton
-            icon={GoogleIcon}
-            type="button"
-            label="Sign in with Google"
-          />
-          <LogoButton
-            icon={AppleIcon}
-            type="button"
-            label="Sign in with Apple"
-          />
-          <LogoButton
-            icon={FacebookIcon}
-            type="button"
-            label="Sign in with Facebook"
-          />
-        </div>
+          {/* MOBILE ONLY - Welcome Back */}
+          <h2 className="font-title text-xl lg:hidden tracking-wide pb-2.5 text-neutral-50">
+            Welcome Back! 👋
+          </h2>
 
-        {/* MOBILE ONLY - Sign up link */}
-        <div className="flex justify-center pt-12 lg:hidden">
-          <Link
-            to="/signup"
-            className="text-neutral-50 opacity-75 text-sm text-center"
-          >
-            Don't have an account?{" "}
-            <span className="font-bold text-primary-500 underline underline-offset-1.5 block">
-              Sign up!
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <FormInput
+              label="Email"
+              name="email"
+              type="email"
+              placeholder="john.doe@outlook.com"
+              register={register}
+              errors={errors}
+              validation={{
+                required: "Email is required",
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: "Invalid email address",
+                },
+              }}
+              labelClassName="text-neutral-50"
+              inputClassName="text-neutral-50"
+            />
+
+            <FormInput
+              label="Password"
+              name="password"
+              type="password"
+              placeholder="••••••••••••"
+              register={register}
+              errors={errors}
+              validation={{ required: "Password is required" }}
+              labelClassName="text-neutral-50"
+              inputClassName="text-neutral-50"
+            />
+
+            <div className="flex justify-end text-sm text-primary-500 underline">
+              <a href="/forgot-password">Forgot password?</a>
+            </div>
+
+            <Button
+              label="Sign in"
+              type="submit"
+              onClick={handleSubmit(onSubmit)}
+            />
+          </form>
+
+          <div className="flex items-center py-6">
+            <div className="flex-1 h-px bg-neutral-300"></div>
+            <span className="px-2 text-xs text-neutral-200">
+              or sign in with
             </span>
-          </Link>
+            <div className="flex-1 h-px bg-neutral-300"></div>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <LogoButton
+              icon={GoogleIcon}
+              type="button"
+              label="Sign in with Google"
+            />
+            <LogoButton
+              icon={AppleIcon}
+              type="button"
+              label="Sign in with Apple"
+            />
+            <LogoButton
+              icon={FacebookIcon}
+              type="button"
+              label="Sign in with Facebook"
+            />
+          </div>
+
+          {/* MOBILE ONLY - Sign up link */}
+          <div className="flex justify-center pt-12 lg:hidden">
+            <Link
+              to="/signup"
+              className="text-neutral-50 opacity-75 text-sm text-center"
+            >
+              Don't have an account?{" "}
+              <span className="font-bold text-primary-500 underline underline-offset-1.5 block">
+                Sign up!
+              </span>
+            </Link>
+          </div>
         </div>
       </div>
     </div>
