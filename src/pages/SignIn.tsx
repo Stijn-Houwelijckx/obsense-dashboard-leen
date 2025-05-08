@@ -90,12 +90,33 @@ const SignIn = () => {
       <div className="w-full max-w-[650px] border-0 lg:border-4 lg:border-primary-500 rounded-2xl bg-secondary-800 p-8">
         <div className="flex justify-start items-center mb-6">
           <div className="w-6" /> {/* Placeholder for back button if needed */}
-          <h1 className="font-title font-bold text-3xl lg:text-5xl tracking-wide text-neutral-50">
-            Sign in
-          </h1>
         </div>
 
-        <h2 className="font-title font-bold text-xl lg:text-2xl tracking-wide pb-2.5 text-neutral-50">
+        {/* DESKTOP ONLY - Welcome Back & Sign Up link */}
+        <div className="hidden lg:flex flex-row items-center justify-between mb-6">
+          <h2 className="font-title text-2xl text-neutral-50">
+            Welcome Back! 👋
+          </h2>
+          <Link
+            to="/signup"
+            className="text-neutral-50 opacity-75 text-sm text-right"
+          >
+            <div className="flex flex-col items-end">
+              <span>Don't have an account?</span>
+              <span className="font-bold text-primary-500 underline underline-offset-1.5">
+                Sign up!
+              </span>
+            </div>
+          </Link>
+        </div>
+
+        {/* Sign In title */}
+        <h1 className="font-title font-bold text-3xl lg:text-5xl tracking-wide text-neutral-50 mb-2">
+          Sign in
+        </h1>
+
+        {/* MOBILE ONLY - Welcome Back */}
+        <h2 className="font-title text-xl lg:hidden tracking-wide pb-2.5 text-neutral-50">
           Welcome Back! 👋
         </h2>
 
@@ -165,10 +186,14 @@ const SignIn = () => {
           />
         </div>
 
-        <div className="flex justify-center pt-12">
-          <Link to="/signup" className="text-neutral-50 opacity-75 text-sm">
+        {/* MOBILE ONLY - Sign up link */}
+        <div className="flex justify-center pt-12 lg:hidden">
+          <Link
+            to="/signup"
+            className="text-neutral-50 opacity-75 text-sm text-center"
+          >
             Don't have an account?{" "}
-            <span className="font-bold text-primary-500 underline underline-offset-1.5">
+            <span className="font-bold text-primary-500 underline underline-offset-1.5 block">
               Sign up!
             </span>
           </Link>
