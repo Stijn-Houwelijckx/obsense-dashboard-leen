@@ -150,6 +150,25 @@ const SignUp = () => {
       ) : (
         <div className="min-h-screen flex items-center justify-center bg-secondary-900 px-4">
           <div className="w-full max-w-[650px] border-0 lg:border-4 lg:border-primary-500 rounded-2xl bg-secondary-800 p-8 opacity-80">
+            {/* DESKTOP ONLY - Welcome & Sign In Link */}
+            <div className="hidden lg:flex flex-row items-center justify-between mb-6">
+              <h2 className="font-title font-bold text-2xl text-neutral-50">
+                Welcome to OBSENSE
+              </h2>
+              <Link
+                to="/signin"
+                className="text-neutral-50 opacity-75 text-sm text-right"
+              >
+                <div className="flex flex-col items-end">
+                  <span>Already have an account?</span>
+                  <span className="font-bold text-primary-500 underline underline-offset-1.5">
+                    Sign in!
+                  </span>
+                </div>
+              </Link>
+            </div>
+
+            {/* Header met "Sign up" titel en Back Button */}
             <div className="flex justify-start items-center mb-6">
               {formStep > 1 ? (
                 <IconButton
@@ -165,10 +184,12 @@ const SignUp = () => {
               </h1>
             </div>
 
-            <h2 className="font-title font-bold text-xl lg:text-2xl tracking-wide pb-2.5 text-neutral-50">
+            {/* MOBILE ONLY - Welcome tekst */}
+            <h2 className="font-title font-bold text-xl lg:hidden tracking-wide pb-2.5 text-neutral-50">
               Welcome to OBSENSE
             </h2>
 
+            {/* Progress Bar */}
             <div className="h-2.5 flex items-center relative mb-6">
               <div className="h-3/4 absolute inset-x-0 bg-primary-500/20 rounded-full"></div>
               <div
@@ -177,6 +198,7 @@ const SignUp = () => {
               ></div>
             </div>
 
+            {/* Formulier */}
             <form className="space-y-4">
               {formStep === 1 && (
                 <div className="flex flex-col gap-4">
@@ -291,10 +313,14 @@ const SignUp = () => {
               <LogoButton icon={FacebookIcon} type="button" />
             </div>
 
-            <div className="flex justify-center pt-12">
-              <Link to="/signin" className="text-neutral-50 opacity-75">
+            {/* MOBILE ONLY - Sign In Link */}
+            <div className="flex justify-center pt-12 lg:hidden">
+              <Link
+                to="/signin"
+                className="text-neutral-50 opacity-75 text-center text-sm"
+              >
                 Already have an account?{" "}
-                <span className="font-bold text-primary-500 underline underline-offset-1.5">
+                <span className="font-bold text-primary-500 underline underline-offset-1.5 block">
                   Sign in!
                 </span>
               </Link>
