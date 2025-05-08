@@ -10,14 +10,14 @@ import { User } from "types/user.types";
 
 import {
   AppleIcon,
-  ArrowIcon,
   FacebookIcon,
   GoogleIcon,
+  ArrowIcon,
 } from "components/@icons";
 import Button from "components/Button";
 import FormInput from "components/FormInput";
-import IconButton from "components/IconButton";
 import LogoButton from "components/LogoButton";
+import IconButton from "components/IconButton";
 import MainContainer from "components/MainContainer";
 
 const TOTAL_FORM_STEPS = 3;
