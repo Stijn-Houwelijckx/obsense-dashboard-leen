@@ -102,7 +102,7 @@ const SignIn = () => {
         </div>
 
         {/* Main form content */}
-        <div className="w-full max-w-[650px] border-0 lg:border-4 lg:border-primary-500 rounded-2xl bg-secondary-800 p-8 opacity-80 relative">
+        <div className="w-full max-w-[650px] border-0 lg:border-4 lg:border-primary-500 rounded-2xl bg-secondary-800 p-8 relative">
           {/* Circle Big - Right Bottom */}
           <img
             src="src/assets/img/circle_big.png"
