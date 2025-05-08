@@ -152,7 +152,7 @@ const SignUp = () => {
           <div className="w-full max-w-[650px] border-0 lg:border-4 lg:border-primary-500 rounded-2xl bg-secondary-800 p-8 opacity-80">
             {/* DESKTOP ONLY - Welcome & Sign In Link */}
             <div className="hidden lg:flex flex-row items-center justify-between mb-6">
-              <h2 className="font-title font-bold text-2xl text-neutral-50">
+              <h2 className="font-title text-2xl text-neutral-50">
                 Welcome to OBSENSE
               </h2>
               <Link
@@ -185,7 +185,7 @@ const SignUp = () => {
             </div>
 
             {/* MOBILE ONLY - Welcome tekst */}
-            <h2 className="font-title font-bold text-xl lg:hidden tracking-wide pb-2.5 text-neutral-50">
+            <h2 className="font-title text-xl lg:hidden tracking-wide pb-2.5 text-neutral-50">
               Welcome to OBSENSE
             </h2>
 
