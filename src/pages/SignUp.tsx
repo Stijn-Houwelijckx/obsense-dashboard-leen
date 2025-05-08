@@ -148,7 +148,7 @@ const SignUp = () => {
           <Button label="Try Again" type="button" onClick={handleErrorReset} />
         </div>
       ) : (
-        <div className="relative min-h-screen flex items-center justify-center bg-secondary-900 px-4 overflow-hidden">
+        <div className="min-h-screen flex items-center justify-center bg-secondary-900 px-4 relative overflow-hidden">
           {/* Left half background color for lg and up */}
           <div className="hidden lg:block absolute top-0 left-0 w-1/2 h-full bg-[#2B2B30] z-0" />
 
@@ -162,37 +162,49 @@ const SignUp = () => {
                 className="absolute top-4 left-[-90px] w-64 h-64 z-10"
               />
             </div>
-            <div className="w-full max-w-[650px] border-0 lg:border-4 lg:border-primary-500 rounded-2xl bg-secondary-800 p-8 opacity-80 relative">
+
+            {/* Main form content */}
+            <div className="w-full max-w-[650px] border-0 lg:border-4 lg:border-primary-500 rounded-2xl bg-secondary-800 p-8 relative">
               {/* Circle Big - Right Bottom */}
               <img
-                src="src/assets/img//circle_big.png"
+                src="src/assets/img/circle_big.png"
                 alt="Circle Big"
                 className="absolute bottom-4 right-[-550px] w-80 h-80 z-10"
-              />{" "}
+              />
+
+              {/* The rest of your sign-in form */}
               <div className="flex justify-start items-center mb-6">
-                {formStep > 1 ? (
-                  <IconButton
-                    icon={ArrowIcon}
-                    type="button"
-                    onClick={handlePreviousFormStep}
-                  />
-                ) : (
-                  <div className="w-6" />
-                )}
-                <h1 className="ml-4 font-title font-bold text-3xl lg:text-5xl tracking-wide text-neutral-50">
-                  Sign up
-                </h1>
+                <div className="w-6" />{" "}
+                {/* Placeholder for back button if needed */}
               </div>
-              <h2 className="font-title font-bold text-xl lg:text-2xl tracking-wide pb-2.5 text-neutral-50">
-                Welcome to OBSENSE
+
+              {/* DESKTOP ONLY - Welcome Back & Sign Up link */}
+              <div className="hidden lg:flex flex-row items-center justify-between mb-6">
+                <h2 className="font-title text-2xl text-neutral-50">
+                  Welcome to OBSENSE!
+                </h2>
+                <Link
+                  to="/signup"
+                  className="text-neutral-50 opacity-75 text-sm text-right"
+                >
+                  <div className="flex flex-col items-end">
+                    <span>Don't have an account?</span>
+                    <span className="font-bold text-primary-500 underline underline-offset-1.5">
+                      Sign up!
+                    </span>
+                  </div>
+                </Link>
+              </div>
+
+              <h1 className="font-title font-bold text-3xl lg:text-5xl tracking-wide text-neutral-50 mb-2">
+                Sign up
+              </h1>
+
+              {/* MOBILE ONLY - Welcome Back */}
+              <h2 className="font-title text-xl lg:hidden tracking-wide pb-2.5 text-neutral-50">
+                Welcome to OBSENSE!
               </h2>
-              <div className="h-2.5 flex items-center relative mb-6">
-                <div className="h-3/4 absolute inset-x-0 bg-primary-500/20 rounded-full"></div>
-                <div
-                  className="absolute inset-0 bg-primary-500 rounded-full transition-all duration-500 ease-in-out"
-                  style={{ width: `${(formStep / TOTAL_FORM_STEPS) * 100}%` }}
-                ></div>
-              </div>
+
               <form className="space-y-4">
                 {formStep === 1 && (
                   <div className="flex flex-col gap-4">
@@ -294,6 +306,7 @@ const SignUp = () => {
                   />
                 )}
               </form>
+
               <div className="flex items-center py-6">
                 <div className="flex-1 h-px bg-neutral-300"></div>
                 <span className="px-2 text-xs text-neutral-200">
@@ -301,12 +314,15 @@ const SignUp = () => {
                 </span>
                 <div className="flex-1 h-px bg-neutral-300"></div>
               </div>
+
               <div className="flex gap-2.5">
                 <LogoButton icon={GoogleIcon} type="button" />
                 <LogoButton icon={AppleIcon} type="button" />
                 <LogoButton icon={FacebookIcon} type="button" />
               </div>
-              <div className="flex justify-center pt-12">
+
+              {/* Mobile only sign-in link */}
+              <div className="flex justify-center pt-12 lg:hidden">
                 <Link to="/signin" className="text-neutral-50 opacity-75">
                   Already have an account?{" "}
                   <span className="font-bold text-primary-500 underline underline-offset-1.5">
