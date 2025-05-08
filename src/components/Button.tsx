@@ -7,7 +7,7 @@ interface Props {
 const Button = ({ label, type, onClick }: Props) => {
   return (
     <button
-      className="w-full p-3.5 mt-10 font-bold rounded-lg text-neutral-950 bg-primary-500"
+      className="w-full p-3.5 mt-10 font-bold rounded-lg text-neutral-950 bg-primary-500 hover:bg-primary-600 transition-all"
       type={type}
       onClick={onClick}
     >
