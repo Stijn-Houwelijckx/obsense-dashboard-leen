@@ -7,6 +7,9 @@ import Home from "./Home";
 import NotFound from "./NotFound";
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";
+import Artworks from "./Artworks";
+import ArtworkUpload from "./ArtworkUpload";
+import ArtworkForm from "./ArtworkForm";
 
 const Pages = () => {
   return (
@@ -26,6 +29,10 @@ const Pages = () => {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signin" element={<SignIn />} />
+        <Route path="/artworks" element={<Artworks />} />
+        <Route path="/upload" element={<ArtworkUpload />} />
+        <Route path="/artworkform" element={<ArtworkForm />} />
+
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>

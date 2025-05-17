@@ -4,6 +4,10 @@ export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
+      boxShadow: {
+        uploadHover: "0 0 0 4px rgba(59, 130, 246, 0.2)", // primary-500 kleur met 20% opacity
+      },
+
       fontFamily: {
         title: ["Nohemi", "sans-serif"],
         text: ["Nunito", "sans-serif"],
@@ -15,8 +19,8 @@ export default {
           200: "#B5FDD9",
           300: "#7CF9BC",
           400: "#3CEC97",
-          500: "#13E07E",
-          600: "#08B160",
+          500: "#557EFE",
+          600: "#1A50F4",
           700: "#0B8A4E",
           800: "#0E6D41",
           900: "#0E5938",
