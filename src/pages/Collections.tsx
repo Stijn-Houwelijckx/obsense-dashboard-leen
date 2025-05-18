@@ -5,6 +5,7 @@ import Button from "components/Button";
 import CollectionCard from "components/CollectionCard";
 import plusIcon from "../assets/img/plus.svg";
 import { useNavigate } from "react-router-dom";
+import Navigation from "components/Navigation"; // pad afhankelijk van je structuur
 
 const Collections = () => {
   const hasCollections = true;
@@ -18,16 +19,14 @@ const Collections = () => {
           <div className="w-10 h-10 bg-secondary-800 rounded-full flex items-center justify-center">
             <img src={searchIcon} alt="Search" className="w-5 h-5" />
           </div>
-          <div className="w-10 h-10 bg-secondary-800 rounded-full flex items-center justify-center">
-            <img src={hamburgerIcon} alt="Menu" className="w-5 h-5" />
-          </div>
+          <Navigation />
         </div>
       </div>
 
       {hasCollections ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 justify-items-center">
           <div
-            onClick={() => navigate("/upload")}
+            onClick={() => navigate("/create")}
             className="w-[303px] h-[350px] bg-secondary-800 rounded-lg flex flex-col items-center justify-center text-center cursor-pointer"
           >
             <div className="relative w-[280px] h-[328px] rounded-lg bg-secondary-700 flex flex-col items-center justify-center text-center">

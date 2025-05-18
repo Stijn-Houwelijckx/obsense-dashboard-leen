@@ -39,7 +39,7 @@ const CollectionCard = ({ title, status }: CollectionCardProps) => {
               src={editIcon}
               alt="Edit"
               className="w-5"
-              onClick={() => navigate("/collectionform")}
+              onClick={() => navigate("/form")}
             />
           </button>
         </div>

@@ -70,8 +70,8 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
             />
           </div>
 
-          <div className="flex justify-between w-[290px] mt-4">
-            <button className="bg-white text-black text-sm font-semibold border border-neutral-400 rounded px-3 py-2 hover:opacity-90">
+          <div className="flex justify-center gap-4 w-[290px] mt-4">
+            <button className="bg-primary-500 text-neutral-50 text-sm font-semibold rounded px-3 py-2 hover:opacity-90">
               Choose cover
             </button>
             <button className="text-sm font-semibold text-red-400 border border-red-600 rounded px-3 py-2 bg-[#FCA5A5] hover:opacity-90">
