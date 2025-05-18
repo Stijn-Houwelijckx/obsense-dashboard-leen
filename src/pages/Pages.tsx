@@ -11,6 +11,7 @@ import Artworks from "./Artworks";
 import ArtworkUpload from "./ArtworkUpload";
 import ArtworkForm from "./ArtworkForm";
 import Collections from "./Collections";
+import CreateCollection from "./CreateCollection";
 
 const Pages = () => {
   return (
@@ -34,6 +35,7 @@ const Pages = () => {
         <Route path="/upload" element={<ArtworkUpload />} />
         <Route path="/artworkform" element={<ArtworkForm />} />
         <Route path="/collections" element={<Collections />} />
+        <Route path="/create" element={<CreateCollection />} />
 
         <Route path="*" element={<NotFound />} />
       </Routes>
