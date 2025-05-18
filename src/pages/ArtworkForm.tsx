@@ -4,6 +4,7 @@ import hamburgerIcon from "../assets/img/hamburger.svg";
 import treeImage from "../assets/img/tree.png";
 import Button from "components/Button";
 import InputField from "../components/InputField";
+import Navigation from "components/Navigation";
 
 const ArtworkForm = () => {
   const navigate = useNavigate();
@@ -22,9 +23,7 @@ const ArtworkForm = () => {
             <div className="w-10 h-10 bg-secondary-800 rounded-full flex items-center justify-center">
               <img src={searchIcon} alt="Search" className="w-5 h-5" />
             </div>
-            <div className="w-10 h-10 bg-secondary-800 rounded-full flex items-center justify-center">
-              <img src={hamburgerIcon} alt="Menu" className="w-5 h-5" />
-            </div>
+            <Navigation />
           </div>
         </div>
       </div>

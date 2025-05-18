@@ -5,6 +5,7 @@ import Button from "components/Button";
 import ArtworkCard from "components/ArtworkCard";
 import plusIcon from "../assets/img/plus.svg";
 import { useNavigate } from "react-router-dom";
+import Navigation from "components/Navigation"; // pad afhankelijk van je structuur
 
 const Artworks = () => {
   const hasArtworks = true;
@@ -18,9 +19,7 @@ const Artworks = () => {
           <div className="w-10 h-10 bg-secondary-800 rounded-full flex items-center justify-center">
             <img src={searchIcon} alt="Search" className="w-5 h-5" />
           </div>
-          <div className="w-10 h-10 bg-secondary-800 rounded-full flex items-center justify-center">
-            <img src={hamburgerIcon} alt="Menu" className="w-5 h-5" />
-          </div>
+          <Navigation />
         </div>
       </div>
 

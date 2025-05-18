@@ -4,6 +4,7 @@ import treeImage from "assets/img/tree.png";
 import plusGenreIcon from "assets/img/plus_genre.svg";
 import artworkImg from "assets/img/tree.png"; // voorbeeld
 import InputField from "components/InputField";
+import Navigation from "components/Navigation";
 
 interface StepTwoFormProps {
   mode: "tour" | "expo";
@@ -47,9 +48,7 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
               ? "Step 2: Choose Artwork"
               : "Step 3: Overview"}
           </h1>
-          <div className="w-10 h-10 bg-secondary-800 rounded-full flex items-center justify-center">
-            <img src={hamburgerIcon} alt="Menu" className="w-5 h-5" />
-          </div>
+          <Navigation />
         </div>
         {step === 2 && (
           <p className="text-sm text-neutral-300 font-medium mt-2">

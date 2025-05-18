@@ -4,6 +4,7 @@ import uploadIcon from "../assets/img/upload_icon.svg";
 import searchIcon from "../assets/img/search.svg";
 import hamburgerIcon from "../assets/img/hamburger.svg";
 import Button from "components/Button";
+import Navigation from "components/Navigation"; // pad afhankelijk van je structuur
 
 const ArtworkUpload = () => {
   const [clicked, setClicked] = useState(false);
@@ -17,9 +18,7 @@ const ArtworkUpload = () => {
           <div className="w-10 h-10 bg-secondary-800 rounded-full flex items-center justify-center">
             <img src={searchIcon} alt="Search" className="w-5 h-5" />
           </div>
-          <div className="w-10 h-10 bg-secondary-800 rounded-full flex items-center justify-center">
-            <img src={hamburgerIcon} alt="Menu" className="w-5 h-5" />
-          </div>
+          <Navigation />
         </div>
       </div>
 
