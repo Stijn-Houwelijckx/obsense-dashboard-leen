@@ -37,7 +37,16 @@ const Pages = () => {
         <Route path="/artworkform" element={<ArtworkForm />} />
         <Route path="/collections" element={<Collections />} />
         <Route path="/create" element={<CreateCollection />} />
-        <Route path="/form" element={<CollectionForm />} />
+        <Route
+          path="/form"
+          element={
+            <CollectionForm
+              mode="tour" // of "expo"
+              onCancel={() => console.log("Cancel clicked")}
+              onNext={() => console.log("Next clicked")}
+            />
+          }
+        />
 
         <Route path="*" element={<NotFound />} />
       </Routes>
