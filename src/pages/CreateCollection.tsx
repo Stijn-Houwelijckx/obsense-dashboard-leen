@@ -2,8 +2,15 @@ import React from "react";
 import hamburgerIcon from "assets/img/hamburger.svg";
 import tourImg from "assets/img/tour.png"; // Zorg dat dit pad klopt
 import expoImg from "assets/img/expo.png"; // Zorg dat dit pad klopt
+import { useNavigate } from "react-router-dom";
 
 const CreateCollection = () => {
+  const navigate = useNavigate();
+
+  const handleCreate = (mode: "tour" | "expo") => {
+    navigate("/form", { state: { mode } });
+  };
+
   return (
     <div className="min-h-screen bg-secondary-900 p-4 text-neutral-50 mt-14 ml-4 mr-4">
       {/* Header */}
@@ -30,7 +37,10 @@ const CreateCollection = () => {
             A tour takes you on a journey, with 3D artworks scattered across
             various locations in a city for an immersive exploration
           </p>
-          <button className="bg-primary-500 text-white px-4 py-2 rounded-lg text-sm hover:opacity-90">
+          <button
+            onClick={() => handleCreate("tour")}
+            className="bg-primary-500 text-white px-4 py-2 rounded-lg text-sm hover:opacity-90"
+          >
             Create tour
           </button>
         </div>
@@ -41,6 +51,7 @@ const CreateCollection = () => {
         {/* Duplicate Section */}
         <div className="w-[330px] h-[300px] bg-secondary-700 border border-dashed border-primary-500 rounded-2xl flex flex-col items-center justify-center text-center px-4">
           <h2 className="text-lg font-semibold mb-3">Exposition</h2>
+
           <img
             src={expoImg}
             alt="Expo"
@@ -50,7 +61,10 @@ const CreateCollection = () => {
             An exposition gathers stunning pieces in a single iconic location
             like the city square.
           </p>
-          <button className="bg-primary-500 text-white px-4 py-2 rounded-lg text-sm hover:opacity-90">
+          <button
+            onClick={() => handleCreate("expo")}
+            className="bg-primary-500 text-white px-4 py-2 rounded-lg text-sm hover:opacity-90"
+          >
             Create exposition
           </button>
         </div>
