@@ -13,6 +13,7 @@ import ArtworkForm from "./ArtworkForm";
 import Collections from "./Collections";
 import CreateCollection from "./CreateCollection";
 import CollectionForm from "./CollectionForm";
+import Settings from "./Settings";
 
 const Pages = () => {
   return (
@@ -37,6 +38,8 @@ const Pages = () => {
         <Route path="/artworkform" element={<ArtworkForm />} />
         <Route path="/collections" element={<Collections />} />
         <Route path="/create" element={<CreateCollection />} />
+        <Route path="/settings" element={<Settings />} />
+
         <Route
           path="/form"
           element={
