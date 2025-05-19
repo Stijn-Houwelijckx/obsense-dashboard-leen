@@ -2,15 +2,96 @@ import React, { useState } from "react";
 import profilePic from "assets/img/profilepic.png";
 import InputField from "components/InputField";
 import searchIcon from "../assets/img/search.svg";
+import backIcon from "../assets/img/back.svg";
+
+import arrowIcon from "../assets/img/arrow.svg";
+
 import Navigation from "components/Navigation";
 
 const tabs = ["General", "Notification", "Wallet", "Security"];
 
 const Settings = () => {
   const [activeTab, setActiveTab] = useState("General");
+  const [securityPage, setSecurityPage] = useState("main"); // 'main' | 'privacy' | 'terms' | 'password'
 
+  const handleBack = () => setSecurityPage("main");
+
+  const renderSecuritySubPage = () => (
+    <div className="w-full flex justify-center pt-6">
+      <div className="w-[400px] bg-secondary-800 p-6 rounded-[16px] text-white flex flex-col gap-6">
+        <button
+          onClick={handleBack}
+          className="w-10 h-10 rounded-full bg-secondary-800 flex items-center justify-center border border-neutral-500"
+        >
+          <img src={backIcon} alt="Back" className="w-4 h-4" />
+        </button>
+
+        {securityPage === "privacy" && (
+          <>
+            <h2 className="text-xl font-semibold">Privacy & cookies</h2>
+            <p className="text-sm text-neutral-300">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis ut
+              libero vitae nulla viverra placerat. Cras at diam sit amet purus
+              pharetra tempor.
+            </p>
+            <p className="text-sm text-neutral-300">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam
+              erat volutpat. Pellentesque vehicula tortor at velit ullamcorper,
+              et porta felis porttitor.
+            </p>
+          </>
+        )}
+
+        {securityPage === "terms" && (
+          <>
+            <h2 className="text-xl font-semibold">Terms and conditions</h2>
+            <p className="text-sm text-neutral-300">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis ut
+              libero vitae nulla viverra placerat. Cras at diam sit amet purus
+              pharetra tempor.
+            </p>
+            <p className="text-sm text-neutral-300">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam
+              erat volutpat. Pellentesque vehicula tortor at velit ullamcorper,
+              et porta felis porttitor.
+            </p>
+          </>
+        )}
+
+        {securityPage === "password" && (
+          <>
+            <h2 className="text-xl font-semibold">Change Password</h2>
+            <InputField
+              label="Current password"
+              placeholder="Current password"
+              type="password"
+              className="w-full h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
+            />
+            <InputField
+              label="New password"
+              placeholder="New password"
+              type="password"
+              className="w-full h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
+            />
+            <InputField
+              label="Retype new password"
+              placeholder="Retype new password"
+              type="password"
+              className="w-full h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
+            />
+            <button className="text-sm text-primary-400 text-left hover:underline">
+              Forgot password?
+            </button>
+            <button className="bg-primary-500 text-white px-4 py-2 rounded-lg w-full font-medium hover:opacity-90 transition">
+              Change password
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  );
   return (
-    <div className="min-h-screen bg-secondary-900 p-4 text-neutral-50 mt-14 ml-4 mr-4">
+    <div className="min-h-screen bg-secondary-900 text-neutral-50 px-4 pt-4 mt-14">
       <div className="flex items-center justify-between mb-10">
         <h1 className="text-2xl font-bold">Settings</h1>
         <div className="flex gap-2">
@@ -27,7 +108,10 @@ const Settings = () => {
           {tabs.map((tab) => (
             <button
               key={tab}
-              onClick={() => setActiveTab(tab)}
+              onClick={() => {
+                setActiveTab(tab);
+                setSecurityPage("main");
+              }}
               className={`px-4 py-2 text-sm font-medium transition ${
                 activeTab === tab
                   ? "text-primary-500 border-b-2 border-primary-500"
@@ -39,6 +123,46 @@ const Settings = () => {
           ))}
         </div>
 
+        {/* Sub-page rendering */}
+        {activeTab === "Security" && securityPage !== "main"
+          ? renderSecuritySubPage()
+          : activeTab === "Security" && (
+              <div className="w-full flex justify-center pt-6">
+                <div className="w-[400px] px-8 pt-5 pb-5 flex flex-col gap-5">
+                  <h2 className="text-xl font-semibold text-neutral-50 mb-2">
+                    Security
+                  </h2>
+
+                  <button
+                    className="flex justify-between items-center text-neutral-50 w-full"
+                    onClick={() => setSecurityPage("password")}
+                  >
+                    <span>Change password</span>
+                    <img src={arrowIcon} alt="Arrow" />
+                  </button>
+
+                  <div className="border-t border-[#757575] my-5" />
+
+                  <button
+                    className="flex justify-between items-center text-neutral-50 w-full"
+                    onClick={() => setSecurityPage("privacy")}
+                  >
+                    <span>Privacy & cookies</span>
+                    <img src={arrowIcon} alt="Arrow" />
+                  </button>
+
+                  <div className="border-t border-[#757575] my-5" />
+
+                  <button
+                    className="flex justify-between items-center text-neutral-50 w-full"
+                    onClick={() => setSecurityPage("terms")}
+                  >
+                    <span>Terms and conditions</span>
+                    <img src={arrowIcon} alt="Arrow" />
+                  </button>
+                </div>
+              </div>
+            )}
         {/* General Tab Content */}
         {activeTab === "General" && (
           <div className="w-full max-w-xl bg-secondary-800 rounded-xl p-6 flex flex-col gap-6">

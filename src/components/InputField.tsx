@@ -3,6 +3,7 @@ interface InputFieldProps {
   placeholder?: string;
   className?: string;
   textarea?: boolean;
+  type?: string;
 }
 
 const InputField = ({
