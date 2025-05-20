@@ -5,14 +5,14 @@ import Button from "components/Button";
 import ArtworkCard from "components/ArtworkCard";
 import plusIcon from "../assets/img/plus.svg";
 import { useNavigate } from "react-router-dom";
-import Navigation from "components/Navigation"; // pad afhankelijk van je structuur
+import Navigation from "components/Navigation";
 
 const Artworks = () => {
   const hasArtworks = true;
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-secondary-900 p-4 text-neutral-50 mt-14 ml-4 mr-4">
+    <div className="min-h-screen bg-secondary-900 px-4 text-neutral-50 mt-14">
       <div className="flex items-center justify-between mb-10">
         <h1 className="text-2xl font-bold">Your Artworks</h1>
         <div className="flex gap-2">
@@ -27,9 +27,9 @@ const Artworks = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 justify-items-center">
           <div
             onClick={() => navigate("/upload")}
-            className="w-[303px] h-[350px] bg-secondary-800 rounded-lg flex flex-col items-center justify-center text-center cursor-pointer"
+            className="w-full h-[350px] p-3 bg-secondary-800 rounded-lg flex flex-col items-center justify-center text-center cursor-pointer"
           >
-            <div className="relative w-[280px] h-[328px] rounded-lg bg-secondary-700 flex flex-col items-center justify-center text-center">
+            <div className="relative w-full h-[328px] rounded-lg bg-secondary-700 flex flex-col items-center justify-center text-center">
               <h6 className="text-lg text-primary-500 font-semibold mb-3">
                 Upload new artwork
               </h6>

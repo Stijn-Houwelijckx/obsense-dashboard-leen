@@ -4,14 +4,13 @@ import uploadIcon from "../assets/img/upload_icon.svg";
 import searchIcon from "../assets/img/search.svg";
 import hamburgerIcon from "../assets/img/hamburger.svg";
 import Button from "components/Button";
-import Navigation from "components/Navigation"; // pad afhankelijk van je structuur
+import Navigation from "components/Navigation";
 
 const ArtworkUpload = () => {
   const [clicked, setClicked] = useState(false);
 
   return (
-    <div className="min-h-screen bg-secondary-900 text-neutral-50 p-4 mt-14 ml-4 mr-4">
-      {/* Header */}
+    <div className="min-h-screen bg-secondary-900 text-neutral-50 px-4 mt-14">
       <div className="flex items-center justify-between mb-10">
         <h1 className="text-2xl font-bold">Your Artworks</h1>
         <div className="flex gap-2">
@@ -22,18 +21,17 @@ const ArtworkUpload = () => {
         </div>
       </div>
 
-      {/* Upload Section */}
       <div className="flex flex-col items-center">
         <img
           src={uploadPreview}
           alt="Preview"
-          className="w-[200px] h-auto mb-8 mt-12"
+          className="w-full h-auto mb-8 mt-12"
         />
 
         <div
           onClick={() => setClicked(!clicked)}
           className={`
-            w-[320px] h-[294px] border border-dashed border-neutral-500 rounded-lg 
+            w-full h-[294px] border border-dashed border-neutral-500 rounded-lg 
             flex flex-col items-center justify-center text-center px-4 cursor-pointer
             transition-all duration-300
             ${
