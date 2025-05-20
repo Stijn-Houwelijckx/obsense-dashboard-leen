@@ -9,7 +9,6 @@ const Navigation = () => {
 
   return (
     <>
-      {/* Hamburger Button */}
       <button
         onClick={() => setIsOpen(true)}
         className="w-10 h-10 bg-secondary-800 rounded-full flex items-center justify-center"
@@ -17,13 +16,11 @@ const Navigation = () => {
         <img src={hamburgerIcon} alt="Menu" className="w-5 h-5" />
       </button>
 
-      {/* Fullscreen Overlay Navigation */}
       <div
         className={`fixed inset-0 z-50 bg-secondary-900 backdrop-blur-3xl transition-transform duration-300 ease-out ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        {/* Close button */}
         <div className="absolute top-6 right-6 mt-10">
           <button
             onClick={() => setIsOpen(false)}
@@ -33,7 +30,6 @@ const Navigation = () => {
           </button>
         </div>
 
-        {/* Navigation Content */}
         <div className="h-full w-full flex flex-col items-center justify-center text-white">
           <div className="flex flex-col items-center gap-4 text-lg font-medium">
             <p>Home</p>
@@ -46,8 +42,10 @@ const Navigation = () => {
             <p>Insights</p>
           </div>
 
-          <div className="mt-[120px] flex flex-col items-center gap-4 text-sm">
-            <p>Settings</p>
+          <div className="mt-[120px] flex flex-col items-center gap-4 text-lg">
+            <Link to="/settings" onClick={() => setIsOpen(false)}>
+              Settings
+            </Link>
             <p>Logout</p>
             <img
               src={profilePic}
