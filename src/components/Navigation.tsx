@@ -32,7 +32,9 @@ const Navigation = () => {
 
         <div className="h-full w-full flex flex-col items-center justify-center text-white">
           <div className="flex flex-col items-center gap-4 text-lg font-medium">
-            <p>Home</p>
+            <Link to="/" onClick={() => setIsOpen(false)}>
+              Home
+            </Link>
             <Link to="/collections" onClick={() => setIsOpen(false)}>
               Collections
             </Link>
