@@ -46,6 +46,8 @@ const Artworks = () => {
           <ArtworkCard title="Working Man" />
           <ArtworkCard title="Sunset Glow" />
           <ArtworkCard title="Modern Art" />
+          <ArtworkCard title="Harry Styles" />
+          <ArtworkCard title="Christmas Wonder" />
         </div>
       ) : (
         <div className="flex flex-col items-center text-center px-4 pt-10">

@@ -37,7 +37,7 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
   const genre = "Low-Poly";
 
   return (
-    <div className="min-h-screen bg-secondary-900 text-neutral-50 p-4 mt-14 flex flex-col items-center">
+    <div className="min-h-screen md:pl-[166px] md:pr-[74px] bg-secondary-900 text-neutral-50 p-4 mt-14 flex flex-col items-center">
       <div className="w-full mb-6">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">
@@ -47,11 +47,12 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
               ? "Step 2: Choose Artwork"
               : "Step 3: Overview"}
           </h1>
+
           <div className="md:hidden">
             <Navigation />
           </div>
         </div>
-        <div className="hidden lg:block w-[250px]">
+        <div className="hidden md:block w-[250px]">
           <NavigationDesktop />
         </div>
         {step === 2 && (
@@ -62,13 +63,13 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
       </div>
 
       {step === 1 && (
-        <>
-          <div className="w-full bg-secondary-800 p-6 rounded-[16px]">
-            <div className="w-full h-[290px] bg-secondary-700 rounded-lg overflow-hidden flex items-center justify-center mt-7">
+        <div className="w-full bg-secondary-800 p-6 rounded-[16px] flex flex-col lg:flex-row gap-0 lg:gap-[80px]">
+          <div className="w-full lg:w-1/2 flex flex-col items-center">
+            <div className="w-full h-3/4 bg-secondary-700 rounded-lg overflow-hidden flex items-center justify-center mt-7">
               <img
                 src={treeImage}
                 alt="Artwork"
-                className="object-cover w-1/2 h-full"
+                className="object-cover w-3/4 h-full"
               />
             </div>
 
@@ -80,8 +81,10 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
                 Delete
               </button>
             </div>
+          </div>
 
-            <div className="w-full flex flex-col items-start gap-4 my-7">
+          <div className="w-full lg:w-1/2 flex flex-col justify-between">
+            <div className="w-full flex flex-col items-start gap-4 mt-7 lg:mt-0">
               <InputField
                 label="Title"
                 placeholder="Title"
@@ -105,7 +108,7 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
               />
             </div>
 
-            <div className="w-full mb-10">
+            <div className="w-full mt-6">
               <p className="text-sm text-left mb-2">Genre</p>
               <div className="flex items-center gap-4">
                 <span className="text-sm font-medium text-[#00B69B] bg-[#00B69B33] px-3 py-1 rounded-lg">
@@ -115,38 +118,43 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
               </div>
             </div>
 
-            <div className="flex gap-4 w-full">
+            <div className="w-full flex justify-end gap-4 mt-6">
               <button
-                onClick={onCancel}
-                className="w-1/3 h-[48px] border border-primary-500 rounded-lg text-primary-500 font-medium hover:border-primary-600 transition"
+                onClick={() => (window.location.href = "/create")}
+                className="w-[75px] h-[48px] border border-primary-500 rounded-lg text-primary-500 font-medium hover:border-primary-600 transition"
               >
                 Cancel
               </button>
               <button
                 onClick={() => setStep(2)}
-                className="w-2/3 h-[48px] bg-primary-500 text-white font-medium rounded-lg hover:opacity-90 transition"
+                className="w-[75px] h-[48px] bg-primary-500 text-white font-medium rounded-lg hover:opacity-90 transition"
               >
                 Next
               </button>
             </div>
           </div>
-        </>
+        </div>
       )}
 
       {/* Step 2: Artwork Selection */}
       {step === 2 && (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-4 w-full">
+          <div className="w-full flex flex-wrap gap-5 mt-4">
             {dummyArtworks.map(({ id, title, image }) => {
               const isSelected = selectedArtworks.includes(id);
               return (
                 <div
                   key={id}
                   onClick={() => toggleArtwork(id)}
-                  className="w-full h-[350px] mb-5 cursor-pointer"
+                  className={`
+              w-full sm:w-[calc(50%-10px)] 
+              lg:basis-[calc(25%-15px)] lg:max-w-[calc(25%-15px)] 
+              lg:w-1/4
+              cursor-pointer h-[350px]
+            `}
                 >
                   <div
-                    className={`w-full bg-secondary-700 rounded-lg flex flex-col relative p-2 h-full transition ${
+                    className={`w-full h-full bg-secondary-700 rounded-lg flex flex-col relative p-2 transition ${
                       isSelected
                         ? "border-2 border-primary-500"
                         : "border border-transparent"
@@ -168,7 +176,7 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
                       <img
                         src={image}
                         alt={title}
-                        className="w-1/2 h-full object-cover mx-auto"
+                        className="lg:w-3/4 w:1/2 h-full object-cover mx-auto"
                       />
                     </div>
 
@@ -183,19 +191,36 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
             })}
           </div>
 
-          <div className="flex gap-4 mt-10 w-full">
-            <button
-              onClick={() => setStep(1)}
-              className="w-1/3 h-[48px] border border-primary-500 rounded-lg text-primary-500 font-medium hover:border-primary-600 transition"
-            >
-              Back
-            </button>
-            <button
-              onClick={() => setStep(3)}
-              className="w-2/3 h-[48px] bg-primary-500 text-white font-medium rounded-lg hover:opacity-90 transition"
-            >
-              Next
-            </button>
+          <div className="mt-10 w-full">
+            <div className="flex gap-4 w-full lg:hidden">
+              <button
+                onClick={() => setStep(1)}
+                className="w-1/3 h-[48px] border border-primary-500 rounded-lg text-primary-500 font-medium hover:border-primary-600 transition"
+              >
+                Back
+              </button>
+              <button
+                onClick={() => setStep(3)}
+                className="w-2/3 h-[48px] bg-primary-500 text-white font-medium rounded-lg hover:opacity-90 transition"
+              >
+                Next
+              </button>
+            </div>
+
+            <div className="hidden lg:flex justify-end gap-4">
+              <button
+                onClick={() => setStep(1)}
+                className="w-[75px] h-[48px] border border-primary-500 rounded-lg text-primary-500 font-medium hover:border-primary-600 transition"
+              >
+                Back
+              </button>
+              <button
+                onClick={() => setStep(3)}
+                className="w-[75px] h-[48px] bg-primary-500 text-white font-medium rounded-lg hover:opacity-90 transition"
+              >
+                Next
+              </button>
+            </div>
           </div>
         </>
       )}
@@ -204,42 +229,53 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
       {step === 3 && (
         <>
           <div className="w-full bg-secondary-800 p-6 rounded-[16px]">
-            <div className="w-full h-[350px] rounded-lg overflow-hidden mb-6">
-              <img
-                src={treeImage}
-                alt="Overview Artwork"
-                className="w-full h-full object-cover rounded-lg"
-              />
+            <div className="w-full flex flex-col lg:flex-row lg:gap-[68px]">
+              {/* Image */}
+              <div className="w-full lg:w-1/2 h-[350px] rounded-lg overflow-hidden mb-6 lg:mb-0">
+                <img
+                  src={treeImage}
+                  alt="Overview Artwork"
+                  className="w-1/2 h-full object-cover rounded-lg mx-auto"
+                />
+              </div>
+
+              {/* Text content */}
+              <div className="w-full lg:w-3/4 flex flex-col">
+                <h4 className="text-3xl font-bold text-primary-500 mb-4">
+                  {title}
+                </h4>
+
+                <p className="text-neutral-50 mb-8 leading-relaxed">
+                  {description}
+                </p>
+
+                <div className="flex justify-between w-full mb-10">
+                  <div className="flex flex-col items-center">
+                    <span className="font-medium mb-1 text-[#B3B3B3]">
+                      {mode === "tour" ? "City" : "Location"}
+                    </span>
+                    <span className="text-neutral-50">{cityOrLocation}</span>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <span className="font-medium mb-1 text-[#B3B3B3]">
+                      Price
+                    </span>
+                    <span className="text-neutral-50">{price}</span>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <span className="font-medium mb-1 text-[#B3B3B3]">
+                      Genre
+                    </span>
+                    <span className="text-sm font-medium text-[#00B69B] bg-[#00B69B33] px-3 py-1 rounded-lg">
+                      {genre}
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <h4 className="text-3xl font-bold text-primary-500 mb-4">
-              {title}
-            </h4>
-
-            <p className="text-neutral-50 mb-8 leading-relaxed">
-              {description}
-            </p>
-
-            <div className="flex justify-between w-full  mb-10">
-              <div className="flex flex-col items-center">
-                <span className="font-medium mb-1 text-[#B3B3B3]">
-                  {mode === "tour" ? "City" : "Location"}
-                </span>
-                <span className="text-neutral-50">{cityOrLocation}</span>
-              </div>
-              <div className="flex flex-col items-center">
-                <span className="font-medium mb-1 text-[#B3B3B3]">Price</span>
-                <span className="text-neutral-50">{price}</span>
-              </div>
-              <div className="flex flex-col items-center">
-                <span className="font-medium mb-1 text-[#B3B3B3]">Genre</span>
-                <span className="text-sm font-medium text-[#00B69B] bg-[#00B69B33] px-3 py-1 rounded-lg">
-                  {genre}
-                </span>
-              </div>
-            </div>
-
-            <div className="w-full mb-10">
+            {/* Artworks */}
+            <div className="w-full mb-10 mt-6">
               <h6 className="mb-4 font-semibold">Artworks</h6>
               <div className="flex flex-col gap-4">
                 {dummyArtworks
@@ -260,16 +296,18 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
               </div>
             </div>
 
-            <div className="flex gap-4 w-full">
+            <div className="flex gap-4 w-full lg:justify-end">
               <button
-                onClick={() => setStep(2)}
-                className="w-1/3 h-[48px] border border-primary-500 rounded-lg text-primary-500 font-medium hover:border-primary-600 transition"
+                onClick={() => (window.location.href = "/collections")}
+                className="w-1/3 h-[48px] border border-primary-500 rounded-lg text-primary-500 font-medium hover:border-primary-600 transition
+               lg:w-[120px]"
               >
                 Save as Draft
               </button>
               <button
-                onClick={onNext}
-                className="w-2/3 h-[48px] bg-primary-500 text-white font-medium rounded-lg hover:opacity-90 transition"
+                onClick={() => (window.location.href = "/collections")}
+                className="w-2/3 h-[48px] bg-primary-500 text-white font-medium rounded-lg hover:opacity-90 transition
+               lg:w-[120px]"
               >
                 Publish
               </button>
