@@ -1,22 +1,18 @@
-import searchIcon from "../assets/img/search.svg";
 import Navigation from "components/Navigation";
 import NavigationDesktop from "components/NavigationDesktop";
 
 const Home = () => {
   return (
     <>
-      <div className="min-h-screen bg-secondary-900 px-4 text-neutral-50 mt-14">
-        <div className="flex items-center justify-between mb-10">
+      <div className="min-h-screen bg-secondary-900 pt-14 px-4 text-neutral-50 md:pl-[166px] md:pr-[74px]">
+        <div className="flex items-center justify-between mb-10 w-full">
           <h1 className="text-2xl font-bold">Home</h1>
           <div className="flex gap-2">
-            <div className="w-10 h-10 bg-secondary-800 rounded-full flex items-center justify-center">
-              <img src={searchIcon} alt="Search" className="w-5 h-5" />
-            </div>
             <div className="md:hidden">
               <Navigation />
             </div>
           </div>
-          <div className="hidden lg:block w-[250px]">
+          <div className="hidden md:block w-[250px]">
             <NavigationDesktop />
           </div>
         </div>
@@ -47,7 +43,6 @@ const Home = () => {
                   <div className="w-1/4 text-left">{item.likes}</div>
                   <div className="w-1/4 text-left">{item.views}</div>
                 </div>
-
                 {index < arr.length - 1 && (
                   <div className="mt-4 mb-4 border-b border-neutral-700" />
                 )}
