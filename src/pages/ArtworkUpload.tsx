@@ -5,9 +5,11 @@ import searchIcon from "../assets/img/search.svg";
 import Button from "components/Button";
 import Navigation from "components/Navigation";
 import NavigationDesktop from "components/NavigationDesktop";
+import { useNavigate } from "react-router-dom";
 
 const ArtworkUpload = () => {
   const [clicked, setClicked] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen md:pl-[166px] md:pr-[74px] bg-secondary-900 text-neutral-50 px-4 mt-14">
@@ -18,7 +20,7 @@ const ArtworkUpload = () => {
             <Navigation />
           </div>
         </div>
-        <div className="hidden lg:block w-[250px]">
+        <div className="hidden md:block w-[250px]">
           <NavigationDesktop />
         </div>
       </div>
@@ -50,7 +52,11 @@ const ArtworkUpload = () => {
           <p className="text-sm text-neutral-400 mb-4">GLB, GLTF up to 5MB.</p>
           <span className="text-sm text-neutral-400 mb-4">OR</span>
           <div className="w-full px-4">
-            <Button label="Browse files" type="button" onClick={() => {}} />
+            <Button
+              label="Browse files"
+              type="button"
+              onClick={() => navigate("/artworkform")}
+            />
           </div>
         </div>
 
