@@ -5,6 +5,7 @@ import searchIcon from "../assets/img/search.svg";
 import hamburgerIcon from "../assets/img/hamburger.svg";
 import Button from "components/Button";
 import Navigation from "components/Navigation";
+import NavigationDesktop from "components/NavigationDesktop";
 
 const ArtworkUpload = () => {
   const [clicked, setClicked] = useState(false);
@@ -17,7 +18,12 @@ const ArtworkUpload = () => {
           <div className="w-10 h-10 bg-secondary-800 rounded-full flex items-center justify-center">
             <img src={searchIcon} alt="Search" className="w-5 h-5" />
           </div>
-          <Navigation />
+          <div className="md:hidden">
+            <Navigation />
+          </div>
+        </div>
+        <div className="hidden lg:block w-[250px]">
+          <NavigationDesktop />
         </div>
       </div>
 

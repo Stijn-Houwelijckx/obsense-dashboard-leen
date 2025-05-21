@@ -24,7 +24,6 @@ const CollectionCard = ({ title, status }: CollectionCardProps) => {
             className="w-1/2 h-full object-cover rounded-lg mx-auto"
           />
 
-          {/* Status badge */}
           <div
             className={`absolute top-2 left-2 w-28 h-[24px] ${badgeColor} text-white text-xs font-medium rounded-full flex items-center justify-center`}
           >
