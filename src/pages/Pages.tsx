@@ -44,7 +44,7 @@ const Pages = () => {
           path="/form"
           element={
             <CollectionForm
-              mode="tour" // of "expo"
+              mode="tour"
               onCancel={() => console.log("Cancel clicked")}
               onNext={() => console.log("Next clicked")}
             />

@@ -5,6 +5,7 @@ import treeImage from "../assets/img/tree.png";
 import Button from "components/Button";
 import InputField from "../components/InputField";
 import Navigation from "components/Navigation";
+import NavigationDesktop from "components/NavigationDesktop";
 
 const ArtworkForm = () => {
   const navigate = useNavigate();
@@ -22,7 +23,12 @@ const ArtworkForm = () => {
             <div className="w-10 h-10 bg-secondary-800 rounded-full flex items-center justify-center">
               <img src={searchIcon} alt="Search" className="w-5 h-5" />
             </div>
-            <Navigation />
+            <div className="md:hidden">
+              <Navigation />
+            </div>
+          </div>
+          <div className="hidden lg:block w-[250px]">
+            <NavigationDesktop />
           </div>
         </div>
       </div>

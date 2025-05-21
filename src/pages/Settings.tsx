@@ -119,7 +119,9 @@ const Settings = () => {
             <div className="w-10 h-10 bg-secondary-800 rounded-full flex items-center justify-center">
               <img src={searchIcon} alt="Search" className="w-5 h-5" />
             </div>
-            <Navigation />
+            <div className="md:hidden">
+              <Navigation />
+            </div>
           </div>
           <div className="hidden lg:block w-[250px]">
             <NavigationDesktop />

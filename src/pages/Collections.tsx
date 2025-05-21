@@ -5,7 +5,8 @@ import Button from "components/Button";
 import CollectionCard from "components/CollectionCard";
 import plusIcon from "../assets/img/plus.svg";
 import { useNavigate } from "react-router-dom";
-import Navigation from "components/Navigation"; // pad afhankelijk van je structuur
+import Navigation from "components/Navigation";
+import NavigationDesktop from "components/NavigationDesktop";
 
 const Collections = () => {
   const hasCollections = true;
@@ -19,7 +20,12 @@ const Collections = () => {
           <div className="w-10 h-10 bg-secondary-800 rounded-full flex items-center justify-center">
             <img src={searchIcon} alt="Search" className="w-5 h-5" />
           </div>
-          <Navigation />
+          <div className="md:hidden">
+            <Navigation />
+          </div>
+        </div>
+        <div className="hidden lg:block w-[250px]">
+          <NavigationDesktop />
         </div>
       </div>
 

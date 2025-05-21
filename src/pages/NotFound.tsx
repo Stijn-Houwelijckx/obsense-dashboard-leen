@@ -5,19 +5,16 @@ const NotFound = () => {
 
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-center bg-secondary-900 px-4 text-center overflow-hidden">
-      {/* Grote 404 tekst */}
       <h1 className="text-[156px] lg:text-[520px] font-title font-bold text-primary-500 opacity-20 leading-none z-0 mb-4">
         404
       </h1>
 
-      {/* Afbeelding over de 404 tekst heen */}
       <img
         src="src/assets/img/404.png"
         alt="404 Graphic"
         className="absolute w-64 lg:w-[280px] top-[4%] lg:top-[20%] z-10"
       />
 
-      {/* Tekstblok */}
       <div className="z-20 mt-4 lg:mt-[-40px]">
         <h4 className="text-[18px] lg:text-[28px] text-neutral-50 font-bold mb-2">
           Oops, seems you’ve wandered too far!

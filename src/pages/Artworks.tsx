@@ -6,6 +6,7 @@ import ArtworkCard from "components/ArtworkCard";
 import plusIcon from "../assets/img/plus.svg";
 import { useNavigate } from "react-router-dom";
 import Navigation from "components/Navigation";
+import NavigationDesktop from "components/NavigationDesktop";
 
 const Artworks = () => {
   const hasArtworks = true;
@@ -19,7 +20,12 @@ const Artworks = () => {
           <div className="w-10 h-10 bg-secondary-800 rounded-full flex items-center justify-center">
             <img src={searchIcon} alt="Search" className="w-5 h-5" />
           </div>
-          <Navigation />
+          <div className="md:hidden">
+            <Navigation />
+          </div>
+        </div>
+        <div className="hidden lg:block w-[250px]">
+          <NavigationDesktop />
         </div>
       </div>
 

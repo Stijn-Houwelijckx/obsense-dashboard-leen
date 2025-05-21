@@ -88,10 +88,8 @@ const NavigationDesktop = () => {
             </Link>
           ))}
 
-          {/* Divider */}
           <div className="h-[1px] bg-secondary-700 w-full my-6 transition-none" />
 
-          {/* Profile */}
           <Link
             to="/settings"
             className="flex items-center justify-between w-full px-2"

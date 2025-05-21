@@ -5,6 +5,7 @@ import plusGenreIcon from "assets/img/plus_genre.svg";
 import artworkImg from "assets/img/tree.png";
 import InputField from "components/InputField";
 import Navigation from "components/Navigation";
+import NavigationDesktop from "components/NavigationDesktop";
 
 interface StepTwoFormProps {
   mode: "tour" | "expo";
@@ -46,7 +47,12 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
               ? "Step 2: Choose Artwork"
               : "Step 3: Overview"}
           </h1>
-          <Navigation />
+          <div className="md:hidden">
+            <Navigation />
+          </div>
+        </div>
+        <div className="hidden lg:block w-[250px]">
+          <NavigationDesktop />
         </div>
         {step === 2 && (
           <p className="text-sm text-neutral-300 font-medium mt-2">

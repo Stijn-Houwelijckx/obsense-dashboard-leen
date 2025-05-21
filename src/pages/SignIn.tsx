@@ -87,13 +87,10 @@ const SignIn = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-secondary-900 px-4 relative overflow-hidden">
-      {/* Left half background color for lg and up */}
       <div className="hidden lg:block absolute top-0 left-0 w-1/2 h-full bg-[#2B2B30] z-0" />
 
-      {/* Foreground content */}
       <div className="relative z-10 w-full flex justify-center items-center">
         <div className="hidden lg:block absolute top-0 left-0 w-1/2 h-full bg-[#2B2B30] z-0">
-          {/* Circle Small - Left Top */}
           <img
             src="src/assets/img/circle_small.png"
             alt="Circle Small"
@@ -101,22 +98,17 @@ const SignIn = () => {
           />
         </div>
 
-        {/* Main form content */}
         <div className="w-full max-w-[650px] border-0 lg:border-4 lg:border-primary-500 rounded-2xl bg-secondary-800 p-8 relative">
-          {/* Circle Big - Right Bottom */}
           <img
             src="src/assets/img/circle_big.png"
             alt="Circle Big"
             className="absolute bottom-4 right-[-550px] w-80 h-80 z-10"
           />
 
-          {/* The rest of your sign-in form */}
           <div className="flex justify-start items-center mb-6">
             <div className="w-6" />{" "}
-            {/* Placeholder for back button if needed */}
           </div>
 
-          {/* DESKTOP ONLY - Welcome Back & Sign Up link */}
           <div className="hidden lg:flex flex-row items-center justify-between mb-6">
             <h2 className="font-title text-2xl text-neutral-50">
               Welcome Back! 👋
@@ -134,12 +126,10 @@ const SignIn = () => {
             </Link>
           </div>
 
-          {/* Sign In title */}
           <h1 className="font-title font-bold text-3xl lg:text-5xl tracking-wide text-neutral-50 mb-2">
             Sign in
           </h1>
 
-          {/* MOBILE ONLY - Welcome Back */}
           <h2 className="font-title text-xl lg:hidden tracking-wide pb-2.5 text-neutral-50">
             Welcome Back! 👋
           </h2>
@@ -212,7 +202,6 @@ const SignIn = () => {
             />
           </div>
 
-          {/* MOBILE ONLY - Sign up link */}
           <div className="flex justify-center pt-12 lg:hidden">
             <Link
               to="/signup"
