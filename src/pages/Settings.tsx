@@ -3,10 +3,10 @@ import profilePic from "assets/img/profilepic.png";
 import InputField from "components/InputField";
 import searchIcon from "../assets/img/search.svg";
 import backIcon from "../assets/img/back.svg";
-
 import arrowIcon from "../assets/img/arrow.svg";
 
 import Navigation from "components/Navigation";
+import NavigationDesktop from "components/NavigationDesktop";
 
 const tabs = ["General", "Notification", "Wallet", "Security"];
 
@@ -121,6 +121,9 @@ const Settings = () => {
             </div>
             <Navigation />
           </div>
+          <div className="hidden lg:block w-[250px]">
+            <NavigationDesktop />
+          </div>
         </div>
       )}
 
@@ -154,7 +157,7 @@ const Settings = () => {
                   <h2 className="text-xl font-semibold text-neutral-50 mb-2">
                     Security
                   </h2>
-                  <div className="w-full max-w-md border border-[#757575] rounded-[16px] p-5 flex flex-col gap-y-5">
+                  <div className="w-full border border-[#757575] rounded-[16px] p-5 flex flex-col gap-y-5">
                     {[
                       { label: "Change password", key: "password" },
                       { label: "Privacy & cookies", key: "privacy" },

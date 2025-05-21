@@ -15,7 +15,7 @@ const ArtworkForm = () => {
 
   return (
     <div className="min-h-screen bg-secondary-900 text-neutral-50 px-4 mt-14 flex flex-col items-center">
-      <div className="w-full max-w-md mb-10">
+      <div className="w-full mb-10">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Your Artworks</h1>
           <div className="flex gap-2">
@@ -27,7 +27,8 @@ const ArtworkForm = () => {
         </div>
       </div>
 
-      <div className="w-full bg-secondary-800 p-6 pt-12 rounded-[16px] max-w-md flex flex-col items-center text-center mb-6">
+      {/* max-w-md */}
+      <div className="w-full bg-secondary-800 p-6 pt-12 rounded-[16px]  flex flex-col items-center text-center mb-6">
         <div className="relative">
           <div className="w-full h-[400px] bg-secondary-700 rounded-lg overflow-hidden relative flex items-center justify-center mt-7">
             <img

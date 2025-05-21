@@ -37,7 +37,7 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
 
   return (
     <div className="min-h-screen bg-secondary-900 text-neutral-50 p-4 mt-14 flex flex-col items-center">
-      <div className="w-full max-w-md mb-6">
+      <div className="w-full mb-6">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">
             {step === 1
@@ -214,7 +214,7 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
               {description}
             </p>
 
-            <div className="flex justify-between w-full max-w-md mb-10">
+            <div className="flex justify-between w-full  mb-10">
               <div className="flex flex-col items-center">
                 <span className="font-medium mb-1 text-[#B3B3B3]">
                   {mode === "tour" ? "City" : "Location"}
@@ -233,7 +233,7 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
               </div>
             </div>
 
-            <div className="w-full max-w-md mb-10">
+            <div className="w-full mb-10">
               <h6 className="mb-4 font-semibold">Artworks</h6>
               <div className="flex flex-col gap-4">
                 {dummyArtworks
