@@ -1,26 +1,40 @@
+import React, { ChangeEvent } from "react";
+
 interface InputFieldProps {
   label: string;
-  placeholder?: string;
+  placeholder: string;
   className?: string;
+  value: string;
+  onChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   textarea?: boolean;
-  type?: string;
 }
 
-const InputField = ({
+const InputField: React.FC<InputFieldProps> = ({
   label,
   placeholder,
-  className,
+  className = "",
+  value,
+  onChange,
   textarea = false,
-}: InputFieldProps) => {
+}) => {
   return (
-    <div className="flex flex-col items-start w-full">
-      <label className="text-sm font-medium text-neutral-50 mb-1">
-        {label}
-      </label>
+    <div className="flex flex-col gap-1 w-full">
+      <label className="text-sm font-medium">{label}</label>
       {textarea ? (
-        <textarea placeholder={placeholder} className={className} />
+        <textarea
+          placeholder={placeholder}
+          value={value}
+          onChange={onChange}
+          className={className}
+        />
       ) : (
-        <input type="text" placeholder={placeholder} className={className} />
+        <input
+          type="text"
+          placeholder={placeholder}
+          value={value}
+          onChange={onChange}
+          className={className}
+        />
       )}
     </div>
   );

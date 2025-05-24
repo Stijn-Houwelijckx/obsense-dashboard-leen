@@ -1,16 +1,69 @@
-import { useNavigate } from "react-router-dom";
-import searchIcon from "../assets/img/search.svg";
+import { useEffect, useState, ChangeEvent } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import treeImage from "../assets/img/tree.png";
 import Button from "components/Button";
 import InputField from "../components/InputField";
 import Navigation from "components/Navigation";
 import NavigationDesktop from "components/NavigationDesktop";
+import api from "../services/api";
+import { useAuthStorage } from "store/authStorage";
 
 const ArtworkForm = () => {
-  const navigate = useNavigate();
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [objectId, setObjectId] = useState<string | null>(null);
 
-  const handleSave = () => {
-    navigate("/artworks");
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state?.objectId) {
+      setObjectId(location.state.objectId);
+    }
+  }, [location.state]);
+
+  const handleSave = async () => {
+    if (!objectId) return;
+
+    try {
+      await api.patch(`/objects/${objectId}`, {
+        title,
+        description,
+      });
+
+      navigate("/artworks");
+    } catch (err) {
+      console.error("Failed to update object:", err);
+    }
+  };
+
+  const handleCreate = async () => {
+    const token = useAuthStorage.getState().token;
+    if (!token) {
+      alert("Je bent niet ingelogd, log eerst in.");
+      return;
+    }
+
+    try {
+      const response = await api.post("/objects", {
+        title,
+        description,
+      });
+
+      // neem aan dat backend het nieuwe object terugstuurt met een ID
+      const newObjectId = response.data.id || null;
+
+      if (newObjectId) {
+        navigate("/artworks");
+      } else {
+        alert("Er ging iets mis bij het aanmaken, probeer opnieuw.");
+      }
+    } catch (err: any) {
+      console.error("Failed to create object:", err);
+      alert(
+        `Fout bij maken artwork: ${err.response?.data?.message || err.message}`
+      );
+    }
   };
 
   const handleCancel = () => {
@@ -78,12 +131,20 @@ const ArtworkForm = () => {
             <InputField
               label="Title"
               placeholder="Title"
+              value={title}
+              onChange={(
+                e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+              ) => setTitle(e.target.value)}
               className="w-full h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
             />
             <InputField
               label="Description"
               placeholder="Description"
               textarea
+              value={description}
+              onChange={(
+                e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+              ) => setDescription(e.target.value)}
               className="w-full h-[166px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 py-2 text-sm text-white resize-none"
             />
           </div>
@@ -97,7 +158,7 @@ const ArtworkForm = () => {
                 Cancel
               </button>
               <button
-                onClick={handleSave}
+                onClick={objectId ? handleSave : handleCreate}
                 className="w-2/3 h-[48px] bg-primary-500 text-white font-medium rounded-lg hover:opacity-90 transition"
               >
                 Save changes

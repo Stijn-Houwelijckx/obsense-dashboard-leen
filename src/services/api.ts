@@ -23,9 +23,9 @@ api.interceptors.request.use(
     }
 
     const token = useAuthStorage.getState().token;
-    if (!token) return config;
-
-    config.headers.Authorization = `Bearer ${token}`;
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`; // toevoegen aan header
+    }
     return config;
   },
   (error) => {
@@ -53,3 +53,5 @@ export const authService = {
     return response.data;
   },
 };
+
+export default api;

@@ -18,39 +18,29 @@ import Settings from "./Settings";
 const Pages = () => {
   return (
     <BrowserRouter>
-      {/* <Routes>
+      <Routes>
         <Route element={<RequireAuth />}>
           <Route path="/" element={<Home />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/artworks" element={<Artworks />} />
+          <Route path="/upload" element={<ArtworkUpload />} />
+          <Route path="/artworkform" element={<ArtworkForm />} />
+          <Route path="/collections" element={<Collections />} />
+          <Route path="/create" element={<CreateCollection />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route
+            path="/form"
+            element={
+              <CollectionForm
+                mode="tour"
+                onCancel={() => console.log("Cancel clicked")}
+                onNext={() => console.log("Next clicked")}
+              />
+            }
+          />
         </Route>
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signin" element={<SignIn />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes> */}
-
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/signin" element={<SignIn />} />
-        <Route path="/artworks" element={<Artworks />} />
-        <Route path="/upload" element={<ArtworkUpload />} />
-        <Route path="/artworkform" element={<ArtworkForm />} />
-        <Route path="/collections" element={<Collections />} />
-        <Route path="/create" element={<CreateCollection />} />
-        <Route path="/settings" element={<Settings />} />
-
-        <Route
-          path="/form"
-          element={
-            <CollectionForm
-              mode="tour"
-              onCancel={() => console.log("Cancel clicked")}
-              onNext={() => console.log("Next clicked")}
-            />
-          }
-        />
-
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
