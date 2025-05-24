@@ -1,15 +1,109 @@
-import { useState } from "react";
+import { useState, useRef, DragEvent, ChangeEvent } from "react";
 import uploadPreview from "../assets/img/upload.png";
 import uploadIcon from "../assets/img/upload_icon.svg";
-import searchIcon from "../assets/img/search.svg";
+import fileIcon from "../assets/img/file.svg"; // Zorg dat dit bestaat
 import Button from "components/Button";
 import Navigation from "components/Navigation";
 import NavigationDesktop from "components/NavigationDesktop";
 import { useNavigate } from "react-router-dom";
+import api from "../services/api";
+
+const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
 
 const ArtworkUpload = () => {
   const [clicked, setClicked] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [files, setFiles] = useState<FileList | null>(null);
   const navigate = useNavigate();
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const isValidFile = (file: File) => {
+    const validExtensions = [".glb", ".gltf"];
+    const extension = file.name.slice(file.name.lastIndexOf(".")).toLowerCase();
+    return validExtensions.includes(extension);
+  };
+
+  const openFileDialog = () => {
+    fileInputRef.current?.click();
+  };
+
+  const uploadFile = async (file: File) => {
+    setError(null);
+
+    const formData = new FormData();
+    formData.append("3DObject", file);
+
+    try {
+      const response = await api.post("/objects", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      // ✅ Haal het ID van het geüploade object op
+      const objectId = response.data.data.object._id;
+
+      // ✅ Geef het mee aan de volgende pagina
+      navigate("/artworkform", { state: { objectId } });
+      navigate("/artworkform");
+    } catch (err: any) {
+      console.error("Upload error:", err);
+      setError("Something went wrong during upload.");
+    }
+  };
+
+  const validateAndSetFiles = async (selectedFiles: FileList) => {
+    setError(null);
+    if (selectedFiles.length === 0) return;
+
+    for (let i = 0; i < selectedFiles.length; i++) {
+      const file = selectedFiles[i];
+
+      if (!isValidFile(file)) {
+        setError("Wrong file type. Only GLB or GLTF");
+        setFiles(null);
+        return;
+      }
+
+      if (file.size > MAX_FILE_SIZE) {
+        setError("File too big. Max. 20MB");
+        setFiles(null);
+        return;
+      }
+    }
+
+    setFiles(selectedFiles);
+
+    // Upload meteen de eerste file
+    await uploadFile(selectedFiles[0]);
+  };
+
+  const onFilesSelected = (event: ChangeEvent<HTMLInputElement>) => {
+    const selectedFiles = event.target.files;
+    if (selectedFiles) {
+      validateAndSetFiles(selectedFiles);
+    }
+  };
+
+  const onDrop = (event: DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    setClicked(false);
+    const droppedFiles = event.dataTransfer.files;
+    if (droppedFiles) {
+      validateAndSetFiles(droppedFiles);
+    }
+  };
+
+  const onDragOver = (event: DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    setClicked(true);
+  };
+
+  const onDragLeave = (event: DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    setClicked(false);
+  };
 
   return (
     <div className="min-h-screen md:pl-[166px] md:pr-[74px] bg-secondary-900 text-neutral-50 px-4 mt-14">
@@ -33,7 +127,10 @@ const ArtworkUpload = () => {
         />
 
         <div
-          onClick={() => setClicked(!clicked)}
+          onClick={openFileDialog}
+          onDrop={onDrop}
+          onDragOver={onDragOver}
+          onDragLeave={onDragLeave}
           className={`
             w-full lg:w-1/3 h-[294px] border border-dashed border-neutral-500 rounded-lg 
             flex flex-col items-center justify-center text-center px-4 cursor-pointer
@@ -49,15 +146,23 @@ const ArtworkUpload = () => {
           <p className="text-base font-medium mb-1">
             Drag and drop a file to upload
           </p>
-          <p className="text-sm text-neutral-400 mb-4">GLB, GLTF up to 5MB.</p>
+          <p className="text-sm text-neutral-400 mb-4">GLB, GLTF up to 20MB.</p>
           <span className="text-sm text-neutral-400 mb-4">OR</span>
           <div className="w-full px-4">
             <Button
               label="Browse files"
               type="button"
-              onClick={() => navigate("/artworkform")}
+              onClick={openFileDialog}
             />
           </div>
+
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={onFilesSelected}
+            accept=".glb,.gltf"
+            style={{ display: "none" }}
+          />
         </div>
 
         <img
@@ -65,6 +170,29 @@ const ArtworkUpload = () => {
           alt="Preview Duplicate"
           className="hidden lg:block w-1/3 h-auto"
         />
+
+        <div className="w-full lg:w-1/3 mt-4 lg:mt-6 flex flex-col items-start">
+          {files && files.length > 0 && (
+            <div className="flex items-center gap-4 mb-1">
+              <div
+                className="flex items-center justify-center rounded-full"
+                style={{
+                  width: 48,
+                  height: 48,
+                  backgroundColor: "rgba(239, 254, 246, 0.05)",
+                }}
+              >
+                <img src={fileIcon} alt="File Icon" className="w-6 h-6" />
+              </div>
+              <p className="text-neutral-300 break-words max-w-[220px]">
+                {files[0].name}
+              </p>
+            </div>
+          )}
+          {error && (
+            <p className="text-red-600 font-semibold text-sm mt-1">{error}</p>
+          )}
+        </div>
       </div>
     </div>
   );
