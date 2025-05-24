@@ -8,12 +8,7 @@ import { useAuthStorage } from "store/authStorage";
 import { ErrorResponse } from "types/error-response.types";
 import { User } from "types/user.types";
 
-import {
-  AppleIcon,
-  FacebookIcon,
-  GoogleIcon,
-  ArrowIcon,
-} from "components/@icons";
+import { AppleIcon, FacebookIcon, GoogleIcon } from "components/@icons";
 import Button from "components/Button";
 import FormInput from "components/FormInput";
 import LogoButton from "components/LogoButton";
@@ -132,8 +127,9 @@ const SignUp = () => {
       {signUpError ? (
         <div className="min-h-screen flex flex-col justify-center items-center bg-secondary-900 px-4">
           <h2 className="font-title font-medium text-2xl text-center mb-8 text-neutral-50">
-            {signUpError.data.message}
+            {signUpError?.data?.message ?? "Something went wrong"}
           </h2>
+
           <img className="w-1/2" src={errorImage} alt="Error Image" />
           <div className="flex flex-col items-center gap-4 mt-6">
             <span className="uppercase text-xs text-neutral-200 bg-secondary-800 px-2.5 py-1.5 rounded-md tracking-wide">

@@ -20,6 +20,9 @@ const SignIn = () => {
   const location = useLocation();
   const targetPath = location.state?.from ?? "/";
   const { setToken } = useAuthStorage();
+  const isEmailError = (error: ErrorResponse | null): boolean => {
+    return !!error?.data?.message?.toLowerCase().includes("email");
+  };
 
   const {
     register,
@@ -37,13 +40,22 @@ const SignIn = () => {
       navigate(targetPath, { replace: true });
     } catch (error) {
       if (error instanceof AxiosError) {
-        setSignInError(error.response?.data);
+        const fallbackError: ErrorResponse = {
+          code: error.response?.status || 500,
+          status: error.response?.statusText || "error",
+          data: {
+            message: error.response?.data?.message || "Invalid credentials.",
+            details: error.response?.data?.details || "",
+          },
+        };
+        setSignInError(fallbackError);
       } else {
         setSignInError({
           code: 500,
           status: "error",
           data: {
             message: "Something went wrong... Please try again.",
+            details: "",
           },
         });
       }
@@ -151,6 +163,11 @@ const SignIn = () => {
               }}
               labelClassName="text-neutral-50"
               inputClassName="text-neutral-50"
+              errorMessage={
+                isEmailError(signInError)
+                  ? signInError!.data.message
+                  : undefined
+              }
             />
 
             <FormInput
@@ -163,6 +180,11 @@ const SignIn = () => {
               validation={{ required: "Password is required" }}
               labelClassName="text-neutral-50"
               inputClassName="text-neutral-50"
+              errorMessage={
+                isEmailError(signInError)
+                  ? signInError!.data.message
+                  : undefined
+              }
             />
 
             <div className="flex justify-end text-sm text-primary-500 underline">

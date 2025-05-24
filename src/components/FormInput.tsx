@@ -13,8 +13,9 @@ interface Props<T extends Record<string, unknown>> {
   register: UseFormRegister<T>;
   errors: FieldErrors<T>;
   validation?: RegisterOptions<T, Path<T>>;
-  labelClassName?: string; // ClassName voor label toegevoegd
-  inputClassName?: string; // ClassName voor input toegevoegd
+  labelClassName?: string;
+  inputClassName?: string;
+  errorMessage?: string;
 }
 
 const FormInput = <T extends Record<string, unknown>>({
@@ -25,13 +26,12 @@ const FormInput = <T extends Record<string, unknown>>({
   register,
   errors,
   validation,
-  labelClassName = "", // default naar lege string
-  inputClassName = "", // default naar lege string
+  labelClassName = "",
+  inputClassName = "",
 }: Props<T>) => {
   return (
     <div className="flex flex-col gap-1.5">
       <label className={`font-medium ${labelClassName}`}>{label}</label>{" "}
-      {/* ClassName wordt toegepast op label */}
       <input
         className={`border rounded-lg bg-secondary-700 placeholder-neutral-500 px-3 py-2.5 ${inputClassName}`}
         type={type}
