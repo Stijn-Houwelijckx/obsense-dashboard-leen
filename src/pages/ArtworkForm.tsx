@@ -2,67 +2,74 @@ import { useEffect, useState, ChangeEvent } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import treeImage from "../assets/img/tree.png";
 import Button from "components/Button";
-import InputField from "../components/InputField";
+import InputField from "components/InputField";
 import Navigation from "components/Navigation";
 import NavigationDesktop from "components/NavigationDesktop";
 import api from "../services/api";
-import { useAuthStorage } from "store/authStorage";
 
 const ArtworkForm = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [objectId, setObjectId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    if (location.state?.objectId) {
-      setObjectId(location.state.objectId);
-    }
-  }, [location.state]);
-
-  const handleSave = async () => {
-    if (!objectId) return;
-
-    try {
-      await api.patch(`/objects/${objectId}`, {
-        title,
-        description,
-      });
-
-      navigate("/artworks");
-    } catch (err) {
-      console.error("Failed to update object:", err);
-    }
-  };
-
-  const handleCreate = async () => {
-    const token = useAuthStorage.getState().token;
-    if (!token) {
-      alert("Je bent niet ingelogd, log eerst in.");
+    if (!location.state || !location.state.objectId) {
+      alert("Geen artwork ID meegegeven via locatie!");
       return;
     }
 
+    const id = location.state.objectId;
+    setObjectId(id);
+
+    setLoading(true);
+    api
+      .get(`/objects/${id}`)
+      .then((res) => {
+        setTitle(res.data.data.object.title || "");
+        setDescription(res.data.data.object.description || "");
+      })
+      .catch((err) => {
+        console.error("Failed to load artwork metadata", err);
+        alert("Kon artwork data niet laden.");
+      })
+      .finally(() => setLoading(false));
+  }, [location.state]);
+
+  if (!location.state) {
+    return <p>Loading...</p>;
+  }
+
+  const handleSave = async () => {
     try {
-      const response = await api.post("/objects", {
-        title,
-        description,
+      const formData = new FormData();
+
+      // De backend verwacht:
+      // JSON.parse(req.body.object) ⇒ { object: { title, description } }
+      const payload = {
+        object: {
+          title,
+          description,
+        },
+      };
+
+      // Voeg als string toe aan FormData
+      formData.append("object", JSON.stringify(payload));
+
+      await api.post("/objects", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
 
-      // neem aan dat backend het nieuwe object terugstuurt met een ID
-      const newObjectId = response.data.id || null;
-
-      if (newObjectId) {
-        navigate("/artworks");
-      } else {
-        alert("Er ging iets mis bij het aanmaken, probeer opnieuw.");
-      }
-    } catch (err: any) {
-      console.error("Failed to create object:", err);
-      alert(
-        `Fout bij maken artwork: ${err.response?.data?.message || err.message}`
-      );
+      alert("Artwork succesvol aangemaakt!");
+      navigate("/artworks");
+    } catch (err) {
+      console.error("Fout bij aanmaken artwork:", err);
+      alert("Fout bij opslaan artwork.");
     }
   };
 
@@ -87,10 +94,7 @@ const ArtworkForm = () => {
       </div>
 
       <div className="w-full bg-secondary-800 p-6 pt-12 rounded-[16px] mb-6 flex flex-col lg:flex-row lg:gap-[68px] lg:justify-between relative">
-        <button className="absolute top-6 right-6 text-sm font-semibold text-red-400 border border-red-600 rounded px-3 py-2 bg-[#FCA5A5] hover:opacity-90 z-10">
-          Delete artwork
-        </button>
-
+        {/* Artwork preview en info */}
         <div className="lg:w-1/2 w-full flex flex-col items-center text-center">
           <div className="relative w-full h-[400px] bg-secondary-700 rounded-lg overflow-hidden flex items-center justify-center mt-7">
             <img
@@ -98,34 +102,11 @@ const ArtworkForm = () => {
               alt="Artwork"
               className="object-cover w-full md:w-1/2 h-full"
             />
-            <div className="absolute -top-6 right-2">
-              <Button
-                label="Preview"
-                type="button"
-                onClick={() => {}}
-                className="w-full h-[48px] text-sm"
-              />
-            </div>
           </div>
-
-          <div className="w-full flex flex-col gap-5 items-start text-left mb-6 mt-7 px-2 lg:px-0">
-            <h3 className="text-neutral-50 text-lg font-semibold">
-              Artwork Information
-            </h3>
-
-            <div className="flex flex-col gap-[21px] mb-7">
-              <div className="flex flex-row gap-[20px]">
-                <p className="text-neutral-50 text-sm">File size</p>
-                <p className="text-neutral-300 text-sm">50MB</p>
-              </div>
-              <div className="flex flex-row gap-[20px]">
-                <p className="text-neutral-50 text-sm">Uploaded on</p>
-                <p className="text-neutral-300 text-sm">17 May 2025</p>
-              </div>
-            </div>
-          </div>
+          {/* eventueel meer metadata */}
         </div>
 
+        {/* Formulier */}
         <div className="lg:w-1/2 lg:mt-16 w-full flex flex-col justify-between">
           <div className="flex flex-col gap-4 mb-7">
             <InputField
@@ -158,7 +139,7 @@ const ArtworkForm = () => {
                 Cancel
               </button>
               <button
-                onClick={objectId ? handleSave : handleCreate}
+                onClick={handleSave}
                 className="w-2/3 h-[48px] bg-primary-500 text-white font-medium rounded-lg hover:opacity-90 transition"
               >
                 Save changes

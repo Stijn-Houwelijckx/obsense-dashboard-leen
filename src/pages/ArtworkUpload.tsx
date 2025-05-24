@@ -29,10 +29,19 @@ const ArtworkUpload = () => {
   };
 
   const uploadFile = async (file: File) => {
+    console.log("uploadFile called with file:", file.name);
     setError(null);
 
     const formData = new FormData();
     formData.append("3DObject", file);
+
+    const objectMeta = {
+      object: {
+        title: "Mijn titel", // Pas aan, bijvoorbeeld via een formulierveld
+        description: "Mijn beschrijving", // Of een lege string
+      },
+    };
+    formData.append("object", JSON.stringify(objectMeta)); // Dit is essentieel!
 
     try {
       const response = await api.post("/objects", formData, {
@@ -41,12 +50,13 @@ const ArtworkUpload = () => {
         },
       });
 
+      console.log("Upload response data:", response.data);
+
       // ✅ Haal het ID van het geüploade object op
       const objectId = response.data.data.object._id;
 
       // ✅ Geef het mee aan de volgende pagina
       navigate("/artworkform", { state: { objectId } });
-      navigate("/artworkform");
     } catch (err: any) {
       console.error("Upload error:", err);
       setError("Something went wrong during upload.");
@@ -54,6 +64,8 @@ const ArtworkUpload = () => {
   };
 
   const validateAndSetFiles = async (selectedFiles: FileList) => {
+    console.log("validateAndSetFiles called with files:", selectedFiles);
+
     setError(null);
     if (selectedFiles.length === 0) return;
 
@@ -76,11 +88,15 @@ const ArtworkUpload = () => {
     setFiles(selectedFiles);
 
     // Upload meteen de eerste file
+    console.log("Files ready to upload:", selectedFiles[0]);
+
     await uploadFile(selectedFiles[0]);
   };
 
   const onFilesSelected = (event: ChangeEvent<HTMLInputElement>) => {
+    console.log("onFilesSelected triggered");
     const selectedFiles = event.target.files;
+    console.log("Selected files:", selectedFiles);
     if (selectedFiles) {
       validateAndSetFiles(selectedFiles);
     }
