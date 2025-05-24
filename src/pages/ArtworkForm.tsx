@@ -45,30 +45,17 @@ const ArtworkForm = () => {
 
   const handleSave = async () => {
     try {
-      const formData = new FormData();
-
-      // De backend verwacht:
-      // JSON.parse(req.body.object) ⇒ { object: { title, description } }
-      const payload = {
+      await api.put(`/objects/${objectId}`, {
         object: {
           title,
           description,
         },
-      };
-
-      // Voeg als string toe aan FormData
-      formData.append("object", JSON.stringify(payload));
-
-      await api.post("/objects", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
       });
 
-      alert("Artwork succesvol aangemaakt!");
+      alert("Artwork succesvol opgeslagen!");
       navigate("/artworks");
     } catch (err) {
-      console.error("Fout bij aanmaken artwork:", err);
+      console.error("Fout bij opslaan artwork:", err);
       alert("Fout bij opslaan artwork.");
     }
   };
