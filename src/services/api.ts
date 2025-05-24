@@ -2,10 +2,10 @@ import axios from "axios";
 import { useAuthStorage } from "store/authStorage";
 import { User } from "types/user.types";
 
-const API_URL = "http://localhost:3000/api/v1";
+const apiUrl = import.meta.env.VITE_API_URL ?? "http://localhost:3000/api/v1";
 
 const api = axios.create({
-  baseURL: API_URL,
+  baseURL: apiUrl,
   headers: {
     "Content-Type": "application/json",
   },
