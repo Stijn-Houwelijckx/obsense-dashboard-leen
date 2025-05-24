@@ -19,7 +19,7 @@ const SignIn = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const targetPath = location.state?.from ?? "/";
-  const { setToken } = useAuthStorage();
+  const { setToken, setUser } = useAuthStorage();
   const isEmailError = (error: ErrorResponse | null): boolean => {
     return !!error?.data?.message?.toLowerCase().includes("email");
   };
@@ -37,6 +37,8 @@ const SignIn = () => {
     try {
       const response = await authService.login(data);
       setToken(response.data.token);
+      setUser(response.data.user); // 👈 hier pak je de rol
+
       navigate(targetPath, { replace: true });
     } catch (error) {
       if (error instanceof AxiosError) {
