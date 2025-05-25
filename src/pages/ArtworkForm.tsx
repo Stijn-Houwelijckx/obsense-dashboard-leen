@@ -17,6 +17,8 @@ const ArtworkForm = () => {
   const location = useLocation();
 
   useEffect(() => {
+    console.log("location.state:", location.state); // ← hier
+
     if (!location.state || !location.state.objectId) {
       alert("Geen artwork ID meegegeven via locatie!");
       return;

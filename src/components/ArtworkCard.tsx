@@ -36,8 +36,11 @@ const ArtworkCard = ({ _id, title, onDelete }: ArtworkCardProps) => {
             <img
               src={editIcon}
               alt="Edit"
-              className="w-5"
-              onClick={() => navigate("/artworkform")}
+              className="w-5 cursor-pointer"
+              onClick={() => {
+                console.log("Navigating with objectId:", _id);
+                navigate("/artworkform", { state: { objectId: _id } });
+              }}
             />
           </button>
         </div>
