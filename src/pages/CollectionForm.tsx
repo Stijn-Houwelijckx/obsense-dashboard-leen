@@ -78,7 +78,7 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
 
     try {
       const token = localStorage.getItem("token");
-      console.log("Token:", token);
+      console.log("Sending token:", token);
 
       const res = await fetch(
         "http://localhost:3000/api/v1/artist/collections",
@@ -86,7 +86,6 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
-            // Geen Content-Type header hier!
           },
           body: formData,
         }
