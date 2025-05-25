@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import hamburgerIcon from "assets/img/hamburger.svg";
 import treeImage from "assets/img/tree.png";
 import plusGenreIcon from "assets/img/plus_genre.svg";
@@ -6,6 +6,7 @@ import artworkImg from "assets/img/tree.png";
 import InputField from "components/InputField";
 import Navigation from "components/Navigation";
 import NavigationDesktop from "components/NavigationDesktop";
+import api from "../services/api"; // importeer je axios instance
 
 interface StepTwoFormProps {
   mode: "tour" | "expo";
@@ -13,15 +14,46 @@ interface StepTwoFormProps {
   onNext: () => void;
 }
 
-const dummyArtworks = [
-  { id: 1, title: "Tree of Life", image: artworkImg },
-  { id: 2, title: "Abstract Dream", image: artworkImg },
-  { id: 3, title: "Urban Mood", image: artworkImg },
-];
-
 const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
   const [step, setStep] = useState(1);
+
+  // Form fields state
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [cityOrLocation, setCityOrLocation] = useState("");
+  const [price, setPrice] = useState("");
+
+  // Genre blijft voorlopig hardcoded
+  const genre = "Low-Poly";
+
+  // Artworks state (gehaald via API)
+  const [artworks, setArtworks] = useState<
+    { _id: number; title: string; image: string }[]
+  >([]);
+
+  // Geselecteerde artwork IDs
   const [selectedArtworks, setSelectedArtworks] = useState<number[]>([]);
+
+  // Artwork ophalen bij laden component (vul je eigen endpoint in)
+  useEffect(() => {
+    const fetchArtworks = async () => {
+      try {
+        const res = await api.get("/objects");
+        const objects = res.data.data.objects;
+
+        if (objects.length === 0) {
+          setArtworks([]); // lege lijst
+        } else {
+          setArtworks(objects);
+        }
+      } catch (err) {
+        console.error("Failed to load artworks", err);
+        setArtworks([]); // ook leeg bij fetch fout
+      }
+    };
+
+    fetchArtworks();
+  }, []);
 
   const toggleArtwork = (id: number) => {
     setSelectedArtworks((prev) =>
@@ -29,12 +61,48 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
     );
   };
 
-  const title = "Delivery Dragon";
-  const description =
-    'Embark on the Delivery Dragon Tour, a captivating journey that blends storytelling, art, and technology as you follow the trail of the enigmatic "Delivery Dragon". The Delivery Dragon is a symbol of curiosity, exploration, and the connection between worlds—both digital and physical. As you walk his path, you\'ll discover stunning 3D sculptures, interactive installations, and immersive AR experiences that bring his journey to life. From hidden corners to bustling squares, each location has been carefully chosen to reflect a pivotal moment in his story.';
-  const cityOrLocation = mode === "tour" ? "Mechelen" : "Some Location";
-  const price = "€19,99";
-  const genre = "Low-Poly";
+  const handlePublish = async () => {
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("description", description);
+    formData.append("location", cityOrLocation);
+    formData.append("price", price);
+    formData.append("genre", genre);
+    formData.append("mode", mode);
+    formData.append("artworks", JSON.stringify(selectedArtworks)); // array in string
+
+    if (coverImageFile) {
+      // stel je hebt een bestand geselecteerd
+      formData.append("coverImage", coverImageFile);
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+      console.log("Token:", token);
+
+      const res = await fetch(
+        "http://localhost:3000/api/v1/artist/collections",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            // Geen Content-Type header hier!
+          },
+          body: formData,
+        }
+      );
+
+      if (res.ok) {
+        window.location.href = "/collections";
+      } else {
+        const error = await res.json();
+        alert("Failed to save: " + error.message);
+      }
+    } catch (err) {
+      alert("Something went wrong.");
+    }
+  };
+  const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
 
   return (
     <div className="min-h-screen md:pl-[166px] md:pr-[74px] bg-secondary-900 text-neutral-50 p-4 mt-14 flex flex-col items-center">
@@ -88,22 +156,30 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
               <InputField
                 label="Title"
                 placeholder="Title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
                 className="w-full h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
               />
               <InputField
                 label="Description"
                 placeholder="Description"
                 textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
                 className="w-full h-[166px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 py-2 text-sm text-white resize-none"
               />
               <InputField
                 label={mode === "tour" ? "City" : "Location"}
                 placeholder={mode === "tour" ? "City" : "Location"}
+                value={cityOrLocation}
+                onChange={(e) => setCityOrLocation(e.target.value)}
                 className="w-full h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
               />
               <InputField
                 label="Price (€)"
                 placeholder="Enter price"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
                 className="w-full h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
               />
             </div>
@@ -139,57 +215,58 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
       {/* Step 2: Artwork Selection */}
       {step === 2 && (
         <>
-          <div className="w-full flex flex-wrap gap-5 mt-4">
-            {dummyArtworks.map(({ id, title, image }) => {
-              const isSelected = selectedArtworks.includes(id);
-              return (
-                <div
-                  key={id}
-                  onClick={() => toggleArtwork(id)}
-                  className={`
-              w-full sm:w-[calc(50%-10px)] 
-              lg:basis-[calc(25%-15px)] lg:max-w-[calc(25%-15px)] 
-              lg:w-1/4
-              cursor-pointer h-[350px]
-            `}
-                >
+          {artworks.length === 0 ? (
+            <div className="w-full h-[350px] flex items-center justify-center text-neutral-400 text-lg font-semibold">
+              No artworks yet
+            </div>
+          ) : (
+            <div className="w-full flex flex-wrap gap-5 mt-4">
+              {artworks.map(({ _id, title, image }) => {
+                const isSelected = selectedArtworks.includes(_id);
+                return (
                   <div
-                    className={`w-full h-full bg-secondary-700 rounded-lg flex flex-col relative p-2 transition ${
-                      isSelected
-                        ? "border-2 border-primary-500"
-                        : "border border-transparent"
-                    }`}
+                    key={_id}
+                    onClick={() => toggleArtwork(_id)}
+                    className="w-full sm:w-[calc(50%-10px)] lg:basis-[calc(25%-15px)] lg:max-w-[calc(25%-15px)] lg:w-1/4 cursor-pointer h-[350px]"
                   >
                     <div
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleArtwork(id);
-                      }}
-                      className={`absolute top-2 right-2 w-5 h-5 rounded-full border-2 ${
+                      className={`w-full h-full bg-secondary-700 rounded-lg flex flex-col relative p-2 transition ${
                         isSelected
-                          ? "bg-primary-500 border-primary-500"
-                          : "border-neutral-300"
-                      } flex items-center justify-center`}
-                    ></div>
+                          ? "border-2 border-primary-500"
+                          : "border border-transparent"
+                      }`}
+                    >
+                      <div
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleArtwork(_id);
+                        }}
+                        className={`absolute top-2 right-2 w-5 h-5 rounded-full border-2 ${
+                          isSelected
+                            ? "bg-primary-500 border-primary-500"
+                            : "border-neutral-300"
+                        } flex items-center justify-center`}
+                      ></div>
 
-                    <div className="w-full h-[300px] rounded-lg overflow-hidden">
-                      <img
-                        src={image}
-                        alt={title}
-                        className="lg:w-3/4 w:1/2 h-full object-cover mx-auto"
-                      />
-                    </div>
+                      <div className="w-full h-[300px] rounded-lg overflow-hidden">
+                        <img
+                          src={image || artworkImg} // fallback image hier
+                          alt={title}
+                          className="lg:w-3/4 w:1/2 h-full object-cover mx-auto"
+                        />
+                      </div>
 
-                    <div className="w-full h-[64px] bg-secondary-600 rounded-lg flex items-center justify-center p-4">
-                      <h6 className="text-primary-500 font-semibold">
-                        {title}
-                      </h6>
+                      <div className="w-full h-[64px] bg-secondary-600 rounded-lg flex items-center justify-center p-4">
+                        <h6 className="text-primary-500 font-semibold">
+                          {title}
+                        </h6>
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
 
           <div className="mt-10 w-full">
             <div className="flex gap-4 w-full lg:hidden">
@@ -278,11 +355,11 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
             <div className="w-full mb-10 mt-6">
               <h6 className="mb-4 font-semibold">Artworks</h6>
               <div className="flex flex-col gap-4">
-                {dummyArtworks
-                  .filter((art) => selectedArtworks.includes(art.id))
-                  .map(({ id, title, image }) => (
+                {artworks
+                  .filter((art) => selectedArtworks.includes(art._id))
+                  .map(({ _id, title, image }) => (
                     <div
-                      key={id}
+                      key={_id}
                       className="flex items-center gap-4 border-2 border-dashed border-primary-500 rounded-xl p-2"
                     >
                       <img
@@ -305,7 +382,7 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
                 Save as Draft
               </button>
               <button
-                onClick={() => (window.location.href = "/collections")}
+                onClick={handlePublish}
                 className="w-2/3 h-[48px] bg-primary-500 text-white font-medium rounded-lg hover:opacity-90 transition
                lg:w-[120px]"
               >
