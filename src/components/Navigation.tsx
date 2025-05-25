@@ -3,9 +3,16 @@ import hamburgerIcon from "assets/img/hamburger.svg";
 import closeIcon from "assets/img/close.svg";
 import profilePic from "assets/img/profilepic.png";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("jwt"); // of hoe je je token ook opslaat
+    navigate("/signin"); // redirect naar loginpagina
+  };
 
   return (
     <>
@@ -48,7 +55,9 @@ const Navigation = () => {
             <Link to="/settings" onClick={() => setIsOpen(false)}>
               Settings
             </Link>
-            <p>Logout</p>
+            <p onClick={handleLogout} className="cursor-pointer">
+              Logout
+            </p>
             <img
               src={profilePic}
               alt="Profile"
