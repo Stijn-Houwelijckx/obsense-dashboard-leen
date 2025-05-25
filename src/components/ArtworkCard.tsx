@@ -5,10 +5,10 @@ import editIcon from "assets/img/edit.svg";
 import { useNavigate } from "react-router-dom";
 
 interface ArtworkCardProps {
+  id: string;
   title: string;
 }
-
-const ArtworkCard = ({ title }: ArtworkCardProps) => {
+const ArtworkCard = ({ id, title }: ArtworkCardProps) => {
   const navigate = useNavigate();
 
   return (

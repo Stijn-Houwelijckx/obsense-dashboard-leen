@@ -6,10 +6,32 @@ import Navigation from "components/Navigation";
 import NavigationDesktop from "components/NavigationDesktop";
 import Button from "components/Button";
 import ArtworkCard from "components/ArtworkCard";
+import { useEffect, useState } from "react";
+import api from "../services/api"; // jouw axios instance
 
+interface Artwork {
+  id: string;
+  title: string;
+  // eventueel ook description en imageUrl als die beschikbaar zijn
+}
 const Artworks = () => {
   const hasArtworks = true;
+  const [artworks, setArtworks] = useState<Artwork[]>([]);
+
   const navigate = useNavigate();
+  useEffect(() => {
+    api
+      .get("/objects")
+      .then((res) => {
+        console.log("RESPONSE:", res.data); // <---- Voeg dit toe
+
+        const objects = res.data.data.objects; // pas aan indien structuur anders is
+        setArtworks(objects);
+      })
+      .catch((err) => {
+        console.error("Failed to load artworks", err);
+      });
+  }, []);
 
   return (
     <div className="min-h-screen bg-secondary-900 pt-14 text-neutral-50 md:pl-[166px] md:pr-[74px] px-4">
@@ -40,7 +62,7 @@ const Artworks = () => {
         </div>
       </div>
 
-      {hasArtworks ? (
+      {artworks.length > 0 ? (
         <div className="grid gap-5 justify-items-center grid-cols-[repeat(auto-fit,minmax(250px,1fr))] pb-8">
           <div
             onClick={() => navigate("/upload")}
@@ -54,11 +76,13 @@ const Artworks = () => {
             </div>
           </div>
 
-          <ArtworkCard title="Working Man" />
-          <ArtworkCard title="Sunset Glow" />
-          <ArtworkCard title="Modern Art" />
-          <ArtworkCard title="Harry Styles" />
-          <ArtworkCard title="Christmas Wonder" />
+          {artworks.map((artwork) => (
+            <ArtworkCard
+              key={artwork.id}
+              id={artwork.id}
+              title={artwork.title}
+            />
+          ))}
         </div>
       ) : (
         <div className="flex flex-col items-center text-center px-4 pt-10">
@@ -68,7 +92,11 @@ const Artworks = () => {
             To use it in an exposition or tour.
           </p>
           <div className="w-full max-w-xs">
-            <Button label="Upload" type="button" onClick={() => {}} />
+            <Button
+              label="Upload"
+              type="button"
+              onClick={() => navigate("/upload")}
+            />
           </div>
         </div>
       )}

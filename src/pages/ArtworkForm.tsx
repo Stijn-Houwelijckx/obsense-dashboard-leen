@@ -51,8 +51,6 @@ const ArtworkForm = () => {
           description,
         },
       });
-
-      alert("Artwork succesvol opgeslagen!");
       navigate("/artworks");
     } catch (err) {
       console.error("Fout bij opslaan artwork:", err);
