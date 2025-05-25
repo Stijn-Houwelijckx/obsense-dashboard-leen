@@ -8,16 +8,17 @@ import Button from "components/Button";
 import ArtworkCard from "components/ArtworkCard";
 import { useEffect, useState } from "react";
 import api from "../services/api"; // jouw axios instance
+// import axios from "axios";
 
 interface Artwork {
-  id: string;
+  _id: string; // ✅ dit is wat MongoDB gebruikt
   title: string;
-  // eventueel ook description en imageUrl als die beschikbaar zijn
+  description?: string;
 }
 const Artworks = () => {
-  const hasArtworks = true;
+  // const hasArtworks = true;
   const [artworks, setArtworks] = useState<Artwork[]>([]);
-
+  // const yourToken = localStorage.getItem("jwt") || ""; // Haal je token op uit localStorag
   const navigate = useNavigate();
   useEffect(() => {
     api
@@ -32,6 +33,16 @@ const Artworks = () => {
         console.error("Failed to load artworks", err);
       });
   }, []);
+
+  const handleDelete = async (id: string) => {
+    try {
+      await api.delete(`/objects/${id}`);
+      console.log(`Object with ID ${id} deleted successfully.`);
+      setArtworks((prev) => prev.filter((art) => art._id !== id));
+    } catch (err) {
+      console.error("Error deleting object:", err);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-secondary-900 pt-14 text-neutral-50 md:pl-[166px] md:pr-[74px] px-4">
@@ -78,9 +89,10 @@ const Artworks = () => {
 
           {artworks.map((artwork) => (
             <ArtworkCard
-              key={artwork.id}
-              id={artwork.id}
+              key={artwork._id}
+              _id={artwork._id}
               title={artwork.title}
+              onDelete={handleDelete}
             />
           ))}
         </div>

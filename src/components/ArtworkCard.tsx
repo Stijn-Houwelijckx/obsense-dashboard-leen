@@ -5,10 +5,11 @@ import editIcon from "assets/img/edit.svg";
 import { useNavigate } from "react-router-dom";
 
 interface ArtworkCardProps {
-  id: string;
+  _id: string;
   title: string;
+  onDelete: (id: string) => void; // ← deze toevoegen
 }
-const ArtworkCard = ({ id, title }: ArtworkCardProps) => {
+const ArtworkCard = ({ _id, title, onDelete }: ArtworkCardProps) => {
   const navigate = useNavigate();
 
   return (
@@ -21,6 +22,7 @@ const ArtworkCard = ({ id, title }: ArtworkCardProps) => {
             className="w-1/2 h-full object-cover rounded-lg mx-auto"
           />
           <button
+            onClick={() => onDelete(_id)} // ← callback aanroepen
             className="absolute top-2 right-2 w-10 h-10 bg-secondary-700 rounded-full flex items-center justify-center"
             aria-label="Delete artwork"
           >
