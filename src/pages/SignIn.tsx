@@ -37,6 +37,8 @@ const SignIn = () => {
     try {
       const response = await authService.login(data);
       setToken(response.data.token);
+      // save in local storage
+      localStorage.setItem("token", response.data.token);
       setUser(response.data.user); // 👈 hier pak je de rol
 
       navigate(targetPath, { replace: true });

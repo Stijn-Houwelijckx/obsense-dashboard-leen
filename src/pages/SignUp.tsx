@@ -23,7 +23,7 @@ const SignUp = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const targetPath = location.state?.from ?? "/";
-  const { setToken } = useAuthStorage();
+  const { setToken, setUser } = useAuthStorage(); // <-- setUser toegevoegd
 
   const {
     register,
@@ -77,8 +77,19 @@ const SignUp = () => {
         isArtist: true,
       };
 
+      // Signup aanroepen
       const response = await authService.signup(userData);
+
+      // Stap 1: Token opslaan
       setToken(response.data.token);
+
+      // Stap 2: User data ophalen via /me endpoint
+      const currentUserResponse = await authService.getCurrentUser();
+
+      // Stap 3: User data opslaan
+      setUser(currentUserResponse.data);
+
+      // Navigeren naar gewenste pagina
       navigate(targetPath, { replace: true });
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -135,7 +146,7 @@ const SignUp = () => {
             <span className="uppercase text-xs text-neutral-200 bg-secondary-800 px-2.5 py-1.5 rounded-md tracking-wide">
               {signUpError.status}_{signUpError.code}
             </span>
-            {signUpError.data.details && (
+            {signUpError.data?.details && (
               <p className="text-sm text-neutral-200 p-5 text-center bg-secondary-800 rounded-lg">
                 {signUpError.data.details}
               </p>
