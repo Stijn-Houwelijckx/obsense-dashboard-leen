@@ -6,7 +6,6 @@ import InputField from "components/InputField";
 import Navigation from "components/Navigation";
 import NavigationDesktop from "components/NavigationDesktop";
 import api from "../services/api";
-// const token = localStorage.getItem("token");
 
 const ArtworkForm = () => {
   const [title, setTitle] = useState("");
@@ -14,12 +13,13 @@ const ArtworkForm = () => {
   const [objectId, setObjectId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
 
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    console.log("location.state:", location.state); // ← hier
+    console.log("location.state:", location.state);
 
     if (!location.state || !location.state.objectId) {
       alert("Geen artwork ID meegegeven via locatie!");
@@ -33,8 +33,14 @@ const ArtworkForm = () => {
     api
       .get(`/objects/${id}`)
       .then((res) => {
+        const object = res.data.data.object;
+        console.log("Backend response object:", object);
+
         setTitle(res.data.data.object.title || "");
         setDescription(res.data.data.object.description || "");
+        if (object.thumbnail && object.thumbnail.filePath) {
+          setThumbnailUrl(object.thumbnail.filePath);
+        }
       })
       .catch((err) => {
         console.error("Failed to load artwork metadata", err);
@@ -53,6 +59,9 @@ const ArtworkForm = () => {
         object: {
           title,
           description,
+          file: {
+            url: thumbnailUrl, // <-- of hoe je backend het noemt
+          },
         },
       });
       navigate("/artworks");
@@ -68,6 +77,7 @@ const ArtworkForm = () => {
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    console.log("hey", file);
     if (!file) return;
 
     if (!objectId) {
@@ -77,17 +87,8 @@ const ArtworkForm = () => {
 
     const formData = new FormData();
 
-    // Voeg hier de JSON data toe zoals je dat wil meesturen
-    formData.append(
-      "object",
-      JSON.stringify({
-        title,
-        description,
-      })
-    );
-
     // Voeg de cover image toe, met dezelfde naam als je backend verwacht
-    formData.append("coverImage", file);
+    formData.append("objectThumbnail", file);
 
     try {
       const token = localStorage.getItem("token");
@@ -99,12 +100,12 @@ const ArtworkForm = () => {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
-            // Let op: Content-Type mag je hier niet zetten als je FormData stuurt
           },
           body: formData,
         }
       );
 
+      console.log("Response status:", response);
       if (!response.ok) {
         const text = await response.text();
         console.error("Upload mislukt:", response.status, text);
@@ -112,9 +113,18 @@ const ArtworkForm = () => {
         return;
       }
 
+      const tempUrl = URL.createObjectURL(file);
+      setThumbnailUrl(tempUrl);
+
       const result = await response.json();
       console.log("Upload resultaat:", result);
-      alert("Cover succesvol geüpload!");
+      if (result.thumbnail && result.thumbnail.filePath) {
+        setThumbnailUrl(result.thumbnail.filePath);
+      } else {
+        // fallback: tijdelijk URL uit lokale file
+        const tempUrl = URL.createObjectURL(file);
+        setThumbnailUrl(tempUrl);
+      }
     } catch (err) {
       console.error("Upload error:", err);
       alert("Er ging iets mis bij uploaden");
@@ -142,7 +152,7 @@ const ArtworkForm = () => {
         <div className="lg:w-1/2 w-full flex flex-col items-center text-center">
           <div className="relative w-full h-[400px] bg-secondary-700 rounded-lg overflow-hidden flex items-center justify-center mt-7">
             <img
-              src={treeImage}
+              src={thumbnailUrl || treeImage}
               alt="Artwork"
               className="object-cover w-full md:w-1/2 h-full"
             />
