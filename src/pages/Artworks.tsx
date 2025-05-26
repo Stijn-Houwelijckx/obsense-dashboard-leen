@@ -18,6 +18,8 @@ interface Artwork {
 const Artworks = () => {
   // const hasArtworks = true;
   const [artworks, setArtworks] = useState<Artwork[]>([]);
+  const [idToDelete, setIdToDelete] = useState<string | null>(null); // welke wil je verwijderen?
+
   // const yourToken = localStorage.getItem("jwt") || ""; // Haal je token op uit localStorag
   const navigate = useNavigate();
   useEffect(() => {
@@ -34,13 +36,23 @@ const Artworks = () => {
       });
   }, []);
 
-  const handleDelete = async (id: string) => {
+  const handleRequestDelete = (id: string) => {
+    setIdToDelete(id); // toon de confirm overlay
+  };
+
+  const handleCancelDelete = () => {
+    setIdToDelete(null); // sluit overlay
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!idToDelete) return;
     try {
-      await api.delete(`/objects/${id}`);
-      console.log(`Object with ID ${id} deleted successfully.`);
-      setArtworks((prev) => prev.filter((art) => art._id !== id));
+      await api.delete(`/objects/${idToDelete}`);
+      setArtworks((prev) => prev.filter((art) => art._id !== idToDelete));
+      setIdToDelete(null);
     } catch (err) {
       console.error("Error deleting object:", err);
+      setIdToDelete(null);
     }
   };
 
@@ -92,7 +104,7 @@ const Artworks = () => {
               key={artwork._id}
               _id={artwork._id}
               title={artwork.title}
-              onDelete={handleDelete}
+              onRequestDelete={handleRequestDelete}
             />
           ))}
         </div>
@@ -112,8 +124,32 @@ const Artworks = () => {
           </div>
         </div>
       )}
+
+      {idToDelete && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+          <div className="bg-secondary-800 rounded-[10px] p-[40px_64px] max-w-md w-full text-neutral-50 flex flex-col gap-[22px]">
+            <h4 className="text-xl font-semibold">
+              Are you sure you want to delete your artwork?
+            </h4>
+            <p>This action cannot be undone.</p>
+            <div className="flex gap-4 justify-end">
+              <button
+                onClick={handleCancelDelete}
+                className="border border-primary-500 text-primary-500 px-6 py-2 rounded-lg hover:bg-primary-500 hover:text-white transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmDelete}
+                className="bg-primary-500 text-white px-6 py-2 rounded-lg hover:opacity-90 transition"
+              >
+                Yes, I'm sure
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
-
 export default Artworks;

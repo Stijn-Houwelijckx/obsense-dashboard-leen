@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import artworkImg from "assets/img/artwork.png";
 import deleteIcon from "assets/img/delete.svg";
 import editIcon from "assets/img/edit.svg";
@@ -7,9 +7,10 @@ import { useNavigate } from "react-router-dom";
 interface ArtworkCardProps {
   _id: string;
   title: string;
-  onDelete: (id: string) => void; // ← deze toevoegen
+  onRequestDelete: (id: string) => void; // anders dan onDelete: hier vraag je om bevestiging
 }
-const ArtworkCard = ({ _id, title, onDelete }: ArtworkCardProps) => {
+
+const ArtworkCard = ({ _id, title, onRequestDelete }: ArtworkCardProps) => {
   const navigate = useNavigate();
 
   return (
@@ -22,9 +23,9 @@ const ArtworkCard = ({ _id, title, onDelete }: ArtworkCardProps) => {
             className="w-1/2 h-full object-cover rounded-lg mx-auto"
           />
           <button
-            onClick={() => onDelete(_id)} // ← callback aanroepen
+            onClick={() => onRequestDelete(_id)} // vraag om bevestiging
             className="absolute top-2 right-2 w-10 h-10 bg-secondary-700 rounded-full flex items-center justify-center"
-            aria-label="Delete artwork"
+            aria-label="Request delete artwork"
           >
             <img src={deleteIcon} alt="Delete" className="w-5" />
           </button>
@@ -38,7 +39,6 @@ const ArtworkCard = ({ _id, title, onDelete }: ArtworkCardProps) => {
               alt="Edit"
               className="w-5 cursor-pointer"
               onClick={() => {
-                console.log("Navigating with objectId:", _id);
                 navigate("/artworkform", { state: { objectId: _id } });
               }}
             />
@@ -48,5 +48,4 @@ const ArtworkCard = ({ _id, title, onDelete }: ArtworkCardProps) => {
     </div>
   );
 };
-
 export default ArtworkCard;
