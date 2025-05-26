@@ -7,10 +7,16 @@ import { useNavigate } from "react-router-dom";
 interface ArtworkCardProps {
   _id: string;
   title: string;
+  thumbnailUrl?: string;
   onRequestDelete: (id: string) => void; // anders dan onDelete: hier vraag je om bevestiging
 }
 
-const ArtworkCard = ({ _id, title, onRequestDelete }: ArtworkCardProps) => {
+const ArtworkCard = ({
+  _id,
+  title,
+  thumbnailUrl,
+  onRequestDelete,
+}: ArtworkCardProps) => {
   const navigate = useNavigate();
 
   return (
@@ -18,7 +24,7 @@ const ArtworkCard = ({ _id, title, onRequestDelete }: ArtworkCardProps) => {
       <div className="w-full h-[330px] bg-secondary-700 rounded-lg flex flex-col">
         <div className="relative w-full h-[264px] rounded-lg bg-secondary-700 overflow-hidden">
           <img
-            src={artworkImg}
+            src={thumbnailUrl || artworkImg}
             alt={title}
             className="w-1/2 h-full object-cover rounded-lg mx-auto"
           />

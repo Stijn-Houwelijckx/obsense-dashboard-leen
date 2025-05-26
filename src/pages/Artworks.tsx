@@ -10,11 +10,21 @@ import { useEffect, useState } from "react";
 import api from "../services/api"; // jouw axios instance
 // import axios from "axios";
 
+interface FileData {
+  fileName: string;
+  filePath: string;
+  fileType?: string;
+  fileSize?: number;
+}
+
 interface Artwork {
-  _id: string; // ✅ dit is wat MongoDB gebruikt
+  _id: string;
   title: string;
   description?: string;
+  file?: FileData;
+  thumbnail?: FileData;
 }
+
 const Artworks = () => {
   // const hasArtworks = true;
   const [artworks, setArtworks] = useState<Artwork[]>([]);
@@ -30,6 +40,10 @@ const Artworks = () => {
 
         const objects = res.data.data.objects; // pas aan indien structuur anders is
         setArtworks(objects);
+        console.log(
+          "Artwork URLs:",
+          objects.map((a: any) => a.thumbnail?.filePath || a.file?.filePath)
+        );
       })
       .catch((err) => {
         console.error("Failed to load artworks", err);
@@ -104,6 +118,9 @@ const Artworks = () => {
               key={artwork._id}
               _id={artwork._id}
               title={artwork.title}
+              thumbnailUrl={
+                artwork.thumbnail?.filePath || artwork.file?.filePath
+              }
               onRequestDelete={handleRequestDelete}
             />
           ))}
