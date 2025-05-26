@@ -135,61 +135,65 @@ const ArtworkUpload = () => {
         </div>
       </div>
 
-      <div className="flex flex-col items-center lg:flex-row lg:items-center lg:justify-center lg:gap-6 w-full bg-secondary-800 p-6 rounded-[16px] lg:h-[calc(85vh-56px)]">
-        <img
-          src={uploadPreview}
-          alt="Preview"
-          className="w-3/4 lg:w-1/3 h-auto mb-8 mt-12 lg:mb-0 lg:mt-0"
-        />
+      <div className="flex flex-col items-center justify-center w-full bg-secondary-800 p-6 rounded-[16px] lg:h-[calc(85vh-56px)]">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-center lg:gap-6 w-full">
+          <img
+            src={uploadPreview}
+            alt="Preview"
+            className="w-3/4 lg:w-1/3 h-auto mb-8 mt-12 lg:mb-0 lg:mt-0"
+          />
 
-        <div
-          onClick={openFileDialog}
-          onDrop={onDrop}
-          onDragOver={onDragOver}
-          onDragLeave={onDragLeave}
-          className={`
-            w-full lg:w-1/3 h-[294px] border border-dashed border-neutral-500 rounded-lg 
-            flex flex-col items-center justify-center text-center px-4 cursor-pointer
-            transition-all duration-300
-            ${
-              clicked
-                ? "bg-neutral-950 shadow-none"
-                : "bg-transparent hover:shadow-uploadHover"
-            }
+          <div
+            onClick={openFileDialog}
+            onDrop={onDrop}
+            onDragOver={onDragOver}
+            onDragLeave={onDragLeave}
+            className={`
+        w-full lg:w-1/3 h-[294px] border border-dashed border-neutral-500 rounded-lg 
+        flex flex-col items-center justify-center text-center px-4 cursor-pointer
+        transition-all duration-300
+        ${
+          clicked
+            ? "bg-neutral-950 shadow-none"
+            : "bg-transparent hover:shadow-uploadHover"
+        }
           `}
-        >
-          <img src={uploadIcon} alt="Upload" className="w-10 h-10 mb-4" />
-          <p className="text-base font-medium mb-1">
-            Drag and drop a file to upload
-          </p>
-          <p className="text-sm text-neutral-400 mb-4">GLB, GLTF up to 20MB.</p>
-          <span className="text-sm text-neutral-400 mb-4">OR</span>
-          <div className="w-full px-4">
-            <Button
-              label="Browse files"
-              type="button"
-              onClick={openFileDialog}
+          >
+            <img src={uploadIcon} alt="Upload" className="w-10 h-10 mb-4" />
+            <p className="text-base font-medium mb-1">
+              Drag and drop a file to upload
+            </p>
+            <p className="text-sm text-neutral-400 mb-4">
+              GLB, GLTF up to 20MB.
+            </p>
+            <span className="text-sm text-neutral-400 mb-4">OR</span>
+            <div className="w-full px-4">
+              <Button
+                label="Browse files"
+                type="button"
+                onClick={openFileDialog}
+              />
+            </div>
+
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={onFilesSelected}
+              accept=".glb,.gltf"
+              style={{ display: "none" }}
             />
           </div>
 
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={onFilesSelected}
-            accept=".glb,.gltf"
-            style={{ display: "none" }}
+          <img
+            src={uploadPreview}
+            alt="Preview Duplicate"
+            className="hidden lg:block w-1/3 h-auto"
           />
         </div>
 
-        <img
-          src={uploadPreview}
-          alt="Preview Duplicate"
-          className="hidden lg:block w-1/3 h-auto"
-        />
-
-        <div className="w-full lg:w-1/3 mt-4 lg:mt-6 flex flex-col items-start">
+        <div className="w-full lg:w-1/3 mt-4 lg:mt-6 flex flex-col items-start justify-center">
           {files && files.length > 0 && (
-            <div className="flex items-center gap-4 mb-1">
+            <div className="flex items-center gap-4 mt-6">
               <div
                 className="flex items-center justify-center rounded-full"
                 style={{
