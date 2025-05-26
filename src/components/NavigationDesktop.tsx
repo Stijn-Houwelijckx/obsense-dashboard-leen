@@ -9,9 +9,11 @@ import settingsIcon from "assets/img/settings.svg";
 import logoutIcon from "assets/img/logout.svg";
 import arrowIcon from "assets/img/arrow.svg";
 import profilePic from "assets/img/profilepic.png";
+import { useAuthStorage } from "store/authStorage"; // jouw auth hook
 
 const NavigationDesktop = () => {
   const location = useLocation();
+  const { user } = useAuthStorage(); // user object met naam, email etc.
 
   const navItems = [
     { icon: homeIcon, path: "/", alt: "Home", label: "Home" },
@@ -44,6 +46,17 @@ const NavigationDesktop = () => {
     },
     { icon: logoutIcon, path: "#", alt: "Logout", label: "Logout" },
   ];
+  // console.log("User in Navbar:", user);
+
+  {
+    user ? (
+      <span className="text-sm text-neutral-50 font-medium">
+        {user.firstName}
+      </span>
+    ) : (
+      <span className="text-sm text-neutral-50 font-medium">Guest</span>
+    );
+  }
 
   return (
     <div className="hidden md:flex fixed top-4 left-4 z-50 group">
@@ -100,10 +113,10 @@ const NavigationDesktop = () => {
                 alt="Profile"
                 className="w-10 h-10 rounded-full object-cover"
               />
-              <div className="flex flex-col opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <div className="flex flex-col transition-opacity duration-300">
                 <span className="text-xs text-neutral-50">Welcome back</span>
                 <span className="text-sm text-neutral-50 font-medium">
-                  Stijn
+                  {user?.firstName ? user.firstName : "Guest"}
                 </span>
               </div>
             </div>
