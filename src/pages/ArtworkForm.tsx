@@ -1,4 +1,4 @@
-import { useEffect, useState, ChangeEvent } from "react";
+import { useEffect, useState, useRef, ChangeEvent } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import treeImage from "../assets/img/tree.png";
 import Button from "components/Button";
@@ -6,12 +6,14 @@ import InputField from "components/InputField";
 import Navigation from "components/Navigation";
 import NavigationDesktop from "components/NavigationDesktop";
 import api from "../services/api";
+// const token = localStorage.getItem("token");
 
 const ArtworkForm = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [objectId, setObjectId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -64,6 +66,61 @@ const ArtworkForm = () => {
     navigate("/artworks");
   };
 
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!objectId) {
+      alert("Geen objectId beschikbaar!");
+      return;
+    }
+
+    const formData = new FormData();
+
+    // Voeg hier de JSON data toe zoals je dat wil meesturen
+    formData.append(
+      "object",
+      JSON.stringify({
+        title,
+        description,
+      })
+    );
+
+    // Voeg de cover image toe, met dezelfde naam als je backend verwacht
+    formData.append("coverImage", file);
+
+    try {
+      const token = localStorage.getItem("token");
+      console.log("Sending token:", token);
+
+      const response = await fetch(
+        `http://localhost:3000/api/v1/objects/${objectId}/thumbnail`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            // Let op: Content-Type mag je hier niet zetten als je FormData stuurt
+          },
+          body: formData,
+        }
+      );
+
+      if (!response.ok) {
+        const text = await response.text();
+        console.error("Upload mislukt:", response.status, text);
+        alert("Upload mislukt: " + response.status);
+        return;
+      }
+
+      const result = await response.json();
+      console.log("Upload resultaat:", result);
+      alert("Cover succesvol geüpload!");
+    } catch (err) {
+      console.error("Upload error:", err);
+      alert("Er ging iets mis bij uploaden");
+    }
+  };
+
   return (
     <div className="min-h-screen md:pl-[166px] md:pr-[74px] bg-secondary-900 text-neutral-50 px-4 mt-14 flex flex-col items-center">
       <div className="w-full mb-10">
@@ -90,7 +147,26 @@ const ArtworkForm = () => {
               className="object-cover w-full md:w-1/2 h-full"
             />
           </div>
-          {/* eventueel meer metadata */}
+
+          <div className="flex justify-center gap-4 w-full mt-4">
+            <input
+              type="file"
+              name="objectThumbnail"
+              accept="image/png, image/jpeg"
+              style={{ display: "none" }}
+              ref={fileInputRef}
+              onChange={handleFileChange}
+            />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="bg-primary-500 text-neutral-50 text-sm font-semibold rounded px-3 py-2 hover:opacity-90"
+            >
+              Choose cover
+            </button>
+            <button className="text-sm font-semibold text-red-400 border border-red-600 rounded px-3 py-2 bg-[#FCA5A5] hover:opacity-90">
+              Delete
+            </button>
+          </div>
         </div>
 
         {/* Formulier */}
