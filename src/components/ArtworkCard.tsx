@@ -26,11 +26,11 @@ const ArtworkCard = ({
           <img
             src={thumbnailUrl || artworkImg}
             alt={title}
-            className="w-1/2 h-full object-cover rounded-lg mx-auto"
+            className="w-cover object-cover rounded-lg mx-auto"
           />
           <button
-            onClick={() => onRequestDelete(_id)} // vraag om bevestiging
-            className="absolute top-2 right-2 w-10 h-10 bg-secondary-700 rounded-full flex items-center justify-center"
+            onClick={() => onRequestDelete(_id)}
+            className="absolute top-2 right-2 w-10 h-10 rounded-full flex items-center justify-center"
             aria-label="Request delete artwork"
           >
             <img src={deleteIcon} alt="Delete" className="w-5" />
