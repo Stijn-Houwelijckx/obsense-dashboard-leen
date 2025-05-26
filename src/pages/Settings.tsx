@@ -4,6 +4,7 @@ import InputField from "components/InputField";
 import searchIcon from "../assets/img/search.svg";
 import backIcon from "../assets/img/back.svg";
 import arrowIcon from "../assets/img/arrow.svg";
+import { useNavigate } from "react-router-dom";
 
 import Navigation from "components/Navigation";
 import NavigationDesktop from "components/NavigationDesktop";
@@ -15,6 +16,7 @@ const Settings = () => {
   const [securityPage, setSecurityPage] = useState("main");
 
   const handleBack = () => setSecurityPage("main");
+  const navigate = useNavigate();
 
   const renderSecuritySubPage = () => (
     <div className="w-full flex justify-center pt-6 ">
@@ -390,7 +392,12 @@ const Settings = () => {
                   Trying to earn extra money?
                 </h6>
                 <p className="text-sm">Upload more tours and expositions.</p>
-                <button className="bg-primary-500 text-white px-6 py-3 rounded-lg font-medium hover:opacity-90 transition">
+                <button
+                  onClick={() => {
+                    navigate("/create");
+                  }}
+                  className="bg-primary-500 text-white px-6 py-3 rounded-lg font-medium hover:opacity-90 transition"
+                >
                   Create here
                 </button>
               </div>
