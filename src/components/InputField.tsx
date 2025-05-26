@@ -8,6 +8,7 @@ interface InputFieldProps {
   onChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   textarea?: boolean;
   error?: string;
+  type?: string;
 }
 
 const InputField: React.FC<InputFieldProps> = ({

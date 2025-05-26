@@ -6,6 +6,7 @@ export type User = {
   password: string;
   confirmPassword: string;
   isArtist?: boolean;
+  phoneNumber?: string;
   profilePicture?: {
     fileName: string;
     filePath: string;
