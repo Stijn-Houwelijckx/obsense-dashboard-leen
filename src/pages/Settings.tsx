@@ -16,7 +16,6 @@ const Settings = () => {
   const [securityPage, setSecurityPage] = useState("main");
 
   const handleBack = () => setSecurityPage("main");
-  const navigate = useNavigate();
 
   const renderSecuritySubPage = () => (
     <div className="w-full flex justify-center pt-6 ">

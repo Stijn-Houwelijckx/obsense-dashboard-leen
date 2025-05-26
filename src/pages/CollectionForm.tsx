@@ -9,7 +9,7 @@ import NavigationDesktop from "components/NavigationDesktop";
 import api from "../services/api"; // importeer je axios instance
 
 interface StepTwoFormProps {
-  mode: "tour" | "expo";
+  mode: "tour" | "exposition";
   onCancel: () => void;
   onNext: () => void;
 }
@@ -63,18 +63,31 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
 
   const handlePublish = async () => {
     const formData = new FormData();
-    formData.append("title", title);
-    formData.append("description", description);
-    formData.append("location", cityOrLocation);
-    formData.append("price", price);
-    formData.append("genre", genre);
-    formData.append("mode", mode);
-    formData.append("artworks", JSON.stringify(selectedArtworks)); // array in string
+    // formData.append("title", title);
+    // formData.append("description", description);
+    // formData.append("location", cityOrLocation);
+    // formData.append("price", price);
+    // formData.append("genre", genre);
+    // formData.append("mode", mode);
 
     if (coverImageFile) {
       // stel je hebt een bestand geselecteerd
       formData.append("coverImage", coverImageFile);
     }
+
+    formData.append(
+      "collection",
+      JSON.stringify({
+        collection: {
+          type: mode,
+          title: title,
+          description: description,
+          city: cityOrLocation,
+          price: price,
+          genre: genre,
+        },
+      })
+    );
 
     try {
       const token = localStorage.getItem("token");
