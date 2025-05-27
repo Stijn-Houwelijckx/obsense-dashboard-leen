@@ -6,11 +6,52 @@ import plusIcon from "../assets/img/plus.svg";
 import { useNavigate } from "react-router-dom";
 import Navigation from "components/Navigation";
 import NavigationDesktop from "components/NavigationDesktop";
+import React, { useState, useEffect } from "react";
+import api from "../services/api";
 
 const Collections = () => {
-  const hasCollections = true;
   const navigate = useNavigate();
+  const [collections, setCollections] = useState<CollectionType[]>([]);
+  const hasCollections = collections.length > 0;
 
+  interface FileData {
+    fileName: string;
+    filePath: string;
+    fileType?: string;
+    fileSize?: number;
+  }
+  interface CollectionType {
+    _id: string;
+    title: string;
+    coverImage: FileData | null;
+    status: "draft" | "published";
+  }
+
+  useEffect(() => {
+    const fetchCollections = async () => {
+      try {
+        const res = await api.get("/artist/collections");
+        console.log("API response:", res.data); // <-- hier even loggen
+        const collectionsData = res.data.data.collections as CollectionType[];
+
+        collectionsData.forEach((c) =>
+          console.log("Cover image URL:", c.coverImage)
+        );
+
+        // Check de URLs even in de console
+        collectionsData.forEach((c) =>
+          console.log("Cover image URL:", c.coverImage)
+        );
+        setCollections(collectionsData);
+
+        // setCollections(res.data.data.collections);
+      } catch (err) {
+        console.error("Failed to fetch collections", err);
+      }
+    };
+
+    fetchCollections();
+  }, []);
   return (
     <div className="min-h-screen bg-secondary-900 pt-14 text-neutral-50 md:pl-[166px] md:pr-[74px] px-4">
       <div className="flex items-center justify-between mb-10 w-full">
@@ -54,11 +95,18 @@ const Collections = () => {
             </div>
           </div>
 
-          <CollectionCard title="Working Man" status="draft" />
-          <CollectionCard title="Sunset Glow" status="published" />
-          <CollectionCard title="Modern Art" status="draft" />
-          <CollectionCard title="Christmas City" status="draft" />
-          <CollectionCard title="Harry Styles" status="published" />
+          {collections.map((collection) => {
+            console.log("Collection ID:", collection._id);
+            return (
+              <CollectionCard
+                key={collection._id}
+                title={collection.title}
+                image={collection.coverImage?.filePath || ""}
+                status={collection.status}
+                collectionId={collection._id}
+              />
+            );
+          })}
         </div>
       ) : (
         <div className="flex flex-col items-center text-center px-4 pt-10">

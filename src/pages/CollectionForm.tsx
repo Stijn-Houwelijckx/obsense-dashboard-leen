@@ -6,51 +6,46 @@ import artworkImg from "assets/img/tree.png";
 import InputField from "components/InputField";
 import Navigation from "components/Navigation";
 import NavigationDesktop from "components/NavigationDesktop";
-import api from "../services/api"; // importeer je axios instance
-import { useLocation } from "react-router-dom";
+import api from "../services/api";
 
 interface StepTwoFormProps {
   mode: "tour" | "exposition";
   onCancel: () => void;
   onNext: () => void;
+  isEditing?: boolean;
+  onDelete?: () => void;
 }
 
 const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
   const [step, setStep] = useState(1);
-  const location = useLocation();
-  const isEditing = location.state?.editing === true;
-  // Form fields state
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [cityOrLocation, setCityOrLocation] = useState("");
   const [price, setPrice] = useState("");
 
-  // Genre blijft voorlopig hardcoded
   const genre = "Low-Poly";
 
-  // Artworks state (gehaald via API)
   const [artworks, setArtworks] = useState<
-    { _id: number; title: string; thumbnailUrl?: string }[]
+    { _id: number; title: string; image: string }[]
   >([]);
 
-  // Geselecteerde artwork IDs
   const [selectedArtworks, setSelectedArtworks] = useState<number[]>([]);
 
-  // Artwork ophalen bij laden component (vul je eigen endpoint in)
   useEffect(() => {
     const fetchArtworks = async () => {
       try {
         const res = await api.get("/objects");
         const objects = res.data.data.objects;
 
-        if (!objects || objects.length === 0) {
+        if (objects.length === 0) {
           setArtworks([]);
         } else {
           setArtworks(
-            objects.map((art: any) => ({
-              _id: art._id,
-              title: art.title,
-              thumbnailUrl: art.thumbnail?.filePath,
+            objects.map((obj: any) => ({
+              _id: obj._id,
+              title: obj.title,
+              image: obj.thumbnail?.filePath || obj.file?.url || "",
             }))
           );
         }
@@ -71,15 +66,8 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
 
   const handlePublish = async () => {
     const formData = new FormData();
-    // formData.append("title", title);
-    // formData.append("description", description);
-    // formData.append("location", cityOrLocation);
-    // formData.append("price", price);
-    // formData.append("genre", genre);
-    // formData.append("mode", mode);
 
     if (coverImageFile) {
-      // stel je hebt een bestand geselecteerd
       formData.append("coverImage", coverImageFile);
     }
 
@@ -91,16 +79,20 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
           title: title,
           description: description,
           city: cityOrLocation,
-          price: price,
-          genre: genre,
+          price: parseFloat(price),
+          genres: [],
+          objects: selectedArtworks,
         },
       })
     );
 
+    // Debug formData
+    for (const pair of formData.entries()) {
+      console.log(pair[0], pair[1]);
+    }
+
     try {
       const token = localStorage.getItem("token");
-      console.log("Sending token:", token);
-
       const res = await fetch(
         "http://localhost:3000/api/v1/artist/collections",
         {
@@ -116,12 +108,15 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
         window.location.href = "/collections";
       } else {
         const error = await res.json();
-        alert("Failed to save: " + error.message);
+        console.error("Backend error response:", error);
+        alert("Fout: " + JSON.stringify(error, null, 2));
       }
     } catch (err) {
+      console.error("Fetch error:", err);
       alert("Something went wrong.");
     }
   };
+
   const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
 
   return (
@@ -259,7 +254,7 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
             </div>
           ) : (
             <div className="w-full flex flex-wrap gap-5 mt-4">
-              {artworks.map(({ _id, title, thumbnailUrl }) => {
+              {artworks.map(({ _id, title, image }) => {
                 const isSelected = selectedArtworks.includes(_id);
                 return (
                   <div
@@ -288,7 +283,7 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
 
                       <div className="w-full h-[300px] rounded-lg overflow-hidden">
                         <img
-                          src={thumbnailUrl || artworkImg}
+                          src={image ? image : artworkImg}
                           alt={title}
                           className="w-full h-full object-cover"
                         />
@@ -345,7 +340,6 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
         <>
           <div className="w-full bg-secondary-800 p-6 rounded-[16px]">
             <div className="w-full flex flex-col lg:flex-row lg:gap-[68px]">
-              {/* Image */}
               <div className="w-full lg:w-1/2 h-[350px] rounded-lg overflow-hidden mb-6 lg:mb-0">
                 <img
                   src={
@@ -358,7 +352,6 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
                 />
               </div>
 
-              {/* Text content */}
               <div className="w-full lg:w-3/4 flex flex-col">
                 <h4 className="text-3xl font-bold text-primary-500 mb-4">
                   {title}
@@ -399,13 +392,13 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
               <div className="flex flex-col gap-4">
                 {artworks
                   .filter((art) => selectedArtworks.includes(art._id))
-                  .map(({ _id, title, thumbnailUrl }) => (
+                  .map(({ _id, title, image }) => (
                     <div
                       key={_id}
                       className="flex items-center gap-4 border-2 border-dashed border-primary-500 rounded-xl p-2"
                     >
                       <img
-                        src={thumbnailUrl}
+                        src={image}
                         alt={title}
                         className="w-1/7 h-[46px] object-cover rounded-lg"
                       />
@@ -423,15 +416,13 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
               >
                 Save as Draft
               </button>
-              {isEditing && (
-                <button
-                  onClick={handlePublish}
-                  className="w-2/3 h-[48px] bg-primary-500 text-white font-medium rounded-lg hover:opacity-90 transition
+              <button
+                onClick={handlePublish}
+                className="w-2/3 h-[48px] bg-primary-500 text-white font-medium rounded-lg hover:opacity-90 transition
                lg:w-[120px]"
-                >
-                  Publish
-                </button>
-              )}
+              >
+                Publish
+              </button>
             </div>
           </div>
         </>

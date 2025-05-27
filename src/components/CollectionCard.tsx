@@ -5,12 +5,14 @@ import { useNavigate } from "react-router-dom";
 
 interface CollectionCardProps {
   title: string;
+  image: string;
   status: "draft" | "published";
   collectionId: string;
 }
 
 const CollectionCard = ({
   title,
+  image,
   status,
   collectionId,
 }: CollectionCardProps) => {
@@ -24,9 +26,9 @@ const CollectionCard = ({
       <div className="w-full h-[330px] bg-secondary-700 rounded-lg flex flex-col">
         <div className="relative w-full h-[264px] rounded-lg bg-secondary-700 overflow-hidden">
           <img
-            src={artworkImg}
+            src={image || artworkImg} // fallback naar dummy afbeelding
             alt={title}
-            className="w-1/2 h-full object-cover rounded-lg mx-auto"
+            className="w-cover object-cover rounded-lg mx-auto"
           />
 
           <div
@@ -45,7 +47,11 @@ const CollectionCard = ({
               className="w-5"
               onClick={() =>
                 navigate("/form", {
-                  state: { editing: true, id: collectionId },
+                  state: {
+                    editing: true,
+                    id: collectionId,
+                    mode: "tour", // of "exposition" afhankelijk van je data
+                  },
                 })
               }
             />
