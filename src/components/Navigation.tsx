@@ -2,16 +2,18 @@ import React, { useState } from "react";
 import hamburgerIcon from "assets/img/hamburger.svg";
 import closeIcon from "assets/img/close.svg";
 import profilePic from "assets/img/profilepic.png";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
 const Navigation = () => {
+  const location = useLocation();
+  const currentPath = location.pathname;
+  const isActive = (path: string) => currentPath === path;
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem("jwt"); // of hoe je je token ook opslaat
-    navigate("/signin"); // redirect naar loginpagina
+    localStorage.removeItem("jwt");
+    navigate("/signin");
   };
 
   return (
@@ -38,31 +40,78 @@ const Navigation = () => {
         </div>
 
         <div className="h-full w-full flex flex-col items-center justify-center text-white">
-          <div className="flex flex-col items-center gap-4 text-lg font-medium">
-            <Link to="/" onClick={() => setIsOpen(false)}>
+          <div className="flex flex-col items-center gap-2 text-lg font-medium w-full">
+            <Link
+              to="/"
+              onClick={() => setIsOpen(false)}
+              className={`w-1/2 flex justify-center py-4 rounded-[10px]  ${
+                isActive("/")
+                  ? "bg-primary-500/20 text-primary-500"
+                  : "text-white"
+              }`}
+            >
               Home
             </Link>
-            <Link to="/collections" onClick={() => setIsOpen(false)}>
+            <Link
+              to="/collections"
+              onClick={() => setIsOpen(false)}
+              className={`w-1/2 flex justify-center py-4 rounded-[10px]  ${
+                isActive("/collections")
+                  ? "bg-primary-500/20 text-primary-500"
+                  : "text-white"
+              }`}
+            >
               Collections
             </Link>
-            <Link to="/artworks" onClick={() => setIsOpen(false)}>
+            <Link
+              to="/artworks"
+              onClick={() => setIsOpen(false)}
+              className={`w-1/2 flex justify-center py-4 rounded-[10px]  ${
+                isActive("/artworks")
+                  ? "bg-primary-500/20 text-primary-500"
+                  : "text-white"
+              }`}
+            >
               Artworks
             </Link>
-            <p>Insights</p>
+            <Link
+              to="/insights"
+              onClick={() => setIsOpen(false)}
+              className={`w-1/2 flex justify-center py-4 rounded-[10px]  ${
+                isActive("/insights")
+                  ? "bg-primary-500/20 text-primary-500"
+                  : "text-white"
+              }`}
+            >
+              Insights
+            </Link>
           </div>
 
-          <div className="mt-[120px] flex flex-col items-center gap-4 text-lg">
-            <Link to="/settings" onClick={() => setIsOpen(false)}>
+          <div className="mt-[120px] flex flex-col items-center gap-2 text-lg w-full">
+            <Link
+              to="/settings"
+              onClick={() => setIsOpen(false)}
+              className={`w-1/2 flex justify-center py-4 rounded-[10px] ${
+                isActive("/settings")
+                  ? "bg-primary-500/20 text-primary-500"
+                  : "text-white"
+              }`}
+            >
               Settings
             </Link>
-            <p onClick={handleLogout} className="cursor-pointer">
+            <button
+              onClick={handleLogout}
+              className="w-full flex justify-center py-4 text-white hover:text-primary-500"
+            >
               Logout
-            </p>
-            <img
-              src={profilePic}
-              alt="Profile"
-              className="w-14 h-14 rounded-full object-cover"
-            />
+            </button>
+            <div className="mt-6">
+              <img
+                src={profilePic}
+                alt="Profile"
+                className="w-14 h-14 rounded-full object-cover"
+              />
+            </div>
           </div>
         </div>
       </div>
