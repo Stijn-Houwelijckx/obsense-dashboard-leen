@@ -12,25 +12,49 @@ interface StepTwoFormProps {
   mode: "tour" | "exposition";
   onCancel: () => void;
   onNext: () => void;
+  collectionId?: string;
   isEditing?: boolean;
-  onDelete?: () => void;
+  initialData?: {
+    title: string;
+    description: string;
+    cityOrLocation: string;
+    price: string;
+    selectedArtworks: number[];
+    coverImageFile?: File | null;
+  };
 }
 
-const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
+const CollectionForm = ({
+  mode,
+  onCancel,
+  onNext,
+  isEditing = false,
+  collectionId,
+  initialData,
+}: StepTwoFormProps) => {
   const [step, setStep] = useState(1);
 
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [cityOrLocation, setCityOrLocation] = useState("");
-  const [price, setPrice] = useState("");
+  const [title, setTitle] = useState(initialData?.title || "");
+  const [description, setDescription] = useState(
+    initialData?.description || ""
+  );
+  const [cityOrLocation, setCityOrLocation] = useState(
+    initialData?.cityOrLocation || ""
+  );
+  const [price, setPrice] = useState(initialData?.price || "");
+  const [selectedArtworks, setSelectedArtworks] = useState<number[]>(
+    initialData?.selectedArtworks || []
+  );
+  const [coverImageFile, setCoverImageFile] = useState<File | null>(
+    initialData?.coverImageFile || null
+  );
+  const [coverImageUrl, setCoverImageUrl] = useState<string | null>(null);
 
   const genre = "Low-Poly";
 
   const [artworks, setArtworks] = useState<
     { _id: number; title: string; image: string }[]
   >([]);
-
-  const [selectedArtworks, setSelectedArtworks] = useState<number[]>([]);
 
   useEffect(() => {
     const fetchArtworks = async () => {
@@ -64,7 +88,9 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
     );
   };
 
-  const handlePublish = async () => {
+  const handlePublish = async (isDraft: boolean) => {
+    const status = isDraft ? "draft" : "published";
+
     const formData = new FormData();
 
     if (coverImageFile) {
@@ -82,6 +108,7 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
           price: parseFloat(price),
           genres: [],
           objects: selectedArtworks,
+          status: isDraft ? "draft" : "published",
         },
       })
     );
@@ -93,6 +120,13 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
 
     try {
       const token = localStorage.getItem("token");
+      const url =
+        isEditing && collectionId
+          ? `http://localhost:3000/api/v1/artist/collections/${collectionId}`
+          : "http://localhost:3000/api/v1/artist/collections";
+
+      const method = isEditing ? "PUT" : "POST";
+
       const res = await fetch(
         "http://localhost:3000/api/v1/artist/collections",
         {
@@ -117,7 +151,50 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
     }
   };
 
-  const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
+  useEffect(() => {
+    if (isEditing && collectionId) {
+      const fetchCollection = async () => {
+        try {
+          const token = localStorage.getItem("token");
+          const res = await fetch(
+            `http://localhost:3000/api/v1/artist/collections/${collectionId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          if (!res.ok) throw new Error("Failed to fetch collection");
+          const data = await res.json();
+
+          const collection = data.data.collection;
+
+          setTitle(collection.title || "");
+          setDescription(collection.description || "");
+          setCityOrLocation(collection.city || "");
+          setPrice(collection.price ? collection.price.toString() : "");
+          setSelectedArtworks(collection.objects || []);
+
+          // Als backend een cover image url teruggeeft, die tonen
+          if (collection.coverImageUrl) {
+            setCoverImageUrl(collection.coverImageUrl);
+            setCoverImageFile(null); // reset lokale file
+          }
+        } catch (error) {
+          console.error("Error fetching collection data:", error);
+        }
+      };
+      fetchCollection();
+    }
+  }, [isEditing, collectionId]);
+
+  const handleCoverImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    if (file) {
+      setCoverImageFile(file);
+      setCoverImageUrl(null); // overschrijven met lokaal bestand
+    }
+  };
 
   return (
     <div className="min-h-screen md:pl-[166px] md:pr-[74px] bg-secondary-900 text-neutral-50 p-4 mt-14 flex flex-col items-center">
@@ -146,7 +223,7 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
       </div>
 
       {step === 1 && (
-        <div className="w-full bg-secondary-800 p-6 rounded-[16px] flex flex-col lg:flex-row gap-0 lg:gap-[80px]">
+        <div className="relative w-full bg-secondary-800 p-6 rounded-[16px] flex flex-col lg:flex-row gap-0 lg:gap-[80px] mt-12">
           <div className="w-full lg:w-1/2 flex flex-col items-center">
             <div className="w-full h-3/4 bg-secondary-700 rounded-lg overflow-hidden flex items-center justify-center mt-7">
               <img
@@ -410,16 +487,14 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
 
             <div className="flex gap-4 w-full lg:justify-end">
               <button
-                onClick={() => (window.location.href = "/collections")}
-                className="w-1/3 h-[48px] border border-primary-500 rounded-lg text-primary-500 font-medium hover:border-primary-600 transition
-               lg:w-[120px]"
+                onClick={() => handlePublish(true)}
+                className="w-1/3 h-[48px] border border-primary-500 rounded-lg text-primary-500 font-medium hover:border-primary-600 transition lg:w-[120px]"
               >
                 Save as Draft
               </button>
               <button
-                onClick={handlePublish}
-                className="w-2/3 h-[48px] bg-primary-500 text-white font-medium rounded-lg hover:opacity-90 transition
-               lg:w-[120px]"
+                onClick={() => handlePublish(false)}
+                className="w-2/3 h-[48px] bg-primary-500 text-white font-medium rounded-lg hover:opacity-90 transition lg:w-[120px]"
               >
                 Publish
               </button>

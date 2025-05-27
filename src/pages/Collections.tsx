@@ -27,6 +27,8 @@ const Collections = () => {
     status: "draft" | "published";
   }
 
+  const [idToDelete, setIdToDelete] = useState<string | null>(null); // welke wil je verwijderen?
+
   useEffect(() => {
     const fetchCollections = async () => {
       try {
@@ -52,6 +54,27 @@ const Collections = () => {
 
     fetchCollections();
   }, []);
+
+  const handleRequestDelete = (id: string) => {
+    setIdToDelete(id); // toon de confirm overlay
+  };
+
+  const handleCancelDelete = () => {
+    setIdToDelete(null); // sluit overlay
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!idToDelete) return;
+    try {
+      await api.delete(`/artist/collections/${idToDelete}`);
+      setCollections((prev) => prev.filter((art) => art._id !== idToDelete));
+      setIdToDelete(null);
+    } catch (err) {
+      console.error("Error deleting object:", err);
+      setIdToDelete(null);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-secondary-900 pt-14 text-neutral-50 md:pl-[166px] md:pr-[74px] px-4">
       <div className="flex items-center justify-between mb-10 w-full">
@@ -100,10 +123,12 @@ const Collections = () => {
             return (
               <CollectionCard
                 key={collection._id}
+                _id={collection._id}
                 title={collection.title}
                 image={collection.coverImage?.filePath || ""}
                 status={collection.status}
                 collectionId={collection._id}
+                onRequestDelete={handleRequestDelete}
               />
             );
           })}
@@ -117,6 +142,30 @@ const Collections = () => {
           <p className="text-neutral-300 mb-6">Start here</p>
           <div className="w-full max-w-xs">
             <Button label="Upload" type="button" onClick={() => {}} />
+          </div>
+        </div>
+      )}
+      {idToDelete && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+          <div className="bg-secondary-800 rounded-[10px] p-[40px_64px] max-w-md w-full text-neutral-50 flex flex-col gap-[22px]">
+            <h4 className="text-xl font-semibold">
+              Are you sure you want to delete your tour or exposition?
+            </h4>
+            <p>This action cannot be undone.</p>
+            <div className="flex gap-4 justify-end">
+              <button
+                onClick={handleCancelDelete}
+                className="border border-primary-500 text-primary-500 px-6 py-2 rounded-lg hover:bg-primary-500 hover:text-white transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmDelete}
+                className="bg-primary-500 text-white px-6 py-2 rounded-lg hover:opacity-90 transition"
+              >
+                Yes, I'm sure
+              </button>
+            </div>
           </div>
         </div>
       )}
