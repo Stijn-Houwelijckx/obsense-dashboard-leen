@@ -33,7 +33,6 @@ const CollectionForm = ({
   initialData,
 }: StepTwoFormProps) => {
   const [step, setStep] = useState(1);
-
   const [title, setTitle] = useState(initialData?.title || "");
   const [description, setDescription] = useState(
     initialData?.description || ""
@@ -49,9 +48,7 @@ const CollectionForm = ({
     initialData?.coverImageFile || null
   );
   const [coverImageUrl, setCoverImageUrl] = useState<string | null>(null);
-
   const genre = "Low-Poly";
-
   const [artworks, setArtworks] = useState<
     { _id: number; title: string; image: string }[]
   >([]);
@@ -62,17 +59,13 @@ const CollectionForm = ({
         const res = await api.get("/objects");
         const objects = res.data.data.objects;
 
-        if (objects.length === 0) {
-          setArtworks([]);
-        } else {
-          setArtworks(
-            objects.map((obj: any) => ({
-              _id: obj._id,
-              title: obj.title,
-              image: obj.thumbnail?.filePath || obj.file?.url || "",
-            }))
-          );
-        }
+        setArtworks(
+          objects.map((obj: any) => ({
+            _id: obj._id,
+            title: obj.title,
+            image: obj.thumbnail?.filePath || obj.file?.url || artworkImg,
+          }))
+        );
       } catch (err) {
         console.error("Failed to load artworks", err);
         setArtworks([]);
@@ -81,73 +74,12 @@ const CollectionForm = ({
 
     fetchArtworks();
   }, []);
+  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
 
-  const toggleArtwork = (id: number) => {
-    setSelectedArtworks((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-    );
-  };
-
-  const handlePublish = async (isDraft: boolean) => {
-    const status = isDraft ? "draft" : "published";
-
-    const formData = new FormData();
-
-    if (coverImageFile) {
-      formData.append("coverImage", coverImageFile);
-    }
-
-    formData.append(
-      "collection",
-      JSON.stringify({
-        collection: {
-          type: mode,
-          title: title,
-          description: description,
-          city: cityOrLocation,
-          price: parseFloat(price),
-          genres: [],
-          objects: selectedArtworks,
-          status: isDraft ? "draft" : "published",
-        },
-      })
-    );
-
-    // Debug formData
-    for (const pair of formData.entries()) {
-      console.log(pair[0], pair[1]);
-    }
-
-    try {
-      const token = localStorage.getItem("token");
-      const url =
-        isEditing && collectionId
-          ? `http://localhost:3000/api/v1/artist/collections/${collectionId}`
-          : "http://localhost:3000/api/v1/artist/collections";
-
-      const method = isEditing ? "PUT" : "POST";
-
-      const res = await fetch(
-        "http://localhost:3000/api/v1/artist/collections",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: formData,
-        }
-      );
-
-      if (res.ok) {
-        window.location.href = "/collections";
-      } else {
-        const error = await res.json();
-        console.error("Backend error response:", error);
-        alert("Fout: " + JSON.stringify(error, null, 2));
-      }
-    } catch (err) {
-      console.error("Fetch error:", err);
-      alert("Something went wrong.");
+    // Alleen cijfers en 0 of 1 keer een komma of punt toestaan
+    if (/^\d*\.?\d{0,2}$/.test(value)) {
+      setPrice(value);
     }
   };
 
@@ -175,10 +107,9 @@ const CollectionForm = ({
           setPrice(collection.price ? collection.price.toString() : "");
           setSelectedArtworks(collection.objects || []);
 
-          // Als backend een cover image url teruggeeft, die tonen
           if (collection.coverImageUrl) {
             setCoverImageUrl(collection.coverImageUrl);
-            setCoverImageFile(null); // reset lokale file
+            setCoverImageFile(null);
           }
         } catch (error) {
           console.error("Error fetching collection data:", error);
@@ -188,11 +119,66 @@ const CollectionForm = ({
     }
   }, [isEditing, collectionId]);
 
+  const toggleArtwork = (id: number) => {
+    setSelectedArtworks((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
+  const handlePublish = async (isDraft: boolean) => {
+    const formData = new FormData();
+    if (coverImageFile) formData.append("coverImage", coverImageFile);
+
+    formData.append(
+      "collection",
+      JSON.stringify({
+        collection: {
+          type: mode,
+          title,
+          description,
+          city: cityOrLocation,
+          price: parseFloat(price),
+          genres: [genre],
+          objects: selectedArtworks,
+          status: isDraft ? "draft" : "published",
+        },
+      })
+    );
+
+    try {
+      const token = localStorage.getItem("token");
+      const url =
+        isEditing && collectionId
+          ? `http://localhost:3000/api/v1/artist/collections/${collectionId}`
+          : "http://localhost:3000/api/v1/artist/collections";
+
+      const method = isEditing ? "PUT" : "POST";
+
+      const res = await fetch(url, {
+        method,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (res.ok) {
+        window.location.href = "/collections";
+      } else {
+        const error = await res.json();
+        alert("Fout: " + JSON.stringify(error, null, 2));
+      }
+    } catch (err) {
+      console.error("Fetch error:", err);
+      alert("Something went wrong.");
+    }
+  };
+
   const handleCoverImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
     if (file) {
       setCoverImageFile(file);
-      setCoverImageUrl(null); // overschrijven met lokaal bestand
+      setCoverImageUrl(null);
     }
   };
 
@@ -289,7 +275,7 @@ const CollectionForm = ({
                 label="Price (€)"
                 placeholder="Enter price"
                 value={price}
-                onChange={(e) => setPrice(e.target.value)}
+                onChange={handlePriceChange}
                 className="w-full h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
               />
             </div>
