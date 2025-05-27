@@ -6,9 +6,14 @@ import { useNavigate } from "react-router-dom";
 interface CollectionCardProps {
   title: string;
   status: "draft" | "published";
+  collectionId: string;
 }
 
-const CollectionCard = ({ title, status }: CollectionCardProps) => {
+const CollectionCard = ({
+  title,
+  status,
+  collectionId,
+}: CollectionCardProps) => {
   const navigate = useNavigate();
 
   const badgeColor = status === "draft" ? "bg-[#9747FF]" : "bg-primary-500";
@@ -38,7 +43,11 @@ const CollectionCard = ({ title, status }: CollectionCardProps) => {
               src={editIcon}
               alt="Edit"
               className="w-5"
-              onClick={() => navigate("/form")}
+              onClick={() =>
+                navigate("/form", {
+                  state: { editing: true, id: collectionId },
+                })
+              }
             />
           </button>
         </div>

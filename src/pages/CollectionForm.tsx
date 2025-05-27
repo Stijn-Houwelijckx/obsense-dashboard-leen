@@ -7,6 +7,7 @@ import InputField from "components/InputField";
 import Navigation from "components/Navigation";
 import NavigationDesktop from "components/NavigationDesktop";
 import api from "../services/api"; // importeer je axios instance
+import { useLocation } from "react-router-dom";
 
 interface StepTwoFormProps {
   mode: "tour" | "exposition";
@@ -16,7 +17,8 @@ interface StepTwoFormProps {
 
 const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
   const [step, setStep] = useState(1);
-
+  const location = useLocation();
+  const isEditing = location.state?.editing === true;
   // Form fields state
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -421,13 +423,15 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
               >
                 Save as Draft
               </button>
-              <button
-                onClick={handlePublish}
-                className="w-2/3 h-[48px] bg-primary-500 text-white font-medium rounded-lg hover:opacity-90 transition
+              {isEditing && (
+                <button
+                  onClick={handlePublish}
+                  className="w-2/3 h-[48px] bg-primary-500 text-white font-medium rounded-lg hover:opacity-90 transition
                lg:w-[120px]"
-              >
-                Publish
-              </button>
+                >
+                  Publish
+                </button>
+              )}
             </div>
           </div>
         </>
