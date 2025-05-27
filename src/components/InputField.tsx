@@ -9,6 +9,7 @@ interface InputFieldProps {
   textarea?: boolean;
   error?: string;
   type?: string;
+  autoComplete?: string;
 }
 
 const InputField: React.FC<InputFieldProps> = ({
