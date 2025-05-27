@@ -7,6 +7,7 @@ import { authService } from "services/api";
 import { useAuthStorage } from "store/authStorage";
 import { ErrorResponse } from "types/error-response.types";
 import { User } from "types/user.types";
+import api from "../services/api";
 
 import { AppleIcon, FacebookIcon, GoogleIcon } from "components/@icons";
 import Button from "components/Button";
@@ -22,7 +23,9 @@ type SignUpData = Omit<User, "isArtist" | "profilePicture" | "tokens">;
 const SignUp = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const targetPath = location.state?.from ?? "/";
+  // console.log("location.state:", location.state);
+
+  const targetPath = "/";
   const { setToken, setUser } = useAuthStorage(); // <-- setUser toegevoegd
 
   const {
@@ -79,17 +82,19 @@ const SignUp = () => {
 
       // Signup aanroepen
       const response = await authService.signup(userData);
+      console.log("Signup response:", response);
 
-      // Stap 1: Token opslaan
-      setToken(response.data.token);
+      const token = response.data.token;
+      if (!token) {
+        throw new Error("Token ontbreekt in response!");
+      }
 
-      // Stap 2: User data ophalen via /me endpoint
+      setToken(token);
+      api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
       const currentUserResponse = await authService.getCurrentUser();
-
-      // Stap 3: User data opslaan
       setUser(currentUserResponse.data);
 
-      // Navigeren naar gewenste pagina
       navigate(targetPath, { replace: true });
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -103,6 +108,7 @@ const SignUp = () => {
           },
         });
       }
+      console.error("Sign up error:", error);
     }
   };
 

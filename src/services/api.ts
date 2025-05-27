@@ -17,6 +17,12 @@ const publicRoutes = ["/users/signup", "/users/login"];
 // Add a request interceptor to add the token to every request
 api.interceptors.request.use(
   (config) => {
+    if (config.data) {
+      console.log(`[Request to ${config.url}] Payload:`, config.data);
+    } else {
+      console.log(`[Request to ${config.url}] No payload`);
+    }
+
     // Skip token authorization for public routes
     if (publicRoutes.some((route) => config.url?.includes(route))) {
       return config;
