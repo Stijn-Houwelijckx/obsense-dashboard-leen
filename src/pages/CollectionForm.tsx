@@ -28,7 +28,7 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
 
   // Artworks state (gehaald via API)
   const [artworks, setArtworks] = useState<
-    { _id: number; title: string; image: string }[]
+    { _id: number; title: string; thumbnailUrl?: string }[]
   >([]);
 
   // Geselecteerde artwork IDs
@@ -41,14 +41,20 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
         const res = await api.get("/objects");
         const objects = res.data.data.objects;
 
-        if (objects.length === 0) {
-          setArtworks([]); // lege lijst
+        if (!objects || objects.length === 0) {
+          setArtworks([]);
         } else {
-          setArtworks(objects);
+          setArtworks(
+            objects.map((art: any) => ({
+              _id: art._id,
+              title: art.title,
+              thumbnailUrl: art.thumbnail?.filePath,
+            }))
+          );
         }
       } catch (err) {
         console.error("Failed to load artworks", err);
-        setArtworks([]); // ook leeg bij fetch fout
+        setArtworks([]);
       }
     };
 
@@ -147,17 +153,35 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
           <div className="w-full lg:w-1/2 flex flex-col items-center">
             <div className="w-full h-3/4 bg-secondary-700 rounded-lg overflow-hidden flex items-center justify-center mt-7">
               <img
-                src={treeImage}
+                src={
+                  coverImageFile
+                    ? URL.createObjectURL(coverImageFile)
+                    : treeImage
+                }
                 alt="Artwork"
                 className="object-cover w-3/4 h-full"
               />
             </div>
 
             <div className="flex justify-center gap-4 w-full mt-4">
-              <button className="bg-primary-500 text-neutral-50 text-sm font-semibold rounded px-3 py-2 hover:opacity-90">
+              <label className="bg-primary-500 text-neutral-50 text-sm font-semibold rounded px-3 py-2 hover:opacity-90 cursor-pointer">
                 Choose cover
-              </button>
-              <button className="text-sm font-semibold text-red-400 border border-red-600 rounded px-3 py-2 bg-[#FCA5A5] hover:opacity-90">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files.length > 0) {
+                      setCoverImageFile(e.target.files[0]);
+                    }
+                  }}
+                  className="hidden"
+                />
+              </label>
+
+              <button
+                className="text-sm font-semibold text-red-400 border border-red-600 rounded px-3 py-2 bg-[#FCA5A5] hover:opacity-90"
+                onClick={() => setCoverImageFile(null)}
+              >
                 Delete
               </button>
             </div>
@@ -233,7 +257,7 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
             </div>
           ) : (
             <div className="w-full flex flex-wrap gap-5 mt-4">
-              {artworks.map(({ _id, title, image }) => {
+              {artworks.map(({ _id, title, thumbnailUrl }) => {
                 const isSelected = selectedArtworks.includes(_id);
                 return (
                   <div
@@ -262,9 +286,9 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
 
                       <div className="w-full h-[300px] rounded-lg overflow-hidden">
                         <img
-                          src={image || artworkImg} // fallback image hier
+                          src={thumbnailUrl || artworkImg}
                           alt={title}
-                          className="lg:w-3/4 w:1/2 h-full object-cover mx-auto"
+                          className="w-full h-full object-cover"
                         />
                       </div>
 
@@ -322,7 +346,11 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
               {/* Image */}
               <div className="w-full lg:w-1/2 h-[350px] rounded-lg overflow-hidden mb-6 lg:mb-0">
                 <img
-                  src={treeImage}
+                  src={
+                    coverImageFile
+                      ? URL.createObjectURL(coverImageFile)
+                      : treeImage
+                  }
                   alt="Overview Artwork"
                   className="w-1/2 h-full object-cover rounded-lg mx-auto"
                 />
@@ -369,13 +397,13 @@ const CollectionForm = ({ mode, onCancel, onNext }: StepTwoFormProps) => {
               <div className="flex flex-col gap-4">
                 {artworks
                   .filter((art) => selectedArtworks.includes(art._id))
-                  .map(({ _id, title, image }) => (
+                  .map(({ _id, title, thumbnailUrl }) => (
                     <div
                       key={_id}
                       className="flex items-center gap-4 border-2 border-dashed border-primary-500 rounded-xl p-2"
                     >
                       <img
-                        src={image}
+                        src={thumbnailUrl}
                         alt={title}
                         className="w-1/7 h-[46px] object-cover rounded-lg"
                       />
