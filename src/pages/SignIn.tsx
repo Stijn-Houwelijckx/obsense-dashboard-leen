@@ -39,7 +39,7 @@ const SignIn = () => {
       setToken(response.data.token);
       // save in local storage
       localStorage.setItem("token", response.data.token);
-      setUser(response.data.user); // 👈 hier pak je de rol
+      setUser(response.data.user?.user ?? response.data.user);
 
       navigate(targetPath, { replace: true });
     } catch (error) {

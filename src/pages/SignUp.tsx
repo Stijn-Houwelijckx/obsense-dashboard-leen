@@ -93,7 +93,7 @@ const SignUp = () => {
       api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
       const currentUserResponse = await authService.getCurrentUser();
-      setUser(currentUserResponse.data);
+      setUser(response.data.user?.user ?? response.data.user);
 
       navigate(targetPath, { replace: true });
     } catch (error) {
