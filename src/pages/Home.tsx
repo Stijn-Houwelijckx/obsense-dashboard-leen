@@ -1,7 +1,43 @@
+import React, { useState, useEffect } from "react";
+import api from "../services/api";
 import Navigation from "components/Navigation";
 import NavigationDesktop from "components/NavigationDesktop";
 
+interface CollectionType {
+  _id: string;
+  title: string;
+  status: "draft" | "published";
+  bought?: number; // als je dat hebt, zo niet, fallback
+  likes?: number;
+  views?: number;
+}
+
 const Home = () => {
+  const [collections, setCollections] = useState<CollectionType[]>([]);
+
+  useEffect(() => {
+    const fetchCollections = async () => {
+      try {
+        const res = await api.get("/artist/collections");
+        const collectionsData = res.data.data.collections as CollectionType[];
+
+        // Als bought, likes, views niet in API zitten, hier dummy data toevoegen
+        const collectionsWithStats = collectionsData.map((c) => ({
+          ...c,
+          bought: c.bought ?? Math.floor(Math.random() * 200),
+          likes: c.likes ?? Math.floor(Math.random() * 100),
+          views: c.views ?? Math.floor(Math.random() * 1000),
+        }));
+
+        setCollections(collectionsWithStats);
+      } catch (err) {
+        console.error("Failed to fetch collections", err);
+      }
+    };
+
+    fetchCollections();
+  }, []);
+
   return (
     <>
       <div className="min-h-screen bg-secondary-900 pt-14 px-4 text-neutral-50 md:pl-[166px] md:pr-[74px]">
@@ -26,22 +62,13 @@ const Home = () => {
           </div>
 
           <div className="flex flex-col w-full text-sm">
-            {[
-              { title: "Christmas City", bought: 148, likes: 32, views: 158 },
-              {
-                title: "Halloween skeleton",
-                bought: 148,
-                likes: 32,
-                views: 158,
-              },
-              { title: "Beach town", bought: 148, likes: 32, views: 158 },
-            ].map((item, index, arr) => (
-              <div key={item.title} className="py-4">
+            {collections.map((collection, index, arr) => (
+              <div key={collection._id} className="py-4">
                 <div className="flex w-full">
-                  <div className="w-1/4 text-left">{item.title}</div>
-                  <div className="w-1/4 text-left">{item.bought}</div>
-                  <div className="w-1/4 text-left">{item.likes}</div>
-                  <div className="w-1/4 text-left">{item.views}</div>
+                  <div className="w-1/4 text-left">{collection.title}</div>
+                  <div className="w-1/4 text-left">{collection.bought}</div>
+                  <div className="w-1/4 text-left">{collection.likes}</div>
+                  <div className="w-1/4 text-left">{collection.views}</div>
                 </div>
                 {index < arr.length - 1 && (
                   <div className="mt-4 mb-4 border-b border-neutral-700" />

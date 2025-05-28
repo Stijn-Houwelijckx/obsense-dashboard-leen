@@ -82,9 +82,101 @@ const CollectionForm = ({
     fetchArtworks();
   }, []);
 
+  const handlePriceChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const value = e.target.value;
+    if (/^\d*\.?\d{0,2}$/.test(value)) {
+      setPrice(value);
+    }
+  };
+
   const toggleArtwork = (id: number) => {
     setSelectedArtworks((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
+  const CityAutocomplete = ({
+    value,
+    onChange,
+  }: {
+    value: string;
+    onChange: (v: string) => void;
+  }) => {
+    const [suggestions, setSuggestions] = useState<string[]>([]);
+    const [showDropdown, setShowDropdown] = useState(false);
+    const containerRef = React.useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+      if (value.length < 2) {
+        setSuggestions([]);
+        setShowDropdown(false);
+        return;
+      }
+
+      const fetchCities = async () => {
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/search?city=${encodeURIComponent(
+              value
+            )}&format=json&limit=5`
+          );
+          const data = await res.json();
+          const cityNames = data.map((item: any) => item.display_name);
+          setSuggestions(cityNames);
+          setShowDropdown(true);
+        } catch (err) {
+          console.error(err);
+          setSuggestions([]);
+          setShowDropdown(false);
+        }
+      };
+
+      fetchCities();
+    }, [value]);
+
+    useEffect(() => {
+      const handleClickOutside = (event: MouseEvent) => {
+        if (
+          containerRef.current &&
+          !containerRef.current.contains(event.target as Node)
+        ) {
+          setShowDropdown(false);
+        }
+      };
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }, []);
+
+    return (
+      <div className="relative w-full" ref={containerRef}>
+        <InputField
+          label={mode === "tour" ? "City" : "Location"}
+          placeholder={mode === "tour" ? "City" : "Location"}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-full h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
+        />
+        {showDropdown && suggestions.length > 0 && (
+          <ul className="absolute top-full left-0 right-0 bg-white text-black rounded shadow max-h-48 overflow-auto z-10">
+            {suggestions.map((city, i) => (
+              <li
+                key={i}
+                onClick={() => {
+                  onChange(city);
+                  setShowDropdown(false);
+                }}
+                className="cursor-pointer hover:bg-gray-200 px-3 py-1"
+              >
+                {city}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     );
   };
 
@@ -288,8 +380,9 @@ const CollectionForm = ({
               <InputField
                 label="Price (€)"
                 placeholder="Enter price"
+                type="number"
                 value={price}
-                onChange={(e) => setPrice(e.target.value)}
+                onChange={handlePriceChange}
                 className="w-full h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
               />
             </div>
