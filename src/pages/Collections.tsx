@@ -8,6 +8,7 @@ import Navigation from "components/Navigation";
 import NavigationDesktop from "components/NavigationDesktop";
 import React, { useState, useEffect } from "react";
 import api from "../services/api";
+import { useRef } from "react";
 
 interface FileData {
   fileName: string;
@@ -15,6 +16,7 @@ interface FileData {
   fileType?: string;
   fileSize?: number;
 }
+
 interface CollectionType {
   _id: string;
   title: string;
@@ -22,31 +24,39 @@ interface CollectionType {
   coverImage: FileData | null;
   status: "draft" | "published";
 }
+
 const Collections = () => {
   const navigate = useNavigate();
   const [collections, setCollections] = useState<CollectionType[]>([]);
-  const hasCollections = collections.length > 0;
+  const [idToDelete, setIdToDelete] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
 
-  const [idToDelete, setIdToDelete] = useState<string | null>(null); // welke wil je verwijderen?
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        searchRef.current &&
+        !searchRef.current.contains(event.target as Node)
+      ) {
+        setIsSearchOpen(false);
+      }
+    };
+
+    if (isSearchOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isSearchOpen]);
 
   useEffect(() => {
     const fetchCollections = async () => {
       try {
         const res = await api.get("/artist/collections");
-        console.log("API response:", res.data); // <-- hier even loggen
-        const collectionsData = res.data.data.collections as CollectionType[];
-
-        collectionsData.forEach((c) =>
-          console.log("Cover image URL:", c.coverImage)
-        );
-
-        // Check de URLs even in de console
-        collectionsData.forEach((c) =>
-          console.log("Cover image URL:", c.coverImage)
-        );
-        setCollections(collectionsData);
-
-        // setCollections(res.data.data.collections);
+        setCollections(res.data.data.collections || []);
       } catch (err) {
         console.error("Failed to fetch collections", err);
       }
@@ -56,24 +66,28 @@ const Collections = () => {
   }, []);
 
   const handleRequestDelete = (id: string) => {
-    setIdToDelete(id); // toon de confirm overlay
+    setIdToDelete(id);
   };
 
   const handleCancelDelete = () => {
-    setIdToDelete(null); // sluit overlay
+    setIdToDelete(null);
   };
 
   const handleConfirmDelete = async () => {
     if (!idToDelete) return;
     try {
       await api.delete(`/artist/collections/${idToDelete}`);
-      setCollections((prev) => prev.filter((art) => art._id !== idToDelete));
+      setCollections((prev) => prev.filter((c) => c._id !== idToDelete));
       setIdToDelete(null);
     } catch (err) {
-      console.error("Error deleting object:", err);
+      console.error("Error deleting collection:", err);
       setIdToDelete(null);
     }
   };
+
+  const filteredCollections = collections.filter((collection) =>
+    collection.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="min-h-screen bg-secondary-900 pt-14 text-neutral-50 md:pl-[166px] md:pr-[74px] px-4">
@@ -81,30 +95,53 @@ const Collections = () => {
         <h1 className="text-2xl font-bold">Your Collections</h1>
 
         <div className="flex items-center gap-2">
-          <div className="w-10 h-10 bg-secondary-800 rounded-full flex items-center justify-center lg:hidden">
-            <img src={searchIcon} alt="Search" className="w-5 h-5" />
+          {/* Mobile search */}
+          <div className="lg:hidden w-full" ref={searchRef}>
+            {!isSearchOpen ? (
+              <div
+                className="w-10 h-10 bg-secondary-800 rounded-full flex items-center justify-center cursor-pointer"
+                onClick={() => setIsSearchOpen(true)}
+              >
+                <img src={searchIcon} alt="Search" className="w-5 h-5" />
+              </div>
+            ) : (
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search collections"
+                className="w-full text-sm text-neutral-50 bg-secondary-800 border border-neutral-500 rounded-[10px] px-4 py-2 focus:outline-none"
+                autoFocus
+              />
+            )}
           </div>
 
-          <div className="hidden lg:flex items-center w-[300px] bg-secondary-800 border border-neutral-500 rounded-[10px] px-[18px] py-[8px] cursor-pointer hover:bg-secondary-700 transition">
+          {/* Desktop search */}
+          <div className="hidden lg:flex items-center w-[300px] bg-secondary-800 border border-neutral-500 rounded-[10px] px-[18px] py-[8px]">
             <img
               src={searchIcon}
               alt="Search"
               className="w-5 h-5 text-neutral-500"
             />
-            <span className="ml-2 text-sm text-neutral-500">Search</span>
+            <input
+              type="text"
+              placeholder="Search"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="ml-2 text-sm text-neutral-50 bg-transparent w-full focus:outline-none"
+            />
           </div>
 
           <div className="md:hidden">
             <Navigation />
           </div>
-
           <div className="hidden md:block w-[250px]">
             <NavigationDesktop />
           </div>
         </div>
       </div>
 
-      {hasCollections ? (
+      {filteredCollections.length > 0 ? (
         <div className="grid gap-5 justify-items-center grid-cols-[repeat(auto-fit,minmax(250px,1fr))] pb-8">
           <div
             onClick={() => navigate("/create")}
@@ -118,20 +155,17 @@ const Collections = () => {
             </div>
           </div>
 
-          {collections.map((collection) => {
-            console.log("Collection ID:", collection._id);
-            return (
-              <CollectionCard
-                key={collection._id}
-                _id={collection._id}
-                title={collection.title}
-                image={collection.coverImage?.filePath || ""}
-                status={collection.status}
-                collectionId={collection._id}
-                onRequestDelete={handleRequestDelete}
-              />
-            );
-          })}
+          {filteredCollections.map((collection) => (
+            <CollectionCard
+              key={collection._id}
+              _id={collection._id}
+              title={collection.title}
+              image={collection.coverImage?.filePath || ""}
+              status={collection.status}
+              collectionId={collection._id}
+              onRequestDelete={handleRequestDelete}
+            />
+          ))}
         </div>
       ) : (
         <div className="flex flex-col items-center text-center px-4 pt-10">
@@ -145,6 +179,7 @@ const Collections = () => {
           </div>
         </div>
       )}
+
       {idToDelete && (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
           <div className="bg-secondary-800 rounded-[10px] p-[40px_64px] max-w-md w-full text-neutral-50 flex flex-col gap-[22px]">
