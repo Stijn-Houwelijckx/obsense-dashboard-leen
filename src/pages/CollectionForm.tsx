@@ -7,13 +7,13 @@ import InputField from "components/InputField";
 import Navigation from "components/Navigation";
 import NavigationDesktop from "components/NavigationDesktop";
 import api from "../services/api";
+import { useLocation } from "react-router-dom";
 
 interface StepTwoFormProps {
   mode: "tour" | "exposition";
   onCancel: () => void;
   onNext: () => void;
   collectionId?: string;
-  isEditing?: boolean;
   initialData?: {
     title: string;
     description: string;
@@ -28,8 +28,6 @@ const CollectionForm = ({
   mode,
   onCancel,
   onNext,
-  isEditing = false,
-  collectionId,
   initialData,
 }: StepTwoFormProps) => {
   const [step, setStep] = useState(1);
@@ -181,8 +179,6 @@ const CollectionForm = ({
   };
 
   const handlePublish = async (isDraft: boolean) => {
-    const status = isDraft ? "draft" : "published";
-
     const formData = new FormData();
 
     if (coverImageFile) {
@@ -205,30 +201,17 @@ const CollectionForm = ({
       })
     );
 
-    // Debug formData
-    for (const pair of formData.entries()) {
-      console.log(pair[0], pair[1]);
-    }
-
     try {
       const token = localStorage.getItem("token");
-      const url =
-        isEditing && collectionId
-          ? `http://localhost:3000/api/v1/artist/collections/${collectionId}`
-          : "http://localhost:3000/api/v1/artist/collections";
+      const url = "http://localhost:3000/api/v1/artist/collections";
 
-      const method = isEditing ? "PUT" : "POST";
-
-      const res = await fetch(
-        "http://localhost:3000/api/v1/artist/collections",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: formData,
-        }
-      );
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
 
       if (res.ok) {
         window.location.href = "/collections";
@@ -242,43 +225,6 @@ const CollectionForm = ({
       alert("Something went wrong.");
     }
   };
-
-  useEffect(() => {
-    if (isEditing && collectionId) {
-      const fetchCollection = async () => {
-        try {
-          const token = localStorage.getItem("token");
-          const res = await fetch(
-            `http://localhost:3000/api/v1/artist/collections/${collectionId}`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-          if (!res.ok) throw new Error("Failed to fetch collection");
-          const data = await res.json();
-
-          const collection = data.data.collection;
-
-          setTitle(collection.title || "");
-          setDescription(collection.description || "");
-          setCityOrLocation(collection.city || "");
-          setPrice(collection.price ? collection.price.toString() : "");
-          setSelectedArtworks(collection.objects || []);
-
-          // Als backend een cover image url teruggeeft, die tonen
-          if (collection.coverImageUrl) {
-            setCoverImageUrl(collection.coverImageUrl);
-            setCoverImageFile(null); // reset lokale file
-          }
-        } catch (error) {
-          console.error("Error fetching collection data:", error);
-        }
-      };
-      fetchCollection();
-    }
-  }, [isEditing, collectionId]);
 
   const handleCoverImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;

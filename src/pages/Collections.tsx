@@ -9,23 +9,23 @@ import NavigationDesktop from "components/NavigationDesktop";
 import React, { useState, useEffect } from "react";
 import api from "../services/api";
 
+interface FileData {
+  fileName: string;
+  filePath: string;
+  fileType?: string;
+  fileSize?: number;
+}
+interface CollectionType {
+  _id: string;
+  title: string;
+  description?: string;
+  coverImage: FileData | null;
+  status: "draft" | "published";
+}
 const Collections = () => {
   const navigate = useNavigate();
   const [collections, setCollections] = useState<CollectionType[]>([]);
   const hasCollections = collections.length > 0;
-
-  interface FileData {
-    fileName: string;
-    filePath: string;
-    fileType?: string;
-    fileSize?: number;
-  }
-  interface CollectionType {
-    _id: string;
-    title: string;
-    coverImage: FileData | null;
-    status: "draft" | "published";
-  }
 
   const [idToDelete, setIdToDelete] = useState<string | null>(null); // welke wil je verwijderen?
 
