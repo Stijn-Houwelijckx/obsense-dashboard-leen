@@ -24,9 +24,9 @@ const Home = () => {
         // Als bought, likes, views niet in API zitten, hier dummy data toevoegen
         const collectionsWithStats = collectionsData.map((c) => ({
           ...c,
-          bought: c.bought ?? Math.floor(Math.random() * 200),
-          likes: c.likes ?? Math.floor(Math.random() * 100),
-          views: c.views ?? Math.floor(Math.random() * 1000),
+          bought: c.bought ?? 0,
+          likes: c.likes ?? 0,
+          views: c.views ?? 0,
         }));
 
         setCollections(collectionsWithStats);
