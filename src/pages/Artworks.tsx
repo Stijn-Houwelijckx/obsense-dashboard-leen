@@ -172,15 +172,15 @@ const Artworks = () => {
 
       {idToDelete && (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-          <div className="bg-secondary-800 rounded-[10px] p-[40px_64px] max-w-md w-full text-neutral-50 flex flex-col gap-[22px]">
+          <div className="bg-secondary-800 rounded-[10px] max-w-md w-full text-neutral-50 flex flex-col items-center text-center gap-6 px-8 py-10">
             <h4 className="text-xl font-semibold">
               Are you sure you want to delete your artwork?
             </h4>
             <p>This action cannot be undone.</p>
-            <div className="flex gap-4 justify-end">
+            <div className="flex gap-4 justify-center w-full mt-4">
               <button
                 onClick={handleCancelDelete}
-                className="border border-primary-500 text-primary-500 px-6 py-2 rounded-lg hover:bg-primary-500 hover:text-white transition"
+                className="border border-primary-500 text-primary-500 px-6 py-2 rounded-lg hover:border-primary-600 transition"
               >
                 Cancel
               </button>
