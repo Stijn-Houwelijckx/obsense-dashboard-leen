@@ -12,7 +12,7 @@ const Navigation = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem("jwt");
+    localStorage.removeItem("token");
     navigate("/signin");
   };
 
