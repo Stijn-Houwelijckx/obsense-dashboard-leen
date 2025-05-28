@@ -33,6 +33,7 @@ const CollectionForm = ({
   initialData,
 }: StepTwoFormProps) => {
   const [step, setStep] = useState(1);
+
   const [title, setTitle] = useState(initialData?.title || "");
   const [description, setDescription] = useState(
     initialData?.description || ""
@@ -48,25 +49,30 @@ const CollectionForm = ({
     initialData?.coverImageFile || null
   );
   const [coverImageUrl, setCoverImageUrl] = useState<string | null>(null);
+
   const genre = "Low-Poly";
+
   const [artworks, setArtworks] = useState<
     { _id: number; title: string; image: string }[]
   >([]);
 
-  // Fetch artworks once on mount
   useEffect(() => {
     const fetchArtworks = async () => {
       try {
         const res = await api.get("/objects");
         const objects = res.data.data.objects;
 
-        setArtworks(
-          objects.map((obj: any) => ({
-            _id: obj._id,
-            title: obj.title,
-            image: obj.thumbnail?.filePath || obj.file?.url || artworkImg,
-          }))
-        );
+        if (objects.length === 0) {
+          setArtworks([]);
+        } else {
+          setArtworks(
+            objects.map((obj: any) => ({
+              _id: obj._id,
+              title: obj.title,
+              image: obj.thumbnail?.filePath || obj.file?.url || "",
+            }))
+          );
+        }
       } catch (err) {
         console.error("Failed to load artworks", err);
         setArtworks([]);
@@ -76,7 +82,75 @@ const CollectionForm = ({
     fetchArtworks();
   }, []);
 
-  // Fetch collection data when editing
+  const toggleArtwork = (id: number) => {
+    setSelectedArtworks((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
+  const handlePublish = async (isDraft: boolean) => {
+    const status = isDraft ? "draft" : "published";
+
+    const formData = new FormData();
+
+    if (coverImageFile) {
+      formData.append("coverImage", coverImageFile);
+    }
+
+    formData.append(
+      "collection",
+      JSON.stringify({
+        collection: {
+          type: mode,
+          title: title,
+          description: description,
+          city: cityOrLocation,
+          price: parseFloat(price),
+          genres: [],
+          objects: selectedArtworks,
+          status: isDraft ? "draft" : "published",
+        },
+      })
+    );
+
+    // Debug formData
+    for (const pair of formData.entries()) {
+      console.log(pair[0], pair[1]);
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+      const url =
+        isEditing && collectionId
+          ? `http://localhost:3000/api/v1/artist/collections/${collectionId}`
+          : "http://localhost:3000/api/v1/artist/collections";
+
+      const method = isEditing ? "PUT" : "POST";
+
+      const res = await fetch(
+        "http://localhost:3000/api/v1/artist/collections",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        }
+      );
+
+      if (res.ok) {
+        window.location.href = "/collections";
+      } else {
+        const error = await res.json();
+        console.error("Backend error response:", error);
+        alert("Fout: " + JSON.stringify(error, null, 2));
+      }
+    } catch (err) {
+      console.error("Fetch error:", err);
+      alert("Something went wrong.");
+    }
+  };
+
   useEffect(() => {
     if (isEditing && collectionId) {
       const fetchCollection = async () => {
@@ -101,9 +175,10 @@ const CollectionForm = ({
           setPrice(collection.price ? collection.price.toString() : "");
           setSelectedArtworks(collection.objects || []);
 
+          // Als backend een cover image url teruggeeft, die tonen
           if (collection.coverImageUrl) {
             setCoverImageUrl(collection.coverImageUrl);
-            setCoverImageFile(null);
+            setCoverImageFile(null); // reset lokale file
           }
         } catch (error) {
           console.error("Error fetching collection data:", error);
@@ -113,163 +188,12 @@ const CollectionForm = ({
     }
   }, [isEditing, collectionId]);
 
-  // Handle price input validation (max 2 decimals)
-  const handlePriceChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const value = e.target.value;
-    if (/^\d*\.?\d{0,2}$/.test(value)) {
-      setPrice(value);
-    }
-  };
-
-  // Toggle artworks selected/unselected
-  const toggleArtwork = (id: number) => {
-    setSelectedArtworks((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-    );
-  };
-
-  // Publish or save draft handler
-  const handlePublish = async (isDraft: boolean) => {
-    const formData = new FormData();
-    if (coverImageFile) formData.append("coverImage", coverImageFile);
-
-    formData.append(
-      "collection",
-      JSON.stringify({
-        collection: {
-          type: mode,
-          title,
-          description,
-          city: cityOrLocation,
-          price: parseFloat(price),
-          genres: [genre],
-          objects: selectedArtworks,
-          status: isDraft ? "draft" : "published",
-        },
-      })
-    );
-
-    try {
-      const token = localStorage.getItem("token");
-      const url =
-        isEditing && collectionId
-          ? `http://localhost:3000/api/v1/artist/collections/${collectionId}`
-          : "http://localhost:3000/api/v1/artist/collections";
-
-      const method = isEditing ? "PUT" : "POST";
-
-      const res = await fetch(url, {
-        method,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      });
-
-      if (res.ok) {
-        window.location.href = "/collections";
-      } else {
-        const error = await res.json();
-        alert("Fout: " + JSON.stringify(error, null, 2));
-      }
-    } catch (err) {
-      console.error("Fetch error:", err);
-      alert("Something went wrong.");
-    }
-  };
-
   const handleCoverImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
     if (file) {
       setCoverImageFile(file);
-      setCoverImageUrl(null);
+      setCoverImageUrl(null); // overschrijven met lokaal bestand
     }
-  };
-
-  const CityAutocomplete = ({
-    value,
-    onChange,
-  }: {
-    value: string;
-    onChange: (v: string) => void;
-  }) => {
-    const [suggestions, setSuggestions] = React.useState<string[]>([]);
-    const [showDropdown, setShowDropdown] = React.useState(false);
-    const containerRef = React.useRef<HTMLDivElement>(null);
-
-    React.useEffect(() => {
-      if (value.length < 3) {
-        setSuggestions([]);
-        setShowDropdown(false);
-        return;
-      }
-
-      const fetchCities = async () => {
-        try {
-          const res = await fetch(
-            `https://nominatim.openstreetmap.org/search?city=${encodeURIComponent(
-              value
-            )}&format=json&limit=5`
-          );
-          const data = await res.json();
-          const cityNames = data.map((item: any) => item.display_name);
-          setSuggestions(cityNames);
-          setShowDropdown(true);
-        } catch (err) {
-          console.error(err);
-          setSuggestions([]);
-          setShowDropdown(false);
-        }
-      };
-
-      fetchCities();
-    }, [value]);
-
-    React.useEffect(() => {
-      const handleClickOutside = (event: MouseEvent) => {
-        if (
-          containerRef.current &&
-          !containerRef.current.contains(event.target as Node)
-        ) {
-          setShowDropdown(false);
-        }
-      };
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => {
-        document.removeEventListener("mousedown", handleClickOutside);
-      };
-    }, []);
-
-    return (
-      <div className="relative w-full">
-        <InputField
-          label={mode === "tour" ? "City" : "Location"}
-          placeholder={mode === "tour" ? "City" : "Location"}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="w-full h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
-          autoComplete="off" // zorg dat dit ook in InputField kan
-        />
-        {showDropdown && suggestions.length > 0 && (
-          <ul className="absolute top-full left-0 right-0 bg-white text-black rounded shadow max-h-48 overflow-auto z-10">
-            {suggestions.map((city, i) => (
-              <li
-                key={i}
-                onClick={() => {
-                  onChange(city);
-                  setShowDropdown(false);
-                }}
-                className="cursor-pointer hover:bg-gray-200 px-3 py-1"
-              >
-                {city}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    );
   };
 
   return (
@@ -306,8 +230,6 @@ const CollectionForm = ({
                 src={
                   coverImageFile
                     ? URL.createObjectURL(coverImageFile)
-                    : coverImageUrl
-                    ? coverImageUrl
                     : treeImage
                 }
                 alt="Artwork"
@@ -321,17 +243,18 @@ const CollectionForm = ({
                 <input
                   type="file"
                   accept="image/*"
-                  onChange={handleCoverImageChange}
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files.length > 0) {
+                      setCoverImageFile(e.target.files[0]);
+                    }
+                  }}
                   className="hidden"
                 />
               </label>
 
               <button
                 className="text-sm font-semibold text-red-400 border border-red-600 rounded px-3 py-2 bg-[#FCA5A5] hover:opacity-90"
-                onClick={() => {
-                  setCoverImageFile(null);
-                  setCoverImageUrl(null);
-                }}
+                onClick={() => setCoverImageFile(null)}
               >
                 Delete
               </button>
@@ -355,18 +278,18 @@ const CollectionForm = ({
                 onChange={(e) => setDescription(e.target.value)}
                 className="w-full h-[166px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 py-2 text-sm text-white resize-none"
               />
-
-              {/* Hier de autocomplete voor stad/location */}
-              <CityAutocomplete
+              <InputField
+                label={mode === "tour" ? "City" : "Location"}
+                placeholder={mode === "tour" ? "City" : "Location"}
                 value={cityOrLocation}
-                onChange={setCityOrLocation}
+                onChange={(e) => setCityOrLocation(e.target.value)}
+                className="w-full h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
               />
-
               <InputField
                 label="Price (€)"
                 placeholder="Enter price"
                 value={price}
-                onChange={handlePriceChange}
+                onChange={(e) => setPrice(e.target.value)}
                 className="w-full h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
               />
             </div>
@@ -377,109 +300,207 @@ const CollectionForm = ({
                 <span className="text-sm font-medium text-[#00B69B] bg-[#00B69B33] px-3 py-1 rounded-lg">
                   Low-Poly
                 </span>
-                <img src={plusGenreIcon} alt="Add genre" className="w-4 h-4" />
+                <img src={plusGenreIcon} alt="Add genre" className="w-5 h-5" />
               </div>
             </div>
 
-            <button
-              className="mt-6 bg-primary-500 py-3 px-6 rounded-lg text-white font-semibold hover:bg-primary-600"
-              onClick={() => setStep(2)}
-              disabled={!title || !description || !cityOrLocation || !price}
-            >
-              Next
-            </button>
-          </div>
-        </div>
-      )}
-
-      {step === 2 && (
-        <div className="w-full flex flex-col gap-4">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {artworks.map((artwork) => (
-              <div
-                key={artwork._id}
-                className={`border rounded-lg p-2 cursor-pointer transition-colors ${
-                  selectedArtworks.includes(artwork._id)
-                    ? "border-primary-500 bg-primary-600"
-                    : "border-transparent"
-                }`}
-                onClick={() => toggleArtwork(artwork._id)}
+            <div className="w-full flex justify-end gap-4 mt-6">
+              <button
+                onClick={() => (window.location.href = "/create")}
+                className="w-[75px] h-[48px] border border-primary-500 rounded-lg text-primary-500 font-medium hover:border-primary-600 transition"
               >
-                <img
-                  src={artwork.image}
-                  alt={artwork.title}
-                  className="w-full h-24 object-cover rounded-md mb-2"
-                />
-                <p className="text-sm text-center">{artwork.title}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="flex justify-between mt-6">
-            <button
-              onClick={() => setStep(1)}
-              className="bg-secondary-700 px-6 py-3 rounded-lg text-neutral-400 hover:text-white"
-            >
-              Back
-            </button>
-
-            <button
-              onClick={() => setStep(3)}
-              className="bg-primary-500 px-6 py-3 rounded-lg text-white hover:bg-primary-600"
-              disabled={selectedArtworks.length === 0}
-            >
-              Next
-            </button>
+                Cancel
+              </button>
+              <button
+                onClick={() => setStep(2)}
+                className="w-[75px] h-[48px] bg-primary-500 text-white font-medium rounded-lg hover:opacity-90 transition"
+              >
+                Next
+              </button>
+            </div>
           </div>
         </div>
       )}
 
-      {step === 3 && (
-        <div className="w-full p-6 bg-secondary-800 rounded-lg flex flex-col gap-4 max-w-3xl">
-          <h2 className="text-xl font-semibold mb-4">Overview</h2>
+      {/* Step 2: Artwork Selection */}
+      {step === 2 && (
+        <>
+          {artworks.length === 0 ? (
+            <div className="w-full h-[350px] flex items-center justify-center text-neutral-400 text-lg font-semibold">
+              No artworks yet
+            </div>
+          ) : (
+            <div className="w-full flex flex-wrap gap-5 mt-4">
+              {artworks.map(({ _id, title, image }) => {
+                const isSelected = selectedArtworks.includes(_id);
+                return (
+                  <div
+                    key={_id}
+                    onClick={() => toggleArtwork(_id)}
+                    className="w-full sm:w-[calc(50%-10px)] lg:basis-[calc(25%-15px)] lg:max-w-[calc(25%-15px)] lg:w-1/4 cursor-pointer h-[350px]"
+                  >
+                    <div
+                      className={`w-full h-full bg-secondary-700 rounded-lg flex flex-col relative p-2 transition ${
+                        isSelected
+                          ? "border-2 border-primary-500"
+                          : "border border-transparent"
+                      }`}
+                    >
+                      <div
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleArtwork(_id);
+                        }}
+                        className={`absolute top-2 right-2 w-5 h-5 rounded-full border-2 ${
+                          isSelected
+                            ? "bg-primary-500 border-primary-500"
+                            : "border-neutral-300"
+                        } flex items-center justify-center`}
+                      ></div>
 
-          <p>
-            <strong>Title:</strong> {title}
-          </p>
-          <p>
-            <strong>Description:</strong> {description}
-          </p>
-          <p>
-            <strong>City/Location:</strong> {cityOrLocation}
-          </p>
-          <p>
-            <strong>Price (€):</strong> {price}
-          </p>
-          <p>
-            <strong>Genre:</strong> {genre}
-          </p>
-          <p>
-            <strong>Selected artworks:</strong> {selectedArtworks.length}
-          </p>
+                      <div className="w-full h-[300px] rounded-lg overflow-hidden">
+                        <img
+                          src={image ? image : artworkImg}
+                          alt={title}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
 
-          <div className="flex gap-4 mt-4">
-            <button
-              onClick={() => setStep(2)}
-              className="bg-secondary-700 px-6 py-3 rounded-lg text-neutral-400 hover:text-white"
-            >
-              Back
-            </button>
+                      <div className="w-full h-[64px] bg-secondary-600 rounded-lg flex items-center justify-center p-4">
+                        <h6 className="text-primary-500 font-semibold">
+                          {title}
+                        </h6>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
 
-            <button
-              onClick={() => handlePublish(true)}
-              className="bg-gray-500 px-6 py-3 rounded-lg text-white hover:bg-gray-600"
-            >
-              Save Draft
-            </button>
+          <div className="mt-10 w-full">
+            <div className="flex gap-4 w-full lg:hidden">
+              <button
+                onClick={() => setStep(1)}
+                className="w-1/3 h-[48px] border border-primary-500 rounded-lg text-primary-500 font-medium hover:border-primary-600 transition"
+              >
+                Back
+              </button>
+              <button
+                onClick={() => setStep(3)}
+                className="w-2/3 h-[48px] bg-primary-500 text-white font-medium rounded-lg hover:opacity-90 transition"
+              >
+                Next
+              </button>
+            </div>
 
-            <button
-              onClick={() => handlePublish(false)}
-              className="bg-primary-500 px-6 py-3 rounded-lg text-white hover:bg-primary-600"
-            >
-              Publish
-            </button>
+            <div className="hidden lg:flex justify-end gap-4">
+              <button
+                onClick={() => setStep(1)}
+                className="w-[75px] h-[48px] border border-primary-500 rounded-lg text-primary-500 font-medium hover:border-primary-600 transition"
+              >
+                Back
+              </button>
+              <button
+                onClick={() => setStep(3)}
+                className="w-[75px] h-[48px] bg-primary-500 text-white font-medium rounded-lg hover:opacity-90 transition"
+              >
+                Next
+              </button>
+            </div>
           </div>
-        </div>
+        </>
+      )}
+
+      {/* Step 3: Overview */}
+      {step === 3 && (
+        <>
+          <div className="w-full bg-secondary-800 p-6 rounded-[16px]">
+            <div className="w-full flex flex-col lg:flex-row lg:gap-[68px]">
+              <div className="w-full lg:w-1/2 h-[350px] rounded-lg overflow-hidden mb-6 lg:mb-0">
+                <img
+                  src={
+                    coverImageFile
+                      ? URL.createObjectURL(coverImageFile)
+                      : treeImage
+                  }
+                  alt="Overview Artwork"
+                  className="w-1/2 h-full object-cover rounded-lg mx-auto"
+                />
+              </div>
+
+              <div className="w-full lg:w-3/4 flex flex-col">
+                <h4 className="text-3xl font-bold text-primary-500 mb-4">
+                  {title}
+                </h4>
+
+                <p className="text-neutral-50 mb-8 leading-relaxed">
+                  {description}
+                </p>
+
+                <div className="flex justify-between w-full mb-10">
+                  <div className="flex flex-col items-center">
+                    <span className="font-medium mb-1 text-[#B3B3B3]">
+                      {mode === "tour" ? "City" : "Location"}
+                    </span>
+                    <span className="text-neutral-50">{cityOrLocation}</span>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <span className="font-medium mb-1 text-[#B3B3B3]">
+                      Price
+                    </span>
+                    <span className="text-neutral-50">{price}</span>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <span className="font-medium mb-1 text-[#B3B3B3]">
+                      Genre
+                    </span>
+                    <span className="text-sm font-medium text-[#00B69B] bg-[#00B69B33] px-3 py-1 rounded-lg">
+                      {genre}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Artworks */}
+            <div className="w-full mb-10 mt-6">
+              <h6 className="mb-4 font-semibold">Artworks</h6>
+              <div className="flex flex-col gap-4">
+                {artworks
+                  .filter((art) => selectedArtworks.includes(art._id))
+                  .map(({ _id, title, image }) => (
+                    <div
+                      key={_id}
+                      className="flex items-center gap-4 border-2 border-dashed border-primary-500 rounded-xl p-2"
+                    >
+                      <img
+                        src={image}
+                        alt={title}
+                        className="w-1/7 h-[46px] object-cover rounded-lg"
+                      />
+                      <span>{title}</span>
+                    </div>
+                  ))}
+              </div>
+            </div>
+
+            <div className="flex gap-4 w-full lg:justify-end">
+              <button
+                onClick={() => handlePublish(true)}
+                className="w-1/3 h-[48px] border border-primary-500 rounded-lg text-primary-500 font-medium hover:border-primary-600 transition lg:w-[120px]"
+              >
+                Save as Draft
+              </button>
+              <button
+                onClick={() => handlePublish(false)}
+                className="w-2/3 h-[48px] bg-primary-500 text-white font-medium rounded-lg hover:opacity-90 transition lg:w-[120px]"
+              >
+                Publish
+              </button>
+            </div>
+          </div>
+        </>
       )}
     </div>
   );
