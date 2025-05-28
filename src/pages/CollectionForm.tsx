@@ -322,10 +322,10 @@ const CollectionForm = ({
                 src={
                   coverImageFile
                     ? URL.createObjectURL(coverImageFile)
+                    : coverImageUrl
+                    ? coverImageUrl
                     : treeImage
                 }
-                alt="Artwork"
-                className="object-cover w-3/4 h-full"
               />
             </div>
 
@@ -346,7 +346,10 @@ const CollectionForm = ({
 
               <button
                 className="text-sm font-semibold text-red-400 border border-red-600 rounded px-3 py-2 bg-[#FCA5A5] hover:opacity-90"
-                onClick={() => setCoverImageFile(null)}
+                onClick={() => {
+                  setCoverImageFile(null);
+                  setCoverImageUrl(null); // Voeg dit toe om ook de bestaande URL te wissen
+                }}
               >
                 Delete
               </button>
@@ -515,6 +518,8 @@ const CollectionForm = ({
                   src={
                     coverImageFile
                       ? URL.createObjectURL(coverImageFile)
+                      : coverImageUrl
+                      ? coverImageUrl
                       : treeImage
                   }
                   alt="Overview Artwork"
