@@ -5,6 +5,7 @@ import searchIcon from "../assets/img/search.svg";
 import backIcon from "../assets/img/back.svg";
 import arrowIcon from "../assets/img/arrow.svg";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 import Navigation from "components/Navigation";
 import NavigationDesktop from "components/NavigationDesktop";
@@ -16,6 +17,56 @@ const Settings = () => {
   const [securityPage, setSecurityPage] = useState("main");
 
   const handleBack = () => setSecurityPage("main");
+  const [profileData, setProfileData] = useState({
+    firstName: "",
+    lastName: "",
+    artistName: "",
+    email: "",
+    phoneNumber: "",
+    instagram: "",
+    behance: "",
+    dribbble: "",
+  });
+
+  useEffect(() => {
+    if (activeTab === "General") {
+      fetch("/api/v1/users") // jouw echte endpoint
+        .then((res) => res.json())
+        .then((data) => {
+          setProfileData({
+            firstName: data.firstName || "",
+            lastName: data.lastName || "",
+            artistName: data.artistName || "",
+            email: data.email || "",
+            phoneNumber: data.phoneNumber || "",
+            instagram: data.instagram || "",
+            behance: data.behance || "",
+            dribbble: data.dribbble || "",
+          });
+        });
+    }
+  }, [activeTab]);
+
+  const handleSaveChanges = () => {
+    fetch("/api/v1/users", {
+      method: "PUT", // of POST, afhankelijk van je API
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(profileData),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to save");
+        return res.json();
+      })
+      .then((data) => {
+        alert("Profile saved!");
+      })
+      .catch((err) => {
+        alert("Error saving profile");
+        console.error(err);
+      });
+  };
 
   const renderSecuritySubPage = () => (
     <div className="w-full flex justify-center pt-6 ">
@@ -206,33 +257,71 @@ const Settings = () => {
                     label="First name"
                     placeholder="First name"
                     className="w-full h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
+                    value={profileData.firstName}
+                    onChange={(e) =>
+                      setProfileData((prev) => ({
+                        ...prev,
+                        firstName: e.target.value,
+                      }))
+                    }
                   />
                   <InputField
                     label="Last name"
                     placeholder="Last name"
                     className="w-full h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
+                    value={profileData.lastName}
+                    onChange={(e) =>
+                      setProfileData((prev) => ({
+                        ...prev,
+                        lastName: e.target.value,
+                      }))
+                    }
                   />
                   <InputField
                     label="Artist name"
                     placeholder="Artist name"
                     className="lg:col-span-2 w-full h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
+                    value={profileData.artistName}
+                    onChange={(e) =>
+                      setProfileData((prev) => ({
+                        ...prev,
+                        artistName: e.target.value,
+                      }))
+                    }
                   />
                   <InputField
                     label="Email address"
                     placeholder="Email address"
                     className="w-full h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
+                    value={profileData.email}
+                    onChange={(e) =>
+                      setProfileData((prev) => ({
+                        ...prev,
+                        email: e.target.value,
+                      }))
+                    }
                   />
                   <InputField
                     label="Phone number"
                     placeholder="Phone number"
                     className="w-full h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
+                    value={profileData.phoneNumber}
+                    onChange={(e) =>
+                      setProfileData((prev) => ({
+                        ...prev,
+                        phoneNumber: e.target.value,
+                      }))
+                    }
                   />
                 </div>
                 <div className="flex gap-4 w-[250px] hidden lg:flex mt-8">
                   <button className="w-1/3 h-[48px] border border-primary-500 rounded-lg text-primary-500 font-medium hover:border-primary-600 transition">
                     Cancel
                   </button>
-                  <button className="w-2/3 h-[48px] bg-primary-500 text-white font-medium rounded-lg hover:opacity-90 transition">
+                  <button
+                    className="w-2/3 h-[48px] bg-primary-500 text-white font-medium rounded-lg hover:opacity-90 transition"
+                    onClick={handleSaveChanges}
+                  >
                     Save changes
                   </button>
                 </div>
@@ -250,16 +339,37 @@ const Settings = () => {
                       label="Instagram"
                       placeholder="Insert a link here"
                       className="w-full h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
+                      value={profileData.instagram}
+                      onChange={(e) =>
+                        setProfileData((prev) => ({
+                          ...prev,
+                          instagram: e.target.value,
+                        }))
+                      }
                     />
                     <InputField
                       label="Behance"
                       placeholder="Insert a link here"
                       className="w-full h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
+                      value={profileData.behance}
+                      onChange={(e) =>
+                        setProfileData((prev) => ({
+                          ...prev,
+                          behance: e.target.value,
+                        }))
+                      }
                     />
                     <InputField
                       label="Dribbble"
                       placeholder="Insert a link here"
                       className="w-full h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
+                      value={profileData.dribbble}
+                      onChange={(e) =>
+                        setProfileData((prev) => ({
+                          ...prev,
+                          dribbble: e.target.value,
+                        }))
+                      }
                     />
                   </div>
                 </div>

@@ -131,6 +131,41 @@ const ArtworkForm = () => {
     }
   };
 
+  const handleDelete = async () => {
+    if (!objectId) {
+      alert("Geen objectId beschikbaar!");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await fetch(
+        `http://localhost:3000/api/v1/objects/${objectId}/thumbnail`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        const text = await response.text();
+        console.error("Delete mislukt:", response.status, text);
+        alert("Verwijderen mislukt: " + response.status);
+        return;
+      }
+
+      setThumbnailUrl(null);
+      alert("Cover image verwijderd");
+    } catch (err) {
+      console.error("Delete error:", err);
+      alert("Er ging iets mis bij het verwijderen");
+    }
+  };
+
   return (
     <div className="min-h-screen md:pl-[166px] md:pr-[74px] bg-secondary-900 text-neutral-50 px-4 mt-14 flex flex-col items-center">
       <div className="w-full mb-10">
@@ -173,7 +208,10 @@ const ArtworkForm = () => {
             >
               Choose cover
             </button>
-            <button className="text-sm font-semibold text-red-400 border border-red-600 rounded px-3 py-2 bg-[#FCA5A5] hover:opacity-90">
+            <button
+              onClick={handleDelete}
+              className="text-sm font-semibold text-red-400 border border-red-600 rounded px-3 py-2 bg-[#FCA5A5] hover:opacity-90"
+            >
               Delete
             </button>
           </div>
