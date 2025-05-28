@@ -7,8 +7,7 @@ import NavigationDesktop from "components/NavigationDesktop";
 import Button from "components/Button";
 import ArtworkCard from "components/ArtworkCard";
 import { useEffect, useState } from "react";
-import api from "../services/api"; // jouw axios instance
-// import axios from "axios";
+import api from "../services/api";
 
 interface FileData {
   fileName: string;
@@ -26,24 +25,23 @@ interface Artwork {
 }
 
 const Artworks = () => {
-  // const hasArtworks = true;
   const [artworks, setArtworks] = useState<Artwork[]>([]);
-  const [idToDelete, setIdToDelete] = useState<string | null>(null); // welke wil je verwijderen?
+  const [idToDelete, setIdToDelete] = useState<string | null>(null);
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
-  // const yourToken = localStorage.getItem("jwt") || ""; // Haal je token op uit localStorag
   const navigate = useNavigate();
+
+  const filteredArtworks = artworks.filter((artwork) =>
+    artwork.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   useEffect(() => {
     api
       .get("/objects")
       .then((res) => {
-        console.log("RESPONSE:", res.data); // <---- Voeg dit toe
-
-        const objects = res.data.data.objects; // pas aan indien structuur anders is
+        const objects = res.data.data.objects;
         setArtworks(objects);
-        console.log(
-          "Artwork URLs:",
-          objects.map((a: any) => a.thumbnail?.filePath || a.file?.filePath)
-        );
       })
       .catch((err) => {
         console.error("Failed to load artworks", err);
@@ -51,11 +49,11 @@ const Artworks = () => {
   }, []);
 
   const handleRequestDelete = (id: string) => {
-    setIdToDelete(id); // toon de confirm overlay
+    setIdToDelete(id);
   };
 
   const handleCancelDelete = () => {
-    setIdToDelete(null); // sluit overlay
+    setIdToDelete(null);
   };
 
   const handleConfirmDelete = async () => {
@@ -76,17 +74,47 @@ const Artworks = () => {
         <h1 className="text-2xl font-bold">Your Artworks</h1>
 
         <div className="flex items-center gap-2">
-          <div className="w-10 h-10 bg-secondary-800 rounded-full flex items-center justify-center lg:hidden">
-            <img src={searchIcon} alt="Search" className="w-5 h-5" />
+          <div className="lg:hidden">
+            {showSearch ? (
+              <div className="flex items-center w-[180px] bg-secondary-800 border border-neutral-500 rounded-[10px] px-[14px] py-[6px] transition">
+                <img
+                  src={searchIcon}
+                  alt="Search"
+                  className="w-5 h-5 text-neutral-500"
+                />
+                <input
+                  type="text"
+                  placeholder="Search"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="ml-2 text-sm text-neutral-50 bg-transparent w-full focus:outline-none"
+                  autoFocus
+                  onBlur={() => setShowSearch(false)}
+                />
+              </div>
+            ) : (
+              <div
+                className="w-10 h-10 bg-secondary-800 rounded-full flex items-center justify-center transition"
+                onClick={() => setShowSearch(true)}
+              >
+                <img src={searchIcon} alt="Search" className="w-5 h-5" />
+              </div>
+            )}
           </div>
 
-          <div className="hidden lg:flex items-center w-[300px] bg-secondary-800 border border-neutral-500 rounded-[10px] px-[18px] py-[8px] cursor-pointer hover:bg-secondary-700 transition">
+          <div className="hidden lg:flex items-center w-[300px] bg-secondary-800 border border-neutral-500 rounded-[10px] px-[18px] py-[8px]">
             <img
               src={searchIcon}
               alt="Search"
               className="w-5 h-5 text-neutral-500"
             />
-            <span className="ml-2 text-sm text-neutral-500">Search</span>
+            <input
+              type="text"
+              placeholder="Search"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="ml-2 text-sm text-neutral-50 bg-transparent w-full focus:outline-none"
+            />
           </div>
 
           <div className="md:hidden">
@@ -113,7 +141,7 @@ const Artworks = () => {
             </div>
           </div>
 
-          {artworks.map((artwork) => (
+          {filteredArtworks.map((artwork) => (
             <ArtworkCard
               key={artwork._id}
               _id={artwork._id}
@@ -169,4 +197,5 @@ const Artworks = () => {
     </div>
   );
 };
+
 export default Artworks;
