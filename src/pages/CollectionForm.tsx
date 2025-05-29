@@ -19,7 +19,7 @@ interface StepTwoFormProps {
     description: string;
     cityOrLocation: string;
     price: string;
-    selectedArtworks: number[];
+    selectedArtworks: string[];
     coverImageFile?: File | null;
     coverImageUrl?: string | null;
     genre?: string;
@@ -45,13 +45,13 @@ const CollectionForm = ({
   const [description, setDescription] = useState("");
   const [cityOrLocation, setCityOrLocation] = useState("");
   const [price, setPrice] = useState("");
-  const [selectedArtworks, setSelectedArtworks] = useState<number[]>([]);
+  const [selectedArtworks, setSelectedArtworks] = useState<string[]>([]);
   const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
   const [coverImageUrl, setCoverImageUrl] = useState<string | null>(null);
   const [genre, setGenre] = useState("Low-Poly");
 
   const [artworks, setArtworks] = useState<
-    { _id: number; title: string; image: string }[]
+    { _id: string; title: string; image: string }[]
   >([]);
 
   useEffect(() => {
@@ -88,12 +88,22 @@ const CollectionForm = ({
 
         const data = await res.json();
         const coll = data.data.collection;
+        console.log("Raw coll.objects:", coll.objects);
+        console.log(
+          "Converted IDs:",
+          (coll.objects || []).map((id: any) => Number(id))
+        );
+
+        console.log("Collection objects:", coll.objects);
+        setSelectedArtworks(
+          (coll.objects || []).map((id: any) => id.toString())
+        );
 
         setTitle(coll.title || "");
         setDescription(coll.description || "");
         setCityOrLocation(coll.city || "");
         setPrice(coll.price !== undefined ? coll.price.toString() : "");
-        setSelectedArtworks(coll.objects || []);
+        setSelectedArtworks((coll.objects || []).map((id: any) => String(id)));
         setGenre(
           coll.genres && coll.genres.length > 0 ? coll.genres[0] : "Low-Poly"
         );
@@ -128,9 +138,11 @@ const CollectionForm = ({
         if (objects.length === 0) {
           setArtworks([]);
         } else {
+          console.log("Objects:", objects);
+
           setArtworks(
             objects.map((obj: any) => ({
-              _id: obj._id,
+              _id: obj._id.toString(),
               title: obj.title,
               image: obj.thumbnail?.filePath || obj.file?.url || "",
             }))
@@ -154,9 +166,11 @@ const CollectionForm = ({
     }
   };
 
-  const toggleArtwork = (id: number) => {
-    setSelectedArtworks((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+  const toggleArtwork = (id: string) => {
+    setSelectedArtworks((prevSelected) =>
+      prevSelected.includes(id)
+        ? prevSelected.filter((artworkId) => artworkId !== id)
+        : [...prevSelected, id]
     );
   };
 
@@ -450,6 +464,18 @@ const CollectionForm = ({
             <div className="w-full flex flex-wrap gap-5 mt-4">
               {artworks.map(({ _id, title, image }) => {
                 const isSelected = selectedArtworks.includes(_id);
+                console.log(
+                  "Artwork ID:",
+                  _id,
+                  "isSelected?",
+                  isSelected,
+                  "selectedArtworks:",
+                  selectedArtworks
+                );
+
+                console.log("Artworks:", artworks);
+                console.log("SelectedArtworks:", selectedArtworks);
+
                 return (
                   <div
                     key={_id}
