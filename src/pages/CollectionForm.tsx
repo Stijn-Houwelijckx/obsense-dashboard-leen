@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import hamburgerIcon from "assets/img/hamburger.svg";
 import treeImage from "assets/img/tree.png";
 import plusGenreIcon from "assets/img/plus_genre.svg";
@@ -7,12 +8,11 @@ import InputField from "components/InputField";
 import Navigation from "components/Navigation";
 import NavigationDesktop from "components/NavigationDesktop";
 import api from "../services/api";
-import { useLocation } from "react-router-dom";
 
 interface StepTwoFormProps {
   mode: "tour" | "exposition";
-  onCancel: () => void;
-  onNext: () => void;
+  onCancel?: () => void;
+  onNext?: () => void;
   collectionId?: string;
   initialData?: {
     title: string;
@@ -21,6 +21,8 @@ interface StepTwoFormProps {
     price: string;
     selectedArtworks: number[];
     coverImageFile?: File | null;
+    coverImageUrl?: string | null;
+    genre?: string;
   };
 }
 
@@ -29,30 +31,92 @@ const CollectionForm = ({
   onCancel,
   onNext,
   initialData,
+  collectionId,
 }: StepTwoFormProps) => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Extract collectionId from location.state if not passed as prop
+  const collId =
+    collectionId || (location.state && (location.state as any).collectionId);
   const [step, setStep] = useState(1);
 
-  const [title, setTitle] = useState(initialData?.title || "");
-  const [description, setDescription] = useState(
-    initialData?.description || ""
-  );
-  const [cityOrLocation, setCityOrLocation] = useState(
-    initialData?.cityOrLocation || ""
-  );
-  const [price, setPrice] = useState(initialData?.price || "");
-  const [selectedArtworks, setSelectedArtworks] = useState<number[]>(
-    initialData?.selectedArtworks || []
-  );
-  const [coverImageFile, setCoverImageFile] = useState<File | null>(
-    initialData?.coverImageFile || null
-  );
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [cityOrLocation, setCityOrLocation] = useState("");
+  const [price, setPrice] = useState("");
+  const [selectedArtworks, setSelectedArtworks] = useState<number[]>([]);
+  const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
   const [coverImageUrl, setCoverImageUrl] = useState<string | null>(null);
-
-  const genre = "Low-Poly";
+  const [genre, setGenre] = useState("Low-Poly");
 
   const [artworks, setArtworks] = useState<
     { _id: number; title: string; image: string }[]
   >([]);
+
+  useEffect(() => {
+    if (!collId) {
+      // If no collectionId, use initialData if provided
+      if (initialData) {
+        setTitle(initialData.title || "");
+        setDescription(initialData.description || "");
+        setCityOrLocation(initialData.cityOrLocation || "");
+        setPrice(initialData.price || "");
+        setSelectedArtworks(initialData.selectedArtworks || []);
+        setCoverImageFile(initialData.coverImageFile || null);
+        setCoverImageUrl(initialData.coverImageUrl || null);
+        setGenre(initialData.genre || "Low-Poly");
+      }
+      return;
+    }
+
+    const fetchCollection = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch(
+          `http://localhost:3000/api/v1/artist/collections/${collId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (!res.ok) {
+          throw new Error("Failed to fetch collection");
+        }
+
+        const data = await res.json();
+        const coll = data.data.collection;
+
+        setTitle(coll.title || "");
+        setDescription(coll.description || "");
+        setCityOrLocation(coll.city || "");
+        setPrice(coll.price !== undefined ? coll.price.toString() : "");
+        setSelectedArtworks(coll.objects || []);
+        setGenre(
+          coll.genres && coll.genres.length > 0 ? coll.genres[0] : "Low-Poly"
+        );
+
+        // Cover image URL if available
+        if (coll.coverImageUrl) {
+          setCoverImageUrl(coll.coverImageUrl);
+          setCoverImageFile(null);
+        } else if (coll.coverImage) {
+          setCoverImageUrl(coll.coverImage);
+          setCoverImageFile(null);
+        } else {
+          setCoverImageUrl(null);
+          setCoverImageFile(null);
+        }
+      } catch (err) {
+        console.error("Error loading collection:", err);
+        alert("Failed to load collection data.");
+      }
+    };
+
+    fetchCollection();
+  }, [collId, initialData]);
 
   useEffect(() => {
     const fetchArtworks = async () => {
@@ -194,19 +258,24 @@ const CollectionForm = ({
           description: description,
           city: cityOrLocation,
           price: parseFloat(price),
-          genres: [],
+          genres: [genre],
           objects: selectedArtworks,
           status: isDraft ? "draft" : "published",
+          _id: collId || undefined,
         },
       })
     );
 
     try {
       const token = localStorage.getItem("token");
-      const url = "http://localhost:3000/api/v1/artist/collections";
+      const url = collId
+        ? `http://localhost:3000/api/v1/artist/collections/${collId}`
+        : "http://localhost:3000/api/v1/artist/collections";
+
+      const method = collId ? "PUT" : "POST";
 
       const res = await fetch(url, {
-        method: "POST",
+        method,
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -240,7 +309,9 @@ const CollectionForm = ({
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">
             {step === 1
-              ? `Step 1: Create a ${mode === "tour" ? "Tour" : "Exposition"}`
+              ? `Step 1: ${collId ? "Edit" : "Create"} a ${
+                  mode === "tour" ? "Tour" : "Exposition"
+                }`
               : step === 2
               ? "Step 2: Choose Artwork"
               : "Step 3: Overview"}
@@ -294,7 +365,7 @@ const CollectionForm = ({
                 className="text-sm font-semibold text-red-400 border border-red-600 rounded px-3 py-2 bg-[#FCA5A5] hover:opacity-90"
                 onClick={() => {
                   setCoverImageFile(null);
-                  setCoverImageUrl(null); // Voeg dit toe om ook de bestaande URL te wissen
+                  setCoverImageUrl(null);
                 }}
               >
                 Delete
@@ -311,21 +382,24 @@ const CollectionForm = ({
                 onChange={(e) => setTitle(e.target.value)}
                 className="w-full h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
               />
-              <InputField
-                label="Description"
+              <textarea
+                className="w-full h-24 p-2 rounded border border-neutral-100 bg-secondary-700 text-white"
                 placeholder="Description"
-                textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full h-[166px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 py-2 text-sm text-white resize-none"
               />
-              <InputField
+              {/* <InputField
                 label={mode === "tour" ? "City" : "Location"}
                 placeholder={mode === "tour" ? "City" : "Location"}
                 value={cityOrLocation}
                 onChange={(e) => setCityOrLocation(e.target.value)}
                 className="w-full h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
+              /> */}
+              <CityAutocomplete
+                value={cityOrLocation}
+                onChange={setCityOrLocation}
               />
+
               <InputField
                 label="Price (€)"
                 placeholder="Enter price"
