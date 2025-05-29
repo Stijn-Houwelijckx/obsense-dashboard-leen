@@ -98,17 +98,18 @@ const CollectionForm = ({
           coll.genres && coll.genres.length > 0 ? coll.genres[0] : "Low-Poly"
         );
 
-        // Cover image URL if available
-        if (coll.coverImageUrl) {
-          setCoverImageUrl(coll.coverImageUrl);
-          setCoverImageFile(null);
-        } else if (coll.coverImage) {
-          setCoverImageUrl(coll.coverImage);
+        const baseUrl = "http://localhost:3000"; // of je live domain
+
+        if (coll.coverImage && coll.coverImage.filePath) {
+          setCoverImageUrl(coll.coverImage.filePath);
           setCoverImageFile(null);
         } else {
           setCoverImageUrl(null);
           setCoverImageFile(null);
         }
+
+        console.log("coll.coverImageUrl", coll.coverImageUrl);
+        console.log("coll.coverImage", coll.coverImage);
       } catch (err) {
         console.error("Error loading collection:", err);
         alert("Failed to load collection data.");
