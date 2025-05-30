@@ -186,7 +186,9 @@ const Collections = () => {
             <h4 className="text-xl font-title font-semibold">
               Are you sure you want to delete your tour or exposition?
             </h4>
-            <p className="font-text">This action cannot be undone.</p>
+            <p className="font-text">
+              Users who have bought your tour will have 30 days to complete it.
+            </p>
             <div className="flex gap-4 justify-center w-full mt-4">
               <button
                 onClick={handleCancelDelete}
