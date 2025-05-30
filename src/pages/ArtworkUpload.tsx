@@ -7,6 +7,7 @@ import Navigation from "components/Navigation";
 import NavigationDesktop from "components/NavigationDesktop";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
+import closeIcon from "../assets/img/close.svg";
 
 const MAX_FILE_SIZE = 20 * 1024 * 1024;
 
@@ -66,6 +67,13 @@ const ArtworkUpload = () => {
       setIsUploading(false);
       setError("Something went wrong during upload.");
     }
+  };
+
+  const handleRemoveFile = () => {
+    setFiles(null);
+    setUploadProgress(0);
+    setIsUploading(false);
+    setError(null);
   };
 
   const validateAndSetFiles = async (selectedFiles: FileList) => {
@@ -198,7 +206,7 @@ const ArtworkUpload = () => {
 
         <div className="w-full lg:w-1/3 mt-4 lg:mt-6 flex flex-col items-start justify-center">
           {files && files.length > 0 && (
-            <div className="flex items-center gap-4 mt-6">
+            <div className="flex items-center gap-4 mt-6 relative">
               <div
                 className="flex items-center justify-center rounded-full"
                 style={{
@@ -212,8 +220,20 @@ const ArtworkUpload = () => {
               <p className="text-neutral-300 font-text break-words max-w-[220px]">
                 {files[0].name}
               </p>
+              <button
+                onClick={handleRemoveFile}
+                className="ml-2"
+                aria-label="Remove file"
+              >
+                <img
+                  src={closeIcon}
+                  alt="Remove"
+                  className="w-4 h-4 opacity-70 hover:opacity-100"
+                />
+              </button>
             </div>
           )}
+
           {isUploading && (
             <>
               <div
