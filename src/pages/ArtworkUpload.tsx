@@ -15,6 +15,8 @@ const ArtworkUpload = () => {
   const [error, setError] = useState<string | null>(null);
   const [files, setFiles] = useState<FileList | null>(null);
   const navigate = useNavigate();
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -29,36 +31,39 @@ const ArtworkUpload = () => {
   };
 
   const uploadFile = async (file: File) => {
-    console.log("uploadFile called with file:", file.name);
     setError(null);
+    setIsUploading(true);
+    setUploadProgress(0);
 
     const formData = new FormData();
     formData.append("3DObject", file);
 
     const objectMeta = {
       object: {
-        title: "Mijn titel", // Pas aan, bijvoorbeeld via een formulierveld
-        description: "Mijn beschrijving", // Of een lege string
+        title: "Mijn titel",
+        description: "Mijn beschrijving",
       },
     };
-    formData.append("object", JSON.stringify(objectMeta)); // Dit is essentieel!
+    formData.append("object", JSON.stringify(objectMeta));
 
     try {
       const response = await api.post("/objects", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
+        onUploadProgress: (progressEvent) => {
+          const percentCompleted = Math.round(
+            (progressEvent.loaded * 100) / (progressEvent.total || 1)
+          );
+          setUploadProgress(percentCompleted);
+        },
       });
 
-      console.log("Upload response data:", response.data);
-
-      // ✅ Haal het ID van het geüploade object op
       const objectId = response.data.data.object._id;
-
-      // ✅ Geef het mee aan de volgende pagina
+      setIsUploading(false);
       navigate("/artworkform", { state: { objectId } });
     } catch (err: any) {
-      console.error("Upload error:", err);
+      setIsUploading(false);
       setError("Something went wrong during upload.");
     }
   };
@@ -208,6 +213,20 @@ const ArtworkUpload = () => {
                 {files[0].name}
               </p>
             </div>
+          )}
+          {isUploading && (
+            <>
+              <div
+                className="w-full h-3 rounded-full mt-6 bg-primary-500/20 overflow-hidden"
+                aria-label="Upload progress"
+              >
+                <div
+                  className="h-3 bg-primary-500 transition-all duration-300"
+                  style={{ width: `${uploadProgress}%` }}
+                ></div>
+              </div>
+              <p className="text-sm text-primary-500 mt-1">Loading...</p>
+            </>
           )}
           {error && (
             <p className="text-red-600 font-semibold text-sm mt-1">{error}</p>
