@@ -26,6 +26,12 @@ interface StepTwoFormProps {
   };
 }
 
+type CityAutocompleteProps = {
+  value: string;
+  onChange: (v: string) => void;
+  className?: string;
+};
+
 const CollectionForm = ({
   mode,
   onCancel,
@@ -49,6 +55,11 @@ const CollectionForm = ({
   const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
   const [coverImageUrl, setCoverImageUrl] = useState<string | null>(null);
   const [genre, setGenre] = useState("Low-Poly");
+  const [titleError, setTitleError] = useState(false);
+  const [descriptionError, setDescriptionError] = useState(false);
+  const [cityOrLocationError, setCityOrLocationError] = useState(false);
+  const [priceError, setPriceError] = useState(false);
+  const [coverImageError, setCoverImageError] = useState(false);
 
   const [artworks, setArtworks] = useState<
     { _id: string; title: string; image: string }[]
@@ -181,6 +192,49 @@ const CollectionForm = ({
     }
   };
 
+  const handleNextStep = () => {
+    let hasError = false;
+
+    if (!title.trim()) {
+      setTitleError(true);
+      hasError = true;
+    } else {
+      setTitleError(false);
+    }
+
+    if (!description.trim()) {
+      setDescriptionError(true);
+      hasError = true;
+    } else {
+      setDescriptionError(false);
+    }
+
+    if (!cityOrLocation.trim()) {
+      setCityOrLocationError(true);
+      hasError = true;
+    } else {
+      setCityOrLocationError(false);
+    }
+
+    if (!price || Number(price) <= 0) {
+      setPriceError(true);
+      hasError = true;
+    } else {
+      setPriceError(false);
+    }
+
+    if (!coverImageFile) {
+      setCoverImageError(true);
+      hasError = true;
+    } else {
+      setCoverImageError(false);
+    }
+
+    if (!hasError) {
+      setStep(2);
+    }
+  };
+
   const toggleArtwork = (id: string) => {
     setSelectedArtworks((prevSelected) =>
       prevSelected.includes(id)
@@ -192,10 +246,8 @@ const CollectionForm = ({
   const CityAutocomplete = ({
     value,
     onChange,
-  }: {
-    value: string;
-    onChange: (v: string) => void;
-  }) => {
+    className,
+  }: CityAutocompleteProps) => {
     const [suggestions, setSuggestions] = useState<string[]>([]);
     const [showDropdown, setShowDropdown] = useState(false);
     const containerRef = React.useRef<HTMLDivElement>(null);
@@ -446,6 +498,11 @@ const CollectionForm = ({
                 Delete
               </button>
             </div>
+            {coverImageError && (
+              <p className="text-sm text-red-500 mt-2 text-left w-full">
+                Please upload a cover image.
+              </p>
+            )}
           </div>
 
           <div className="w-full lg:w-1/2 flex flex-col justify-between">
@@ -455,14 +512,24 @@ const CollectionForm = ({
                 placeholder="Title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full font-text h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
+                className={`w-full font-text h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white ${
+                  titleError ? "border-red-500" : "border-neutral-100"
+                }`}
               />
+              {titleError && (
+                <p className="text-sm text-red-500">Title is required.</p>
+              )}
               <textarea
-                className="w-full font-text h-24 p-2 rounded border border-neutral-100 bg-secondary-700 text-white"
+                className={`w-full font-text h-24 p-2 rounded-lg border border-neutral-100 bg-secondary-700 text-white ${
+                  titleError ? "border-red-500" : "border-neutral-100"
+                }`}
                 placeholder="Description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               />
+              {titleError && (
+                <p className="text-sm text-red-500">Description is required.</p>
+              )}
               {/* <InputField
                 label={mode === "tour" ? "City" : "Location"}
                 placeholder={mode === "tour" ? "City" : "Location"}
@@ -472,8 +539,12 @@ const CollectionForm = ({
               /> */}
               <CityAutocomplete
                 value={cityOrLocation}
-                onChange={setCityOrLocation}
+                onChange={(val) => setCityOrLocation(val)}
+                className={cityOrLocationError ? "border-red-500" : ""}
               />
+              {cityOrLocationError && (
+                <p className="text-sm text-red-500">Location is required.</p>
+              )}
 
               <InputField
                 label="Price (€)"
@@ -481,8 +552,13 @@ const CollectionForm = ({
                 type="number"
                 value={price}
                 onChange={handlePriceChange}
-                className="w-full font-text h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
+                className={`w-full font-text h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white ${
+                  titleError ? "border-red-500" : "border-neutral-100"
+                }`}
               />
+              {titleError && (
+                <p className="text-sm text-red-500">Price is required.</p>
+              )}
             </div>
 
             <div className="w-full mt-6">
@@ -503,7 +579,7 @@ const CollectionForm = ({
                 Cancel
               </button>
               <button
-                onClick={() => setStep(2)}
+                onClick={handleNextStep}
                 className="w-[75px] h-[48px] font-text bg-primary-500 text-white font-medium rounded-lg hover:opacity-90 transition"
               >
                 Next
@@ -657,7 +733,7 @@ const CollectionForm = ({
                     <span className="text-neutral-50">{price}</span>
                   </div>
                   <div className="flex flex-col items-center">
-                    <span className="font-medium font-text mb-1 text-[#B3B3B3]">
+                    <span className="font-medium font-textx mb-1 text-[#B3B3B3]">
                       Genre
                     </span>
                     <span className="text-sm font-medium font-text text-[#00B69B] bg-[#00B69B33] px-3 py-1 rounded-lg">
