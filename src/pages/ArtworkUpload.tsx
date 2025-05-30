@@ -1,14 +1,14 @@
 import { useState, useRef, DragEvent, ChangeEvent } from "react";
 import uploadPreview from "../assets/img/upload.png";
 import uploadIcon from "../assets/img/upload_icon.svg";
-import fileIcon from "../assets/img/file.svg"; // Zorg dat dit bestaat
+import fileIcon from "../assets/img/file.svg";
 import Button from "components/Button";
 import Navigation from "components/Navigation";
 import NavigationDesktop from "components/NavigationDesktop";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 
-const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
+const MAX_FILE_SIZE = 20 * 1024 * 1024;
 
 const ArtworkUpload = () => {
   const [clicked, setClicked] = useState(false);
@@ -129,7 +129,7 @@ const ArtworkUpload = () => {
   return (
     <div className="min-h-screen md:pl-[166px] md:pr-[74px] bg-secondary-900 text-neutral-50 px-4 mt-14">
       <div className="flex items-center justify-between mb-10">
-        <h1 className="text-2xl font-bold">Your Artworks</h1>
+        <h1 className="text-2xl font-title font-bold">Your Artworks</h1>
         <div className="flex gap-2">
           <div className="md:hidden">
             <Navigation />
@@ -165,13 +165,13 @@ const ArtworkUpload = () => {
           `}
           >
             <img src={uploadIcon} alt="Upload" className="w-10 h-10 mb-4" />
-            <p className="text-base font-medium mb-1">
+            <p className="text-base font-text font-medium mb-1">
               Drag and drop a file to upload
             </p>
-            <p className="text-sm text-neutral-400 mb-4">
+            <p className="text-sm font-text text-neutral-400 mb-4">
               GLB, GLTF up to 20MB.
             </p>
-            <span className="text-sm text-neutral-400 mb-4">OR</span>
+            <span className="text-sm font-text text-neutral-400 mb-4">OR</span>
             <div className="w-full px-4">
               <Button
                 label="Browse files"
@@ -209,7 +209,7 @@ const ArtworkUpload = () => {
               >
                 <img src={fileIcon} alt="File Icon" className="w-6 h-6" />
               </div>
-              <p className="text-neutral-300 break-words max-w-[220px]">
+              <p className="text-neutral-300 font-text break-words max-w-[220px]">
                 {files[0].name}
               </p>
             </div>
@@ -225,7 +225,9 @@ const ArtworkUpload = () => {
                   style={{ width: `${uploadProgress}%` }}
                 ></div>
               </div>
-              <p className="text-sm text-primary-500 mt-1">Loading...</p>
+              <p className="text-sm font-text text-primary-500 mt-1">
+                Loading...
+              </p>
             </>
           )}
           {error && (

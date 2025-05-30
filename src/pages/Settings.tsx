@@ -73,7 +73,7 @@ const Settings = () => {
       <div className="w-full bg-secondary-800 lg:h-[calc(80vh-56px)] p-6 rounded-[16px] text-neutral-50 flex flex-col gap-6">
         {securityPage === "privacy" && (
           <>
-            <p className="text-sm text-neutral-300">
+            <p className="text-sm font-text text-neutral-300">
               Lorem ipsum dolor sit amet, consectetur adipiscing elit.
               Pellentesque blandit justo lacus, id consequat augue scelerisque
               a. Proin ipsum dui, condimentum sit amet auctor quis, tempus sed
@@ -86,7 +86,7 @@ const Settings = () => {
               condimentum fringilla. Donec vel tortor magna. Vivamus luctus
               viverra augue eget fringilla.
             </p>
-            <p className="text-sm text-neutral-300">
+            <p className="text-sm font-text text-neutral-300">
               Lorem ipsum dolor sit amet, consectetur adipiscing elit.
               Pellentesque blandit justo lacus, id consequat augue scelerisque
               a. Proin ipsum dui, condimentum sit amet auctor quis, tempus sed
@@ -104,12 +104,12 @@ const Settings = () => {
 
         {securityPage === "terms" && (
           <>
-            <p className="text-sm text-neutral-300">
+            <p className="text-sm font-text text-neutral-300">
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis ut
               libero vitae nulla viverra placerat. Cras at diam sit amet purus
               pharetra tempor.
             </p>
-            <p className="text-sm text-neutral-300">
+            <p className="text-sm font-text text-neutral-300">
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam
               erat volutpat. Pellentesque vehicula tortor at velit ullamcorper,
               et porta felis porttitor.
@@ -123,24 +123,24 @@ const Settings = () => {
               label="Current password"
               placeholder="Current password"
               type="password"
-              className="w-full lg:w-1/3 h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
+              className="w-full font-text lg:w-1/3 h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
             />
             <InputField
               label="New password"
               placeholder="New password"
               type="password"
-              className="w-full lg:w-1/3 h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
+              className="w-full font-text lg:w-1/3 h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
             />
             <InputField
               label="Retype new password"
               placeholder="Retype new password"
               type="password"
-              className="w-full lg:w-1/3 h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
+              className="w-full font-text lg:w-1/3 h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
             />
-            <button className="text-sm text-primary-500 text-left hover:underline">
+            <button className="text-sm font-text text-primary-500 text-left hover:underline">
               Forgot password?
             </button>
-            <button className="bg-primary-500 text-white px-4 py-2 rounded-lg lg:w-1/5 w-full font-medium hover:opacity-90 transition">
+            <button className="bg-primary-500 font-text text-white px-4 py-2 rounded-lg lg:w-1/5 w-full font-medium hover:opacity-90 transition">
               Change password
             </button>
           </>
@@ -158,7 +158,7 @@ const Settings = () => {
           >
             <img src={backIcon} alt="Back" className="w-4 h-4" />
           </button>
-          <h1 className="text-2xl font-bold md:pr-[74px]">
+          <h1 className="text-2xl font-title font-bold md:pr-[74px]">
             {securityPage === "privacy" && "Privacy & cookies"}
             {securityPage === "terms" && "Terms and conditions"}
             {securityPage === "password" && "Change Password"}
@@ -166,7 +166,7 @@ const Settings = () => {
         </div>
       ) : (
         <div className="flex items-center justify-between mb-10 md:pl-[166px] md:pr-[74px]">
-          <h1 className="text-2xl font-bold">Settings</h1>
+          <h1 className="text-2xl font-title font-bold">Settings</h1>
           <div className="flex gap-2">
             <div className="md:hidden">
               <Navigation />
@@ -190,7 +190,7 @@ const Settings = () => {
                 }}
                 className={`px-4 py-2 text-sm font-medium transition ${
                   activeTab === tab
-                    ? "text-primary-500 border-b-2 border-primary-500"
+                    ? "text-primary-500 font-text border-b-2 border-primary-500"
                     : "text-neutral-50"
                 }`}
               >
@@ -205,7 +205,7 @@ const Settings = () => {
           : activeTab === "Security" && (
               <div className="w-full flex justify-center pt-6">
                 <div className="bg-secondary-800 lg:h-[calc(70vh-56px)] rounded-xl p-6 w-full pt-5 pb-5 flex flex-col gap-5">
-                  <h2 className="text-xl font-semibold text-neutral-50 mb-2">
+                  <h2 className="text-xl font-title font-semibold text-neutral-50 mb-2">
                     Security
                   </h2>
                   <div className="w-full lg:w-1/3 border border-[#757575] rounded-[16px] p-5 flex flex-col gap-y-5">
@@ -231,7 +231,7 @@ const Settings = () => {
                   </div>
 
                   <div className="mt-4 lg:mt-0">
-                    <button className="text-sm text-red-400 border border-red-600 rounded px-4 py-2 hover:opacity-90 bg-[#FCA5A5]">
+                    <button className="text-sm font-text text-red-400 border border-red-600 rounded px-4 py-2 hover:opacity-90 bg-[#FCA5A5]">
                       Delete account
                     </button>
                   </div>
@@ -243,7 +243,9 @@ const Settings = () => {
           <div className="w-full bg-secondary-800 rounded-xl p-6 flex flex-col lg:flex-row lg:gap-[80px]">
             <div className="w-full lg:w-2/3 flex flex-col gap-6">
               <div>
-                <h2 className="text-lg font-semibold mb-4">Your Profile</h2>
+                <h2 className="text-lg font-title font-semibold mb-4">
+                  Your Profile
+                </h2>
                 <div className="flex justify-start mb-6">
                   <img
                     src={profilePic}
@@ -256,7 +258,7 @@ const Settings = () => {
                   <InputField
                     label="First name"
                     placeholder="First name"
-                    className="w-full h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
+                    className="w-full font-text h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
                     value={profileData.firstName}
                     onChange={(e) =>
                       setProfileData((prev) => ({
@@ -268,7 +270,7 @@ const Settings = () => {
                   <InputField
                     label="Last name"
                     placeholder="Last name"
-                    className="w-full h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
+                    className="w-full font-text h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
                     value={profileData.lastName}
                     onChange={(e) =>
                       setProfileData((prev) => ({
@@ -280,7 +282,7 @@ const Settings = () => {
                   <InputField
                     label="Artist name"
                     placeholder="Artist name"
-                    className="lg:col-span-2 w-full h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
+                    className="lg:col-span-2 w-full font-text h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
                     value={profileData.artistName}
                     onChange={(e) =>
                       setProfileData((prev) => ({
@@ -292,7 +294,7 @@ const Settings = () => {
                   <InputField
                     label="Email address"
                     placeholder="Email address"
-                    className="w-full h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
+                    className="w-full h-[48px] font-text bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
                     value={profileData.email}
                     onChange={(e) =>
                       setProfileData((prev) => ({
@@ -304,7 +306,7 @@ const Settings = () => {
                   <InputField
                     label="Phone number"
                     placeholder="Phone number"
-                    className="w-full h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
+                    className="w-full h-[48px] font-text bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
                     value={profileData.phoneNumber}
                     onChange={(e) =>
                       setProfileData((prev) => ({
@@ -315,11 +317,11 @@ const Settings = () => {
                   />
                 </div>
                 <div className="flex gap-4 w-[250px] hidden lg:flex mt-8">
-                  <button className="w-1/3 h-[48px] border border-primary-500 rounded-lg text-primary-500 font-medium hover:border-primary-600 transition">
+                  <button className="w-1/3 h-[48px] font-text border border-primary-500 rounded-lg text-primary-500 font-medium hover:border-primary-600 transition">
                     Cancel
                   </button>
                   <button
-                    className="w-2/3 h-[48px] bg-primary-500 text-white font-medium rounded-lg hover:opacity-90 transition"
+                    className="w-2/3 h-[48px] font-text bg-primary-500 text-white font-medium rounded-lg hover:opacity-90 transition"
                     onClick={handleSaveChanges}
                   >
                     Save changes
@@ -331,14 +333,14 @@ const Settings = () => {
             <div className="w-full lg:w-1/2 flex flex-col justify-between">
               <div className="flex flex-col gap-6">
                 <div>
-                  <h2 className="text-lg font-semibold mb-4 mt-8 lg:mt-0">
+                  <h2 className="text-lg font-title font-semibold mb-4 mt-8 lg:mt-0">
                     Your Social Media Accounts
                   </h2>
                   <div className="grid grid-cols-1 gap-4">
                     <InputField
                       label="Instagram"
                       placeholder="Insert a link here"
-                      className="w-full h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
+                      className="w-full font-text h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
                       value={profileData.instagram}
                       onChange={(e) =>
                         setProfileData((prev) => ({
@@ -350,7 +352,7 @@ const Settings = () => {
                     <InputField
                       label="Behance"
                       placeholder="Insert a link here"
-                      className="w-full h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
+                      className="w-full font-text h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
                       value={profileData.behance}
                       onChange={(e) =>
                         setProfileData((prev) => ({
@@ -362,7 +364,7 @@ const Settings = () => {
                     <InputField
                       label="Dribbble"
                       placeholder="Insert a link here"
-                      className="w-full h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
+                      className="w-full font-text h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
                       value={profileData.dribbble}
                       onChange={(e) =>
                         setProfileData((prev) => ({
@@ -377,10 +379,10 @@ const Settings = () => {
                 <div className="lg:flex lg:justify-between lg:items-end mt-6">
                   <div className="flex flex-col lg:flex-row justify-between items-center w-full mt-6">
                     <div className="flex gap-4 w-full lg:w-[250px] lg:hidden">
-                      <button className="w-1/3 h-[48px] border border-primary-500 rounded-lg text-primary-500 font-medium hover:border-primary-600 transition">
+                      <button className="w-1/3 font-text h-[48px] border border-primary-500 rounded-lg text-primary-500 font-medium hover:border-primary-600 transition">
                         Cancel
                       </button>
-                      <button className="w-2/3 h-[48px] bg-primary-500 text-white font-medium rounded-lg hover:opacity-90 transition">
+                      <button className="w-2/3 font-text h-[48px] bg-primary-500 text-white font-medium rounded-lg hover:opacity-90 transition">
                         Save changes
                       </button>
                     </div>
@@ -393,14 +395,16 @@ const Settings = () => {
 
         {activeTab === "Notification" && (
           <div className="w-full lg:h-[calc(75vh-56px)] pt-6 flex flex-col gap-6 bg-secondary-800 rounded-xl p-6">
-            <h1 className="text-2xl font-semibold">Notifications</h1>
+            <h1 className="text-2xl font-title font-semibold">Notifications</h1>
 
             <div className="flex flex-col gap-5">
-              <h6 className="text-lg font-semibold">Marketing</h6>
+              <h6 className="text-lg font-text font-semibold">Marketing</h6>
               <div className="lg:w-1/2 flex justify-between items-center">
                 <div>
-                  <p className="text-sm font-medium">Email notifications</p>
-                  <p className="text-sm italic text-neutral-400">
+                  <p className="text-sm font-text font-medium">
+                    Email notifications
+                  </p>
+                  <p className="text-sm italic font-text text-neutral-400">
                     Get mail updates about our new features and promotions.
                   </p>
                 </div>
@@ -413,12 +417,12 @@ const Settings = () => {
             </div>
 
             <div className="flex flex-col gap-5">
-              <h6 className="text-lg font-semibold">Interactions</h6>
+              <h6 className="text-lg font-text font-semibold">Interactions</h6>
 
               <div className="flex justify-between lg:w-1/2 items-center">
                 <div>
                   <p className="text-sm font-medium">Purchases</p>
-                  <p className="text-sm italic text-neutral-400">
+                  <p className="text-sm font-text italic text-neutral-400">
                     Get notifications every time someone buys your tour or
                     exposition.
                   </p>
@@ -432,8 +436,8 @@ const Settings = () => {
 
               <div className="flex justify-between lg:w-1/2 items-center">
                 <div>
-                  <p className="text-sm font-medium">Likes</p>
-                  <p className="text-sm italic text-neutral-400">
+                  <p className="text-sm font-text font-medium">Likes</p>
+                  <p className="text-sm italic text-neutral-400 font-text">
                     Get notifications every time someone likes your tour or
                     exposition.
                   </p>
@@ -447,8 +451,8 @@ const Settings = () => {
 
               <div className="flex justify-between lg:w-1/2 items-center">
                 <div>
-                  <p className="text-sm font-medium">Rating</p>
-                  <p className="text-sm italic text-neutral-400">
+                  <p className="text-sm font-text font-medium">Rating</p>
+                  <p className="text-sm italic font-text text-neutral-400">
                     Get notifications every time someone rates your tour or
                     exposition.
                   </p>
@@ -465,7 +469,9 @@ const Settings = () => {
         {activeTab === "Wallet" && (
           <div className="bg-secondary-800 lg:h-[calc(75vh-56px)] rounded-xl p-6 w-full max-w-xl lg:max-w-none pt-6 text-neutral-50">
             <div className="w-full mb-6">
-              <h1 className="text-2xl font-semibold text-left">Your Wallet</h1>
+              <h1 className="text-2xl font-title font-semibold text-left">
+                Your Wallet
+              </h1>
             </div>
 
             <div className="flex flex-col lg:flex-row lg:gap-10 items-center">
@@ -476,17 +482,17 @@ const Settings = () => {
                     "radial-gradient(circle at top left, #99B2FF 0%, #3B82F6 100%)",
                 }}
               >
-                <h3 className="text-lg font-semibold text-neutral-950">
+                <h3 className="text-lg font-title font-semibold text-neutral-950">
                   Your Wallet
                 </h3>
-                <p className="text-[96px] font-bold leading-none text-neutral-950">
+                <p className="text-[96px] font-title font-bold leading-none text-neutral-950">
                   €15
                 </p>
-                <h6 className="text-sm font-medium text-neutral-500">
+                <h6 className="text-sm font-title font-medium text-neutral-500">
                   Your balance
                 </h6>
                 <button
-                  className="w-full h-[62px] rounded-lg font-medium border border-primary-600 text-neutral-950 flex items-center justify-center"
+                  className="w-full font-text h-[62px] rounded-lg font-medium border border-primary-600 text-neutral-950 flex items-center justify-center"
                   style={{
                     background:
                       "radial-gradient(circle, #1A50F3 0%, #3B82F6 100%)",
@@ -497,15 +503,17 @@ const Settings = () => {
               </div>
 
               <div className="w-full lg:w-1/2 flex flex-col items-center text-center gap-4 mt-10 lg:mt-0 text-neutral-50">
-                <h6 className="text-xl font-semibold">
+                <h6 className="text-xl font-title font-semibold">
                   Trying to earn extra money?
                 </h6>
-                <p className="text-sm">Upload more tours and expositions.</p>
+                <p className="text-sm font-text">
+                  Upload more tours and expositions.
+                </p>
                 <button
                   onClick={() => {
                     navigate("/create");
                   }}
-                  className="bg-primary-500 text-white px-6 py-3 rounded-lg font-medium hover:opacity-90 transition"
+                  className="bg-primary-500 font-text text-white px-6 py-3 rounded-lg font-medium hover:opacity-90 transition"
                 >
                   Create here
                 </button>

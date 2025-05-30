@@ -38,7 +38,7 @@ const ArtworkCard = ({
         </div>
 
         <div className="w-full h-[64px] bg-secondary-600 rounded-lg flex items-center justify-between px-4">
-          <h6 className="text-primary-500 font-semibold">{title}</h6>
+          <h6 className="text-primary-500 font-title font-semibold">{title}</h6>
           <button aria-label="Edit artwork">
             <img
               src={editIcon}

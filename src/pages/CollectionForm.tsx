@@ -294,7 +294,7 @@ const CollectionForm = ({
       description: description.trim(),
       city: cityOrLocation.trim(),
       price: parseFloat(price),
-      genres: [genreId], // gebruik genreId i.p.v. genre naam
+      genres: [genreId],
       objects: selectedArtworks,
       status: isDraft ? "draft" : "published",
       _id: collId || undefined,
@@ -330,8 +330,7 @@ const CollectionForm = ({
         body: formData,
       });
 
-      // const data = await res.json();
-      const text = await res.text(); // niet .json() om errors te vangen
+      const text = await res.text();
       console.log("Response status:", res.status);
       console.log("Response text:", text);
 
@@ -374,7 +373,7 @@ const CollectionForm = ({
     const file = e.target.files?.[0] || null;
     if (file) {
       setCoverImageFile(file);
-      setCoverImageUrl(null); // overschrijven met lokaal bestand
+      setCoverImageUrl(null);
     }
   };
 
@@ -382,7 +381,7 @@ const CollectionForm = ({
     <div className="min-h-screen md:pl-[166px] md:pr-[74px] bg-secondary-900 text-neutral-50 p-4 mt-14 flex flex-col items-center">
       <div className="w-full mb-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold">
+          <h1 className="text-2xl font-title font-bold">
             {step === 1
               ? `Step 1: ${collId ? "Edit" : "Create"} a ${
                   mode === "tour" ? "Tour" : "Exposition"
@@ -400,7 +399,7 @@ const CollectionForm = ({
           <NavigationDesktop />
         </div>
         {step === 2 && (
-          <p className="text-sm text-neutral-300 font-medium mt-2">
+          <p className="text-sm font-text text-neutral-300 font-medium mt-2">
             Selected ({selectedArtworks.length})
           </p>
         )}
@@ -423,7 +422,7 @@ const CollectionForm = ({
             </div>
 
             <div className="flex justify-center gap-4 w-full mt-4">
-              <label className="bg-primary-500 text-neutral-50 text-sm font-semibold rounded px-3 py-2 hover:opacity-90 cursor-pointer">
+              <label className="bg-primary-500 font-text text-neutral-50 text-sm font-semibold rounded px-3 py-2 hover:opacity-90 cursor-pointer">
                 Choose cover
                 <input
                   type="file"
@@ -438,7 +437,7 @@ const CollectionForm = ({
               </label>
 
               <button
-                className="text-sm font-semibold text-red-400 border border-red-600 rounded px-3 py-2 bg-[#FCA5A5] hover:opacity-90"
+                className="text-sm font-text font-semibold text-red-400 border border-red-600 rounded px-3 py-2 bg-[#FCA5A5] hover:opacity-90"
                 onClick={() => {
                   setCoverImageFile(null);
                   setCoverImageUrl(null);
@@ -456,10 +455,10 @@ const CollectionForm = ({
                 placeholder="Title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
+                className="w-full font-text h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
               />
               <textarea
-                className="w-full h-24 p-2 rounded border border-neutral-100 bg-secondary-700 text-white"
+                className="w-full font-text h-24 p-2 rounded border border-neutral-100 bg-secondary-700 text-white"
                 placeholder="Description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
@@ -482,14 +481,14 @@ const CollectionForm = ({
                 type="number"
                 value={price}
                 onChange={handlePriceChange}
-                className="w-full h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
+                className="w-full font-text h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
               />
             </div>
 
             <div className="w-full mt-6">
               <p className="text-sm text-left mb-2">Genre</p>
               <div className="flex items-center gap-4">
-                <span className="text-sm font-medium text-[#00B69B] bg-[#00B69B33] px-3 py-1 rounded-lg">
+                <span className="text-sm font-text font-medium text-[#00B69B] bg-[#00B69B33] px-3 py-1 rounded-lg">
                   Low-Poly
                 </span>
                 <img src={plusGenreIcon} alt="Add genre" className="w-5 h-5" />
@@ -499,13 +498,13 @@ const CollectionForm = ({
             <div className="w-full flex justify-end gap-4 mt-6">
               <button
                 onClick={() => (window.location.href = "/create")}
-                className="w-[75px] h-[48px] border border-primary-500 rounded-lg text-primary-500 font-medium hover:border-primary-600 transition"
+                className="w-[75px] h-[48px] font-text border border-primary-500 rounded-lg text-primary-500 font-medium hover:border-primary-600 transition"
               >
                 Cancel
               </button>
               <button
                 onClick={() => setStep(2)}
-                className="w-[75px] h-[48px] bg-primary-500 text-white font-medium rounded-lg hover:opacity-90 transition"
+                className="w-[75px] h-[48px] font-text bg-primary-500 text-white font-medium rounded-lg hover:opacity-90 transition"
               >
                 Next
               </button>
@@ -518,7 +517,7 @@ const CollectionForm = ({
       {step === 2 && (
         <>
           {artworks.length === 0 ? (
-            <div className="w-full h-[350px] flex items-center justify-center text-neutral-400 text-lg font-semibold">
+            <div className="w-full font-text h-[350px] flex items-center justify-center text-neutral-400 text-lg font-semibold">
               No artworks yet
             </div>
           ) : (
@@ -571,7 +570,7 @@ const CollectionForm = ({
                       </div>
 
                       <div className="w-full h-[64px] bg-secondary-600 rounded-lg flex items-center justify-center p-4">
-                        <h6 className="text-primary-500 font-semibold">
+                        <h6 className="text-primary-500 font-text font-semibold">
                           {title}
                         </h6>
                       </div>
@@ -586,13 +585,13 @@ const CollectionForm = ({
             <div className="flex gap-4 w-full lg:hidden">
               <button
                 onClick={() => setStep(1)}
-                className="w-1/3 h-[48px] border border-primary-500 rounded-lg text-primary-500 font-medium hover:border-primary-600 transition"
+                className="w-1/3 h-[48px] font-text border border-primary-500 rounded-lg text-primary-500 font-medium hover:border-primary-600 transition"
               >
                 Back
               </button>
               <button
                 onClick={() => setStep(3)}
-                className="w-2/3 h-[48px] bg-primary-500 text-white font-medium rounded-lg hover:opacity-90 transition"
+                className="w-2/3 h-[48px] font-text bg-primary-500 text-white font-medium rounded-lg hover:opacity-90 transition"
               >
                 Next
               </button>
@@ -601,13 +600,13 @@ const CollectionForm = ({
             <div className="hidden lg:flex justify-end gap-4">
               <button
                 onClick={() => setStep(1)}
-                className="w-[75px] h-[48px] border border-primary-500 rounded-lg text-primary-500 font-medium hover:border-primary-600 transition"
+                className="w-[75px] h-[48px] font-text border border-primary-500 rounded-lg text-primary-500 font-medium hover:border-primary-600 transition"
               >
                 Back
               </button>
               <button
                 onClick={() => setStep(3)}
-                className="w-[75px] h-[48px] bg-primary-500 text-white font-medium rounded-lg hover:opacity-90 transition"
+                className="w-[75px] h-[48px] font-text bg-primary-500 text-white font-medium rounded-lg hover:opacity-90 transition"
               >
                 Next
               </button>
@@ -636,32 +635,32 @@ const CollectionForm = ({
               </div>
 
               <div className="w-full lg:w-3/4 flex flex-col">
-                <h4 className="text-3xl font-bold text-primary-500 mb-4">
+                <h4 className="text-3xl font-title font-bold text-primary-500 mb-4">
                   {title}
                 </h4>
 
-                <p className="text-neutral-50 mb-8 leading-relaxed">
+                <p className="text-neutral-50 font-text mb-8 leading-relaxed">
                   {description}
                 </p>
 
                 <div className="flex justify-between w-full mb-10">
                   <div className="flex flex-col items-center">
-                    <span className="font-medium mb-1 text-[#B3B3B3]">
+                    <span className="font-medium font-text mb-1 text-[#B3B3B3]">
                       {mode === "tour" ? "City" : "Location"}
                     </span>
                     <span className="text-neutral-50">{cityOrLocation}</span>
                   </div>
                   <div className="flex flex-col items-center">
-                    <span className="font-medium mb-1 text-[#B3B3B3]">
+                    <span className="font-medium font-text mb-1 text-[#B3B3B3]">
                       Price
                     </span>
                     <span className="text-neutral-50">{price}</span>
                   </div>
                   <div className="flex flex-col items-center">
-                    <span className="font-medium mb-1 text-[#B3B3B3]">
+                    <span className="font-medium font-text mb-1 text-[#B3B3B3]">
                       Genre
                     </span>
-                    <span className="text-sm font-medium text-[#00B69B] bg-[#00B69B33] px-3 py-1 rounded-lg">
+                    <span className="text-sm font-medium font-text text-[#00B69B] bg-[#00B69B33] px-3 py-1 rounded-lg">
                       {genre}
                     </span>
                   </div>
@@ -671,7 +670,7 @@ const CollectionForm = ({
 
             {/* Artworks */}
             <div className="w-full mb-10 mt-6">
-              <h6 className="mb-4 font-semibold">Artworks</h6>
+              <h6 className="mb-4 font-title font-semibold">Artworks</h6>
               <div className="flex flex-col gap-4">
                 {artworks
                   .filter((art) => selectedArtworks.includes(art._id))
@@ -685,7 +684,7 @@ const CollectionForm = ({
                         alt={title}
                         className="w-1/7 h-[46px] object-cover rounded-lg"
                       />
-                      <span>{title}</span>
+                      <span className="font-text">{title}</span>
                     </div>
                   ))}
               </div>
@@ -694,13 +693,13 @@ const CollectionForm = ({
             <div className="flex gap-4 w-full lg:justify-end">
               <button
                 onClick={() => handlePublish(true)}
-                className="w-1/3 h-[48px] border border-primary-500 rounded-lg text-primary-500 font-medium hover:border-primary-600 transition lg:w-[120px]"
+                className="w-1/3 h-[48px] font-text border border-primary-500 rounded-lg text-primary-500 font-medium hover:border-primary-600 transition lg:w-[120px]"
               >
                 Save as Draft
               </button>
               <button
                 onClick={() => handlePublish(false)}
-                className="w-2/3 h-[48px] bg-primary-500 text-white font-medium rounded-lg hover:opacity-90 transition lg:w-[120px]"
+                className="w-2/3 h-[48px] font-text bg-primary-500 text-white font-medium rounded-lg hover:opacity-90 transition lg:w-[120px]"
               >
                 Publish
               </button>

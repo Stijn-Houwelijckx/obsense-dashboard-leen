@@ -29,42 +29,42 @@ const CreateCollection = () => {
 
       <div className="bg-secondary-800 rounded-2xl p-6 flex flex-col lg:flex-row items-stretch gap-4 lg:h-[calc(80vh-56px)]">
         <div className="w-full lg:w-1/2 h-[300px] lg:h-full bg-secondary-700 border border-dashed border-primary-500 rounded-2xl flex flex-col items-center justify-center text-center px-4">
-          <h2 className="text-lg font-semibold mb-3">Tour</h2>
+          <h2 className="text-lg font-title font-semibold mb-3">Tour</h2>
           <img
             src={tourImg}
             alt="Tour"
             className="w-full h-[100px] object-contain mb-3"
           />
-          <p className="text-sm text-neutral-300 mb-4 max-w-[400px]">
+          <p className="text-sm font-text text-neutral-300 mb-4 max-w-[400px]">
             A tour takes you on a journey, with 3D artworks scattered across
             various locations in a city for an immersive exploration
           </p>
           <button
             onClick={() => handleCreate("tour")}
-            className="bg-primary-500 text-white px-4 py-2 rounded-lg text-sm hover:opacity-90"
+            className="bg-primary-500 font-text text-white px-4 py-2 rounded-lg text-sm hover:opacity-90"
           >
             Create tour
           </button>
         </div>
 
-        <p className="text-sm text-primary-500 text-center my-4 lg:my-0 lg:flex lg:items-center lg:justify-center lg:h-full lg:w-12">
+        <p className="text-sm text-primary-500 font-text text-center my-4 lg:my-0 lg:flex lg:items-center lg:justify-center lg:h-full lg:w-12">
           OR
         </p>
 
         <div className="w-full lg:w-1/2 h-[300px] lg:h-full bg-secondary-700 border border-dashed border-primary-500 rounded-2xl flex flex-col items-center justify-center text-center px-4">
-          <h2 className="text-lg font-semibold mb-3">Exposition</h2>
+          <h2 className="text-lg font-title font-semibold mb-3">Exposition</h2>
           <img
             src={expoImg}
             alt="Expo"
             className="w-full h-[100px] object-contain mb-3"
           />
-          <p className="text-sm text-neutral-300 mb-4 max-w-[400px]">
+          <p className="text-sm font-text text-neutral-300 mb-4 max-w-[400px]">
             An exposition gathers stunning pieces in a single iconic location
             like the city square.
           </p>
           <button
             onClick={() => handleCreate("expo")}
-            className="bg-primary-500 text-white px-4 py-2 rounded-lg text-sm hover:opacity-90"
+            className="bg-primary-500 font-text text-white px-4 py-2 rounded-lg text-sm hover:opacity-90"
           >
             Create exposition
           </button>

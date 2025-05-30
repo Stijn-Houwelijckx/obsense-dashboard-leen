@@ -60,7 +60,7 @@ const ArtworkForm = () => {
           title,
           description,
           file: {
-            url: thumbnailUrl, // <-- of hoe je backend het noemt
+            url: thumbnailUrl,
           },
         },
       });
@@ -87,7 +87,6 @@ const ArtworkForm = () => {
 
     const formData = new FormData();
 
-    // Voeg de cover image toe, met dezelfde naam als je backend verwacht
     formData.append("objectThumbnail", file);
 
     try {
@@ -170,7 +169,7 @@ const ArtworkForm = () => {
     <div className="min-h-screen md:pl-[166px] md:pr-[74px] bg-secondary-900 text-neutral-50 px-4 mt-14 flex flex-col items-center">
       <div className="w-full mb-10">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Your Artworks</h1>
+          <h1 className="text-2xl font-title font-bold">Your Artworks</h1>
           <div className="flex gap-2">
             <div className="md:hidden">
               <Navigation />
@@ -183,7 +182,6 @@ const ArtworkForm = () => {
       </div>
 
       <div className="w-full bg-secondary-800 p-6 pt-12 rounded-[16px] mb-6 flex flex-col lg:flex-row lg:gap-[68px] lg:justify-between relative">
-        {/* Artwork preview en info */}
         <div className="lg:w-1/2 w-full flex flex-col items-center text-center">
           <div className="relative w-full h-[400px] bg-secondary-700 rounded-lg overflow-hidden flex items-center justify-center mt-7">
             <img
@@ -204,20 +202,19 @@ const ArtworkForm = () => {
             />
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="bg-primary-500 text-neutral-50 text-sm font-semibold rounded px-3 py-2 hover:opacity-90"
+              className="bg-primary-500 font-text text-neutral-50 text-sm font-semibold rounded px-3 py-2 hover:opacity-90"
             >
               Choose cover
             </button>
             <button
               onClick={handleDelete}
-              className="text-sm font-semibold text-red-400 border border-red-600 rounded px-3 py-2 bg-[#FCA5A5] hover:opacity-90"
+              className="text-sm font-text font-semibold text-red-400 border border-red-600 rounded px-3 py-2 bg-[#FCA5A5] hover:opacity-90"
             >
               Delete
             </button>
           </div>
         </div>
 
-        {/* Formulier */}
         <div className="lg:w-1/2 lg:mt-16 w-full flex flex-col justify-between">
           <div className="flex flex-col gap-4 mb-7">
             <InputField
@@ -227,7 +224,7 @@ const ArtworkForm = () => {
               onChange={(
                 e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
               ) => setTitle(e.target.value)}
-              className="w-full h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
+              className="w-full font-text h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
             />
             <InputField
               label="Description"
@@ -237,7 +234,7 @@ const ArtworkForm = () => {
               onChange={(
                 e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
               ) => setDescription(e.target.value)}
-              className="w-full h-[166px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 py-2 text-sm text-white resize-none"
+              className="w-full font-text h-[166px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 py-2 text-sm text-white resize-none"
             />
           </div>
 
@@ -245,13 +242,13 @@ const ArtworkForm = () => {
             <div className="w-full max-w-[250px] flex gap-4">
               <button
                 onClick={handleCancel}
-                className="w-1/3 h-[48px] border border-primary-500 rounded-lg text-primary-500 font-medium hover:border-primary-600 transition"
+                className="w-1/3 h-[48px] font-text border border-primary-500 rounded-lg text-primary-500 font-medium hover:border-primary-600 transition"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSave}
-                className="w-2/3 h-[48px] bg-primary-500 text-white font-medium rounded-lg hover:opacity-90 transition"
+                className="w-2/3 h-[48px] font-text bg-primary-500 text-white font-medium rounded-lg hover:opacity-90 transition"
               >
                 Save changes
               </button>

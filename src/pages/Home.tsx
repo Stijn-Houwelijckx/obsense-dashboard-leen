@@ -42,7 +42,7 @@ const Home = () => {
     <>
       <div className="min-h-screen bg-secondary-900 pt-14 px-4 text-neutral-50 md:pl-[166px] md:pr-[74px]">
         <div className="flex items-center justify-between mb-10 w-full">
-          <h1 className="text-2xl font-bold">Home</h1>
+          <h1 className="text-2xl font-title font-bold">Home</h1>
           <div className="flex gap-2">
             <div className="md:hidden">
               <Navigation />
@@ -55,20 +55,28 @@ const Home = () => {
 
         <div className="w-full bg-secondary-800 p-6 rounded-[16px] text-neutral-50 mt-16">
           <div className="w-full flex text-sm font-semibold mb-4">
-            <h4 className="w-1/4 text-left">Tour / Expo</h4>
-            <h4 className="w-1/4 text-left">Times bought</h4>
-            <h4 className="w-1/4 text-left">Likes</h4>
-            <h4 className="w-1/4 text-left">Views</h4>
+            <h4 className="w-1/4 font-title text-left">Tour / Expo</h4>
+            <h4 className="w-1/4 font-title text-left">Times bought</h4>
+            <h4 className="w-1/4 font-title text-left">Likes</h4>
+            <h4 className="w-1/4 font-title text-left">Views</h4>
           </div>
 
           <div className="flex flex-col w-full text-sm">
             {collections.map((collection, index, arr) => (
               <div key={collection._id} className="py-4">
                 <div className="flex w-full">
-                  <div className="w-1/4 text-left">{collection.title}</div>
-                  <div className="w-1/4 text-left">{collection.bought}</div>
-                  <div className="w-1/4 text-left">{collection.likes}</div>
-                  <div className="w-1/4 text-left">{collection.views}</div>
+                  <div className="w-1/4 font-text text-left">
+                    {collection.title}
+                  </div>
+                  <div className="w-1/4 font-text text-left">
+                    {collection.bought}
+                  </div>
+                  <div className="w-1/4 font-text text-left">
+                    {collection.likes}
+                  </div>
+                  <div className="w-1/4 font-text text-left">
+                    {collection.views}
+                  </div>
                 </div>
                 {index < arr.length - 1 && (
                   <div className="mt-4 mb-4 border-b border-neutral-700" />

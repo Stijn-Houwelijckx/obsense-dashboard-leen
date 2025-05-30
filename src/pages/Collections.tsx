@@ -92,7 +92,7 @@ const Collections = () => {
   return (
     <div className="min-h-screen bg-secondary-900 pt-14 text-neutral-50 md:pl-[166px] md:pr-[74px] px-4">
       <div className="flex items-center justify-between mb-10 w-full">
-        <h1 className="text-2xl font-bold">Your Collections</h1>
+        <h1 className="text-2xl font-title font-bold">Your Collections</h1>
 
         <div className="flex items-center gap-2">
           {/* Mobile search */}
@@ -148,7 +148,7 @@ const Collections = () => {
             className="w-full h-[350px] p-[11px] bg-secondary-800 rounded-lg flex flex-col items-center justify-center text-center cursor-pointer"
           >
             <div className="relative w-full h-[328px] p-[11px] rounded-lg bg-secondary-700 flex flex-col items-center justify-center text-center">
-              <h6 className="text-lg text-primary-500 font-semibold mb-3">
+              <h6 className="text-lg font-text text-primary-500 font-semibold mb-3">
                 Upload new tour or exposition
               </h6>
               <img src={plusIcon} alt="Plus" className="w-24 h-24" />
@@ -170,10 +170,10 @@ const Collections = () => {
       ) : (
         <div className="flex flex-col items-center text-center px-4 pt-10">
           <img src={rocket} alt="Upload" className="w-32 h-32 mb-6" />
-          <h6 className="text-lg font-semibold mb-2">
+          <h6 className="text-lg font-text font-semibold mb-2">
             No tours or expositions yet
           </h6>
-          <p className="text-neutral-300 mb-6">Start here</p>
+          <p className="text-neutral-300 font-text mb-6">Start here</p>
           <div className="w-full max-w-xs">
             <Button label="Upload" type="button" onClick={() => {}} />
           </div>
@@ -183,20 +183,20 @@ const Collections = () => {
       {idToDelete && (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
           <div className="bg-secondary-800 rounded-[10px] max-w-md w-full text-neutral-50 flex flex-col items-center text-center gap-6 px-8 py-10">
-            <h4 className="text-xl font-semibold">
+            <h4 className="text-xl font-title font-semibold">
               Are you sure you want to delete your tour or exposition?
             </h4>
-            <p>This action cannot be undone.</p>
+            <p className="font-text">This action cannot be undone.</p>
             <div className="flex gap-4 justify-center w-full mt-4">
               <button
                 onClick={handleCancelDelete}
-                className="border border-primary-500 text-primary-500 px-6 py-2 rounded-lg hover:border-primary-600 transition"
+                className="border font-text border-primary-500 text-primary-500 px-6 py-2 rounded-lg hover:border-primary-600 transition"
               >
                 Cancel
               </button>
               <button
                 onClick={handleConfirmDelete}
-                className="bg-primary-500 text-white px-6 py-2 rounded-lg hover:opacity-90 transition"
+                className="bg-primary-500 font-text text-white px-6 py-2 rounded-lg hover:opacity-90 transition"
               >
                 Yes, I'm sure
               </button>

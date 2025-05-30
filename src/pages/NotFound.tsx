@@ -16,15 +16,15 @@ const NotFound = () => {
       />
 
       <div className="z-20 mt-4 lg:mt-[-40px]">
-        <h4 className="text-[18px] lg:text-[28px] text-neutral-50 font-bold mb-2">
+        <h4 className="text-[18px] font-title lg:text-[28px] text-neutral-50 font-bold mb-2">
           Oops, seems you’ve wandered too far!
         </h4>
-        <p className="text-neutral-300 text-sm lg:text-base mb-8 max-w-[360px] lg:max-w-[420px] mx-auto">
+        <p className="text-neutral-300 font-text text-sm lg:text-base mb-8 max-w-[360px] lg:max-w-[420px] mx-auto">
           This page does not exist. Let’s get you back on track.
         </p>
         <button
           onClick={() => navigate("/")}
-          className="bg-primary-500 hover:bg-primary-600 text-neutral-950 font-semibold px-6 py-2 rounded-xl transition w-[300px] lg:w-[320px]"
+          className="bg-primary-500 font-text hover:bg-primary-600 text-neutral-950 font-semibold px-6 py-2 rounded-xl transition w-[300px] lg:w-[320px]"
         >
           Home
         </button>

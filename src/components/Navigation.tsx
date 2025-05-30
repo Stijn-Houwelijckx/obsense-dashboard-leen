@@ -44,7 +44,7 @@ const Navigation = () => {
             <Link
               to="/"
               onClick={() => setIsOpen(false)}
-              className={`w-1/2 flex justify-center py-4 rounded-[10px]  ${
+              className={`w-1/2 font-text flex justify-center py-4 rounded-[10px]  ${
                 isActive("/")
                   ? "bg-primary-500/20 text-primary-500"
                   : "text-white"
@@ -55,7 +55,7 @@ const Navigation = () => {
             <Link
               to="/collections"
               onClick={() => setIsOpen(false)}
-              className={`w-1/2 flex justify-center py-4 rounded-[10px]  ${
+              className={`w-1/2 font-text flex justify-center py-4 rounded-[10px]  ${
                 isActive("/collections")
                   ? "bg-primary-500/20 text-primary-500"
                   : "text-white"
@@ -66,7 +66,7 @@ const Navigation = () => {
             <Link
               to="/artworks"
               onClick={() => setIsOpen(false)}
-              className={`w-1/2 flex justify-center py-4 rounded-[10px]  ${
+              className={`w-1/2 font-text flex justify-center py-4 rounded-[10px]  ${
                 isActive("/artworks")
                   ? "bg-primary-500/20 text-primary-500"
                   : "text-white"
@@ -77,7 +77,7 @@ const Navigation = () => {
             <Link
               to="/insights"
               onClick={() => setIsOpen(false)}
-              className={`w-1/2 flex justify-center py-4 rounded-[10px]  ${
+              className={`w-1/2 font-text flex justify-center py-4 rounded-[10px]  ${
                 isActive("/insights")
                   ? "bg-primary-500/20 text-primary-500"
                   : "text-white"
@@ -91,7 +91,7 @@ const Navigation = () => {
             <Link
               to="/settings"
               onClick={() => setIsOpen(false)}
-              className={`w-1/2 flex justify-center py-4 rounded-[10px] ${
+              className={`w-1/2 font-text flex justify-center py-4 rounded-[10px] ${
                 isActive("/settings")
                   ? "bg-primary-500/20 text-primary-500"
                   : "text-white"
@@ -101,7 +101,7 @@ const Navigation = () => {
             </Link>
             <button
               onClick={handleLogout}
-              className="w-full flex justify-center py-4 text-white hover:text-primary-500"
+              className="w-full font-text flex justify-center py-4 text-white hover:text-primary-500"
             >
               Logout
             </button>
