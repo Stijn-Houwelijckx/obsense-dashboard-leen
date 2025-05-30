@@ -365,7 +365,15 @@ const CollectionForm = ({
 
     formData.append("title", title);
     formData.append("description", description);
-    formData.append("coverImageFile", coverImageFile);
+    formData.append("city", cityOrLocation.trim());
+    formData.append("price", price.toString());
+    formData.append("status", isDraft ? "draft" : "published");
+    formData.append("type", mode); // bijvoorbeeld "tour" of "expo"
+    formData.append("genres", JSON.stringify([genreId]));
+    formData.append("objects", JSON.stringify(selectedArtworks));
+    if (collId) {
+      formData.append("_id", collId);
+    }
 
     try {
       const token = localStorage.getItem("token");
