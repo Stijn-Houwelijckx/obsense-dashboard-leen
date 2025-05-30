@@ -157,6 +157,21 @@ const CollectionForm = ({
     fetchArtworks();
   }, []);
 
+  const genreOptions = [
+    { _id: "000000000000000000000001", name: "Low-Poly" },
+    { _id: "000000000000000000000002", name: "Stylized" },
+    { _id: "000000000000000000000003", name: "Pixel Art" },
+  ];
+
+  const selectedGenre = genreOptions.find((g) => g.name === genre);
+  const genreId = selectedGenre?._id;
+
+  const payload = {
+    title,
+    artworks: selectedArtworks,
+    genre: genreId,
+  };
+
   const handlePriceChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -258,35 +273,43 @@ const CollectionForm = ({
   };
 
   const handlePublish = async (isDraft: boolean) => {
+    if (!title.trim()) {
+      alert("Title is required");
+      return;
+    }
+
+    if (!price || isNaN(parseFloat(price))) {
+      alert("Price must be a valid number");
+      return;
+    }
+
+    const payload = {
+      type: mode,
+      title: title.trim(),
+      description: description.trim(),
+      city: cityOrLocation.trim(),
+      price: parseFloat(price),
+      genres: [genreId], // gebruik genreId i.p.v. genre naam
+      objects: selectedArtworks,
+      status: isDraft ? "draft" : "published",
+      _id: collId || undefined,
+    };
+
+    console.log("Payload before sending:", payload);
+
     const formData = new FormData();
 
     if (coverImageFile) {
       formData.append("coverImage", coverImageFile);
     }
 
-    formData.append(
-      "collection",
-      JSON.stringify({
-        collection: {
-          type: mode,
-          title: title,
-          description: description,
-          city: cityOrLocation,
-          price: parseFloat(price),
-          genres: [genre],
-          objects: selectedArtworks,
-          status: isDraft ? "draft" : "published",
-          _id: collId || undefined,
-        },
-      })
-    );
+    formData.append("collection", JSON.stringify(payload));
 
     try {
       const token = localStorage.getItem("token");
       const url = collId
         ? `http://localhost:3000/api/v1/artist/collections/${collId}`
         : "http://localhost:3000/api/v1/artist/collections";
-
       const method = collId ? "PUT" : "POST";
 
       const res = await fetch(url, {
@@ -305,9 +328,29 @@ const CollectionForm = ({
         alert("Fout: " + JSON.stringify(error, null, 2));
       }
     } catch (err) {
-      console.error("Fetch error:", err);
+      console.error("Error:", err);
       alert("Something went wrong.");
     }
+  };
+
+  const ProgressBar = ({ currentStep }: { currentStep: number }) => {
+    const stepWidths: { [key: number]: string } = {
+      1: "33.3333%",
+      2: "66.6666%",
+      3: "100%",
+    };
+    const width = stepWidths[currentStep] || "0%";
+
+    return (
+      <div className="w-full max-w-xl mx-auto mb-6">
+        <div className="h-3 rounded-[10px] bg-primary-500/20 w-full relative">
+          <div
+            className="h-3 rounded-[10px] bg-primary-500 transition-all duration-300"
+            style={{ width }}
+          />
+        </div>
+      </div>
+    );
   };
 
   const handleCoverImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -345,6 +388,7 @@ const CollectionForm = ({
           </p>
         )}
       </div>
+      <ProgressBar currentStep={step} />
 
       {step === 1 && (
         <div className="relative w-full bg-secondary-800 p-6 rounded-[16px] flex flex-col lg:flex-row gap-0 lg:gap-[80px] mt-12">
