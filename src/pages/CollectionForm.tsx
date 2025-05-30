@@ -283,8 +283,13 @@ const CollectionForm = ({
       return;
     }
 
+    if (!coverImageFile) {
+      alert("Please select a cover image file.");
+      return;
+    }
+
     const payload = {
-      type: mode,
+      type: "tour",
       title: title.trim(),
       description: description.trim(),
       city: cityOrLocation.trim(),
@@ -295,6 +300,9 @@ const CollectionForm = ({
       _id: collId || undefined,
     };
 
+    console.log("Mode:", mode);
+    console.log("Payload:", payload);
+
     console.log("Payload before sending:", payload);
 
     const formData = new FormData();
@@ -303,7 +311,9 @@ const CollectionForm = ({
       formData.append("coverImage", coverImageFile);
     }
 
-    formData.append("collection", JSON.stringify(payload));
+    formData.append("title", title);
+    formData.append("description", description);
+    formData.append("coverImageFile", coverImageFile);
 
     try {
       const token = localStorage.getItem("token");
@@ -320,7 +330,14 @@ const CollectionForm = ({
         body: formData,
       });
 
+      // const data = await res.json();
+      const text = await res.text(); // niet .json() om errors te vangen
+      console.log("Response status:", res.status);
+      console.log("Response text:", text);
+
       if (res.ok) {
+        throw new Error(text || "Unknown error");
+
         window.location.href = "/collections";
       } else {
         const error = await res.json();
@@ -342,7 +359,7 @@ const CollectionForm = ({
     const width = stepWidths[currentStep] || "0%";
 
     return (
-      <div className="w-full max-w-xl mx-auto mb-6">
+      <div className="w-full lg:w-1/2 mb-6 lg:mx-0 lg:self-start">
         <div className="h-3 rounded-[10px] bg-primary-500/20 w-full relative">
           <div
             className="h-3 rounded-[10px] bg-primary-500 transition-all duration-300"
