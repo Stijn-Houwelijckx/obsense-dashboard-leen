@@ -33,7 +33,6 @@ type CityAutocompleteProps = {
 };
 
 const CollectionForm = ({
-  mode,
   onCancel,
   onNext,
   initialData,
@@ -41,6 +40,7 @@ const CollectionForm = ({
 }: StepTwoFormProps) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const mode = location.state?.mode || "tour";
 
   // Extract collectionId from location.state if not passed as prop
   const collId =
@@ -435,7 +435,7 @@ const CollectionForm = ({
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-title font-bold">
             {step === 1
-              ? `Step 1: ${collId ? "Edit" : "Create"} a ${
+              ? `Step 1: ${collId ? "Edit" : "Create"}  ${
                   mode === "tour" ? "Tour" : "Exposition"
                 }`
               : step === 2

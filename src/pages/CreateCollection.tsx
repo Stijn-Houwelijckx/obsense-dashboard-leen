@@ -9,8 +9,8 @@ import NavigationDesktop from "components/NavigationDesktop";
 const CreateCollection = () => {
   const navigate = useNavigate();
 
-  const handleCreate = (mode: "tour" | "expo") => {
-    navigate("/form", { state: { mode } });
+  const handleCreate = (type: "tour" | "expo") => {
+    navigate("/form", { state: { mode: type } });
   };
 
   return (
