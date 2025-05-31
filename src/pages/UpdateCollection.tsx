@@ -41,7 +41,6 @@ const UpdateCollection = ({
   const navigate = useNavigate();
   const mode = location.state?.mode || "tour";
 
-  // Gebruik alleen collectionId uit prop of location.state
   const collId =
     collectionId || (location.state && (location.state as any).collectionId);
 
@@ -66,7 +65,6 @@ const UpdateCollection = ({
     { _id: string; title: string; image: string }[]
   >([]);
 
-  // Alleen data ophalen als we een collectionId hebben (bewerken)
   useEffect(() => {
     if (!collId) return;
 
@@ -240,22 +238,22 @@ const UpdateCollection = ({
       formData.append("coverImage", coverImageFile);
     }
 
-    formData.append("title", title.trim());
-    formData.append("description", description.trim());
-    formData.append("city", cityOrLocation.trim());
-    formData.append("price", price.toString());
-    formData.append("type", mode);
-    formData.append("_id", collId);
-    formData.append("status", isDraft ? "draft" : "published");
-
-    if (coverImageFile) {
-      formData.append("coverImage", coverImageFile);
-    }
-
-    if (genreId) {
-      formData.append("genres", genreId);
-    }
-    selectedArtworks.forEach((id) => formData.append("objects", id));
+    formData.append(
+      "collection",
+      JSON.stringify({
+        collection: {
+          _id: collId,
+          title: title.trim(),
+          description: description.trim(),
+          city: cityOrLocation.trim(),
+          price: parseFloat(price),
+          type: mode,
+          genres: genreId ? [] : [],
+          objects: selectedArtworks,
+          status: isDraft ? "draft" : "published",
+        },
+      })
+    );
 
     try {
       const token = localStorage.getItem("token");
@@ -266,6 +264,7 @@ const UpdateCollection = ({
         method,
         headers: {
           Authorization: `Bearer ${token}`,
+          // Content-Type niet zetten voor multipart/form-data
         },
         body: formData,
       });
@@ -277,7 +276,6 @@ const UpdateCollection = ({
       if (res.ok) {
         window.location.href = "/collections";
       } else {
-        // Probeer JSON te parsen uit de tekst
         let error;
         try {
           error = JSON.parse(text);
