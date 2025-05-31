@@ -61,6 +61,7 @@ const UpdateCollection = ({
   const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
   const [coverImageUrl, setCoverImageUrl] = useState<string | null>(null);
   const [genre, setGenre] = useState("Low-Poly");
+  const [showPublishConfirm, setShowPublishConfirm] = useState(false);
 
   const [titleError, setTitleError] = useState(false);
   const [descriptionError, setDescriptionError] = useState(false);
@@ -801,12 +802,39 @@ const UpdateCollection = ({
                 Save as Draft
               </button>
               <button
-                onClick={() => handlePublish(false)}
-                className="w-2/3 h-[48px] font-text bg-primary-500 text-white font-medium rounded-lg hover:opacity-90 transition lg:w-[120px]"
+                onClick={() => setShowPublishConfirm(true)}
+                className="bg-primary-500 text-white px-4 py-2 rounded"
               >
                 Publish
               </button>
             </div>
+            {showPublishConfirm && (
+              <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+                <div className="bg-secondary-800 rounded-[10px] max-w-md w-full text-neutral-50 flex flex-col items-center text-center gap-6 px-8 py-10">
+                  <h4 className="text-xl font-title font-semibold">
+                    Are you sure you want to publish your collection?
+                  </h4>
+                  <p className="font-text">This action cannot be undone</p>
+                  <div className="flex gap-4 justify-center w-full mt-4">
+                    <button
+                      className="border font-text border-primary-500 text-primary-500 px-6 py-2 rounded-lg hover:border-primary-600 transition"
+                      onClick={() => setShowPublishConfirm(false)}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      className="bg-primary-500 font-text text-white px-6 py-2 rounded-lg hover:opacity-90 transition"
+                      onClick={() => {
+                        setShowPublishConfirm(false);
+                        handlePublish(false); // publish als 'published'
+                      }}
+                    >
+                      Yes, I'm sure
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </>
       )}
