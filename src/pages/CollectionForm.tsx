@@ -237,14 +237,26 @@ const CollectionForm = () => {
 
     const formData = new FormData();
     formData.append("coverImage", coverImageFile);
-    formData.append("title", title.trim());
-    formData.append("description", description.trim());
-    formData.append("city", cityOrLocation.trim());
-    formData.append("price", price.toString());
-    formData.append("type", mode);
-    formData.append("genres", JSON.stringify([genreId]));
-    formData.append("objects", JSON.stringify(selectedArtworks));
-    formData.append("status", isDraft ? "draft" : "published");
+
+    console.log("mode (type):", mode);
+    console.log("mode before send:", mode);
+
+    formData.append(
+      "collection",
+      JSON.stringify({
+        collection: {
+          title: title.trim(),
+          description: description.trim(),
+          city: cityOrLocation.trim(),
+          price: parseFloat(price),
+
+          type: mode,
+          genres: [],
+          objects: selectedArtworks,
+          status: isDraft ? "draft" : "published",
+        },
+      })
+    );
 
     try {
       const token = localStorage.getItem("token");
@@ -254,22 +266,28 @@ const CollectionForm = () => {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
+            // GEEN Content-Type hier — laat browser dat doen voor multipart/form-data
           },
           body: formData,
         }
       );
 
       if (!res.ok) {
-        const errorText = await res.text();
+        let errorJson: any;
         try {
-          const errorJson = JSON.parse(errorText);
-          console.error("Backend error:", errorJson);
-          alert("Fout: " + JSON.stringify(errorJson, null, 2));
-        } catch (e) {
-          console.error("Server returned non-JSON error:", errorText);
-          alert("Unexpected server error: " + errorText);
+          errorJson = await res.json();
+        } catch (err) {
+          const fallbackText = await res.text();
+          console.error("Server returned non-JSON error:", fallbackText);
+          alert("Unexpected server error:\n" + fallbackText);
+          return;
         }
+
+        console.error("Backend error:", errorJson);
+        alert("Fout:\n" + JSON.stringify(errorJson, null, 2));
       }
+
+      navigate("/collections");
     } catch (err) {
       console.error("Error:", err);
       alert("Something went wrong.");
@@ -623,7 +641,7 @@ const CollectionForm = () => {
                 onClick={() => handlePublish(false)}
                 className="w-full h-[48px] font-text bg-primary-500 text-white font-medium rounded-lg hover:opacity-90 transition lg:w-[120px]"
               >
-                Publish
+                Save as Draft
               </button>
             </div>
           </div>

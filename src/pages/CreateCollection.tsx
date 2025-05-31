@@ -9,7 +9,7 @@ import NavigationDesktop from "components/NavigationDesktop";
 const CreateCollection = () => {
   const navigate = useNavigate();
 
-  const handleCreate = (type: "tour" | "expo") => {
+  const handleCreate = (type: "tour" | "exposition") => {
     navigate("/form", { state: { mode: type } });
   };
 
@@ -63,7 +63,7 @@ const CreateCollection = () => {
             like the city square.
           </p>
           <button
-            onClick={() => handleCreate("expo")}
+            onClick={() => handleCreate("exposition")}
             className="bg-primary-500 font-text text-white px-4 py-2 rounded-lg text-sm hover:opacity-90"
           >
             Create exposition
