@@ -32,19 +32,10 @@ type CityAutocompleteProps = {
   className?: string;
 };
 
-const CollectionForm = ({
-  onCancel,
-  onNext,
-  initialData,
-  collectionId,
-}: StepTwoFormProps) => {
+const CollectionForm = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const mode = location.state?.mode || "tour";
-
-  // Extract collectionId from location.state if not passed as prop
-  const collId =
-    collectionId || (location.state && (location.state as any).collectionId);
   const [step, setStep] = useState(1);
 
   const [title, setTitle] = useState("");
@@ -53,8 +44,8 @@ const CollectionForm = ({
   const [price, setPrice] = useState("");
   const [selectedArtworks, setSelectedArtworks] = useState<string[]>([]);
   const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
-  const [coverImageUrl, setCoverImageUrl] = useState<string | null>(null);
   const [genre, setGenre] = useState("Low-Poly");
+
   const [titleError, setTitleError] = useState(false);
   const [descriptionError, setDescriptionError] = useState(false);
   const [cityOrLocationError, setCityOrLocationError] = useState(false);
@@ -64,184 +55,6 @@ const CollectionForm = ({
   const [artworks, setArtworks] = useState<
     { _id: string; title: string; image: string }[]
   >([]);
-
-  useEffect(() => {
-    if (!collId) {
-      // If no collectionId, use initialData if provided
-      if (initialData) {
-        setTitle(initialData.title || "");
-        setDescription(initialData.description || "");
-        setCityOrLocation(initialData.cityOrLocation || "");
-        setPrice(initialData.price || "");
-        setSelectedArtworks(initialData.selectedArtworks || []);
-        setCoverImageFile(initialData.coverImageFile || null);
-        setCoverImageUrl(initialData.coverImageUrl || null);
-        setGenre(initialData.genre || "Low-Poly");
-      }
-      return;
-    }
-
-    const fetchCollection = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const res = await fetch(
-          `http://localhost:3000/api/v1/artist/collections/${collId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (!res.ok) {
-          throw new Error("Failed to fetch collection");
-        }
-
-        const data = await res.json();
-        const coll = data.data.collection;
-        console.log("Raw coll.objects:", coll.objects);
-        console.log(
-          "Converted IDs:",
-          (coll.objects || []).map((id: any) => Number(id))
-        );
-
-        console.log("Collection objects:", coll.objects);
-        setSelectedArtworks(
-          (coll.objects || []).map((id: any) => id.toString())
-        );
-
-        setTitle(coll.title || "");
-        setDescription(coll.description || "");
-        setCityOrLocation(coll.city || "");
-        setPrice(coll.price !== undefined ? coll.price.toString() : "");
-        setSelectedArtworks((coll.objects || []).map((id: any) => String(id)));
-        setGenre(
-          coll.genres && coll.genres.length > 0 ? coll.genres[0] : "Low-Poly"
-        );
-
-        const baseUrl = "http://localhost:3000"; // of je live domain
-
-        if (coll.coverImage && coll.coverImage.filePath) {
-          setCoverImageUrl(coll.coverImage.filePath);
-          setCoverImageFile(null);
-        } else {
-          setCoverImageUrl(null);
-          setCoverImageFile(null);
-        }
-
-        console.log("coll.coverImageUrl", coll.coverImageUrl);
-        console.log("coll.coverImage", coll.coverImage);
-      } catch (err) {
-        console.error("Error loading collection:", err);
-        alert("Failed to load collection data.");
-      }
-    };
-
-    fetchCollection();
-  }, [collId, initialData]);
-
-  useEffect(() => {
-    const fetchArtworks = async () => {
-      try {
-        const res = await api.get("/objects");
-        const objects = res.data.data.objects;
-
-        if (objects.length === 0) {
-          setArtworks([]);
-        } else {
-          console.log("Objects:", objects);
-
-          setArtworks(
-            objects.map((obj: any) => ({
-              _id: obj._id.toString(),
-              title: obj.title,
-              image: obj.thumbnail?.filePath || obj.file?.url || "",
-            }))
-          );
-        }
-      } catch (err) {
-        console.error("Failed to load artworks", err);
-        setArtworks([]);
-      }
-    };
-
-    fetchArtworks();
-  }, []);
-
-  const genreOptions = [
-    { _id: "000000000000000000000001", name: "Low-Poly" },
-    { _id: "000000000000000000000002", name: "Stylized" },
-    { _id: "000000000000000000000003", name: "Pixel Art" },
-  ];
-
-  const selectedGenre = genreOptions.find((g) => g.name === genre);
-  const genreId = selectedGenre?._id;
-
-  const payload = {
-    title,
-    artworks: selectedArtworks,
-    genre: genreId,
-  };
-
-  const handlePriceChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const value = e.target.value;
-    if (/^\d*\.?\d{0,2}$/.test(value)) {
-      setPrice(value);
-    }
-  };
-
-  const handleNextStep = () => {
-    let hasError = false;
-
-    if (!title.trim()) {
-      setTitleError(true);
-      hasError = true;
-    } else {
-      setTitleError(false);
-    }
-
-    if (!description.trim()) {
-      setDescriptionError(true);
-      hasError = true;
-    } else {
-      setDescriptionError(false);
-    }
-
-    if (!cityOrLocation.trim()) {
-      setCityOrLocationError(true);
-      hasError = true;
-    } else {
-      setCityOrLocationError(false);
-    }
-
-    if (!price || Number(price) <= 0) {
-      setPriceError(true);
-      hasError = true;
-    } else {
-      setPriceError(false);
-    }
-
-    if (!coverImageFile) {
-      setCoverImageError(true);
-      hasError = true;
-    } else {
-      setCoverImageError(false);
-    }
-
-    if (!hasError) {
-      setStep(2);
-    }
-  };
-
-  const toggleArtwork = (id: string) => {
-    setSelectedArtworks((prevSelected) =>
-      prevSelected.includes(id)
-        ? prevSelected.filter((artworkId) => artworkId !== id)
-        : [...prevSelected, id]
-    );
-  };
 
   const CityAutocomplete = ({
     value,
@@ -324,9 +137,91 @@ const CollectionForm = ({
     );
   };
 
-  const handlePublish = async (isDraft: boolean) => {
+  useEffect(() => {
+    const fetchArtworks = async () => {
+      try {
+        const res = await api.get("/objects");
+        const objects = res.data.data.objects;
+        setArtworks(
+          objects.map((obj: any) => ({
+            _id: obj._id.toString(),
+            title: obj.title,
+            image: obj.thumbnail?.filePath || obj.file?.url || "",
+          }))
+        );
+      } catch (err) {
+        console.error("Failed to load artworks", err);
+        setArtworks([]);
+      }
+    };
+
+    fetchArtworks();
+  }, []);
+
+  const genreOptions = [
+    { _id: "000000000000000000000001", name: "Low-Poly" },
+    { _id: "000000000000000000000002", name: "Stylized" },
+    { _id: "000000000000000000000003", name: "Pixel Art" },
+  ];
+
+  const selectedGenre = genreOptions.find((g) => g.name === genre);
+  const genreId = selectedGenre?._id;
+
+  const handlePriceChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const value = e.target.value;
+    if (/^\d*\.?\d{0,2}$/.test(value)) {
+      setPrice(value);
+    }
+  };
+
+  const handleNextStep = () => {
+    let hasError = false;
+
     if (!title.trim()) {
-      alert("Title is required");
+      setTitleError(true);
+      hasError = true;
+    } else {
+      setTitleError(false);
+    }
+
+    if (!description.trim()) {
+      setDescriptionError(true);
+      hasError = true;
+    } else {
+      setDescriptionError(false);
+    }
+
+    if (!cityOrLocation.trim()) {
+      setCityOrLocationError(true);
+      hasError = true;
+    } else {
+      setCityOrLocationError(false);
+    }
+
+    if (!price || Number(price) <= 0) {
+      setPriceError(true);
+      hasError = true;
+    } else {
+      setPriceError(false);
+    }
+
+    if (!coverImageFile) {
+      setCoverImageError(true);
+      hasError = true;
+    } else {
+      setCoverImageError(false);
+    }
+
+    if (!hasError) {
+      setStep(2);
+    }
+  };
+
+  const handlePublish = async (isDraft: boolean) => {
+    if (!title.trim() || !description.trim() || !cityOrLocation.trim()) {
+      alert("Please fill in all required fields.");
       return;
     }
 
@@ -340,72 +235,59 @@ const CollectionForm = ({
       return;
     }
 
-    const payload = {
-      type: "tour",
-      title: title.trim(),
-      description: description.trim(),
-      city: cityOrLocation.trim(),
-      price: parseFloat(price),
-      genres: [genreId],
-      objects: selectedArtworks,
-      status: isDraft ? "draft" : "published",
-      _id: collId || undefined,
-    };
-
-    console.log("Mode:", mode);
-    console.log("Payload:", payload);
-
-    console.log("Payload before sending:", payload);
-
     const formData = new FormData();
-
-    if (coverImageFile) {
-      formData.append("coverImage", coverImageFile);
-    }
-
-    formData.append("title", title);
-    formData.append("description", description);
+    formData.append("coverImage", coverImageFile);
+    formData.append("title", title.trim());
+    formData.append("description", description.trim());
     formData.append("city", cityOrLocation.trim());
     formData.append("price", price.toString());
-    formData.append("status", isDraft ? "draft" : "published");
-    formData.append("type", mode); // bijvoorbeeld "tour" of "expo"
+    formData.append("type", mode);
     formData.append("genres", JSON.stringify([genreId]));
     formData.append("objects", JSON.stringify(selectedArtworks));
-    if (collId) {
-      formData.append("_id", collId);
-    }
+    formData.append("status", isDraft ? "draft" : "published");
 
     try {
       const token = localStorage.getItem("token");
-      const url = collId
-        ? `http://localhost:3000/api/v1/artist/collections/${collId}`
-        : "http://localhost:3000/api/v1/artist/collections";
-      const method = collId ? "PUT" : "POST";
+      const res = await fetch(
+        "http://localhost:3000/api/v1/artist/collections",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        }
+      );
 
-      const res = await fetch(url, {
-        method,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      });
-
-      const text = await res.text();
-      console.log("Response status:", res.status);
-      console.log("Response text:", text);
-
-      if (res.ok) {
-        throw new Error(text || "Unknown error");
-
-        window.location.href = "/collections";
-      } else {
-        const error = await res.json();
-        console.error("Backend error response:", error);
-        alert("Fout: " + JSON.stringify(error, null, 2));
+      if (!res.ok) {
+        const errorText = await res.text();
+        try {
+          const errorJson = JSON.parse(errorText);
+          console.error("Backend error:", errorJson);
+          alert("Fout: " + JSON.stringify(errorJson, null, 2));
+        } catch (e) {
+          console.error("Server returned non-JSON error:", errorText);
+          alert("Unexpected server error: " + errorText);
+        }
       }
     } catch (err) {
       console.error("Error:", err);
       alert("Something went wrong.");
+    }
+  };
+
+  const toggleArtwork = (id: string) => {
+    setSelectedArtworks((prevSelected) =>
+      prevSelected.includes(id)
+        ? prevSelected.filter((artworkId) => artworkId !== id)
+        : [...prevSelected, id]
+    );
+  };
+
+  const handleCoverImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    if (file) {
+      setCoverImageFile(file);
     }
   };
 
@@ -429,23 +311,13 @@ const CollectionForm = ({
     );
   };
 
-  const handleCoverImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] || null;
-    if (file) {
-      setCoverImageFile(file);
-      setCoverImageUrl(null);
-    }
-  };
-
   return (
     <div className="min-h-screen md:pl-[166px] md:pr-[74px] bg-secondary-900 text-neutral-50 p-4 mt-14 flex flex-col items-center">
       <div className="w-full mb-6">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-title font-bold">
             {step === 1
-              ? `Step 1: ${collId ? "Edit" : "Create"}  ${
-                  mode === "tour" ? "Tour" : "Exposition"
-                }`
+              ? `Step 1: Create ${mode === "tour" ? "Tour" : "Exposition"}`
               : step === 2
               ? "Step 2: Choose Artwork"
               : "Step 3: Overview"}
@@ -474,8 +346,6 @@ const CollectionForm = ({
                 src={
                   coverImageFile
                     ? URL.createObjectURL(coverImageFile)
-                    : coverImageUrl
-                    ? coverImageUrl
                     : treeImage
                 }
               />
@@ -498,10 +368,7 @@ const CollectionForm = ({
 
               <button
                 className="text-sm font-text font-semibold text-red-400 border border-red-600 rounded px-3 py-2 bg-[#FCA5A5] hover:opacity-90"
-                onClick={() => {
-                  setCoverImageFile(null);
-                  setCoverImageUrl(null);
-                }}
+                onClick={() => setCoverImageFile(null)}
               >
                 Delete
               </button>
@@ -538,13 +405,7 @@ const CollectionForm = ({
               {titleError && (
                 <p className="text-sm text-red-500">Description is required.</p>
               )}
-              {/* <InputField
-                label={mode === "tour" ? "City" : "Location"}
-                placeholder={mode === "tour" ? "City" : "Location"}
-                value={cityOrLocation}
-                onChange={(e) => setCityOrLocation(e.target.value)}
-                className="w-full h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
-              /> */}
+
               <CityAutocomplete
                 value={cityOrLocation}
                 onChange={(val) => setCityOrLocation(val)}
@@ -597,7 +458,6 @@ const CollectionForm = ({
         </div>
       )}
 
-      {/* Step 2: Artwork Selection */}
       {step === 2 && (
         <>
           {artworks.length === 0 ? (
@@ -608,18 +468,6 @@ const CollectionForm = ({
             <div className="w-full flex flex-wrap gap-5 mt-4">
               {artworks.map(({ _id, title, image }) => {
                 const isSelected = selectedArtworks.includes(_id);
-                console.log(
-                  "Artwork ID:",
-                  _id,
-                  "isSelected?",
-                  isSelected,
-                  "selectedArtworks:",
-                  selectedArtworks
-                );
-
-                console.log("Artworks:", artworks);
-                console.log("SelectedArtworks:", selectedArtworks);
-
                 return (
                   <div
                     key={_id}
@@ -699,7 +547,6 @@ const CollectionForm = ({
         </>
       )}
 
-      {/* Step 3: Overview */}
       {step === 3 && (
         <>
           <div className="w-full bg-secondary-800 p-6 rounded-[16px]">
@@ -709,8 +556,6 @@ const CollectionForm = ({
                   src={
                     coverImageFile
                       ? URL.createObjectURL(coverImageFile)
-                      : coverImageUrl
-                      ? coverImageUrl
                       : treeImage
                   }
                   alt="Overview Artwork"
@@ -741,7 +586,7 @@ const CollectionForm = ({
                     <span className="text-neutral-50">{price}</span>
                   </div>
                   <div className="flex flex-col items-center">
-                    <span className="font-medium font-textx mb-1 text-[#B3B3B3]">
+                    <span className="font-medium font-text mb-1 text-[#B3B3B3]">
                       Genre
                     </span>
                     <span className="text-sm font-medium font-text text-[#00B69B] bg-[#00B69B33] px-3 py-1 rounded-lg">
@@ -752,7 +597,6 @@ const CollectionForm = ({
               </div>
             </div>
 
-            {/* Artworks */}
             <div className="w-full mb-10 mt-6">
               <h6 className="mb-4 font-title font-semibold">Artworks</h6>
               <div className="flex flex-col gap-4">
@@ -776,14 +620,8 @@ const CollectionForm = ({
 
             <div className="flex gap-4 w-full lg:justify-end">
               <button
-                onClick={() => handlePublish(true)}
-                className="w-1/3 h-[48px] font-text border border-primary-500 rounded-lg text-primary-500 font-medium hover:border-primary-600 transition lg:w-[120px]"
-              >
-                Save as Draft
-              </button>
-              <button
                 onClick={() => handlePublish(false)}
-                className="w-2/3 h-[48px] font-text bg-primary-500 text-white font-medium rounded-lg hover:opacity-90 transition lg:w-[120px]"
+                className="w-full h-[48px] font-text bg-primary-500 text-white font-medium rounded-lg hover:opacity-90 transition lg:w-[120px]"
               >
                 Publish
               </button>
