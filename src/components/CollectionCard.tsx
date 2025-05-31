@@ -58,7 +58,7 @@ const CollectionCard = ({
               alt="Edit"
               className="w-5"
               onClick={() => {
-                navigate("/form", {
+                navigate("/edit", {
                   state: { collectionId: _id },
                 });
               }}

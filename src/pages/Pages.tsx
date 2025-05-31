@@ -14,6 +14,7 @@ import Collections from "./Collections";
 import CreateCollection from "./CreateCollection";
 import CollectionForm from "./CollectionForm";
 import Settings from "./Settings";
+import UpdateCollection from "./UpdateCollection";
 
 const Pages = () => {
   return (
@@ -27,14 +28,15 @@ const Pages = () => {
           <Route path="/artworkform" element={<ArtworkForm />} />
           <Route path="/collections" element={<Collections />} />
           <Route path="/create" element={<CreateCollection />} />
+          <Route path="/edit" element={<UpdateCollection />} />
           <Route path="/settings" element={<Settings />} />
           <Route
             path="/form"
             element={
               <CollectionForm
-                mode="tour"
-                onCancel={() => console.log("Cancel clicked")}
-                onNext={() => console.log("Next clicked")}
+              // mode="tour"
+              // onCancel={() => console.log("Cancel clicked")}
+              // onNext={() => console.log("Next clicked")}
               />
             }
           />
