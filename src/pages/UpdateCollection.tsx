@@ -26,6 +26,13 @@ interface StepTwoFormProps {
   };
 }
 
+type Genre = {
+  _id: string;
+  name: string;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
 type CityAutocompleteProps = {
   value: string;
   onChange: (v: string) => void;
@@ -66,11 +73,32 @@ const UpdateCollection = ({
   >([]);
 
   useEffect(() => {
+    const token = localStorage.getItem("token") || "";
+
+    const fetchGenres = async () => {
+      try {
+        const res = await fetch("http://localhost:3000/api/v1/genres", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await res.json();
+        setAllGenres(data.data.genres);
+      } catch (err) {
+        console.error("Failed to fetch genres", err);
+      }
+    };
+
+    fetchGenres();
+  }, []);
+
+  useEffect(() => {
     if (!collId) return;
+
+    const token = localStorage.getItem("token") || "";
 
     const fetchCollection = async () => {
       try {
-        const token = localStorage.getItem("token");
         const res = await fetch(
           `http://localhost:3000/api/v1/artist/collections/${collId}`,
           {
@@ -79,22 +107,16 @@ const UpdateCollection = ({
             },
           }
         );
-
-        if (!res.ok) {
-          throw new Error("Failed to fetch collection");
-        }
-
         const data = await res.json();
         const coll = data.data.collection;
 
+        // Vul de state
         setSelectedArtworks((coll.objects || []).map((id: any) => String(id)));
         setTitle(coll.title || "");
         setDescription(coll.description || "");
         setCityOrLocation(coll.city || "");
         setPrice(coll.price !== undefined ? coll.price.toString() : "");
-        setGenre(
-          coll.genres && coll.genres.length > 0 ? coll.genres[0] : "Low-Poly"
-        );
+        setSelectedGenres(coll.genres || []);
 
         if (coll.coverImage && coll.coverImage.filePath) {
           setCoverImageUrl(coll.coverImage.filePath);
@@ -111,6 +133,18 @@ const UpdateCollection = ({
 
     fetchCollection();
   }, [collId]);
+
+  const handleSelectGenre = (genre: Genre) => {
+    // Voeg alleen toe als nog niet geselecteerd
+    if (!selectedGenres.find((g) => g._id === genre._id)) {
+      setSelectedGenres([...selectedGenres, genre]);
+    }
+    setShowGenreDropdown(false);
+  };
+
+  const handleRemoveGenre = (id: string) => {
+    setSelectedGenres(selectedGenres.filter((g) => g._id !== id));
+  };
 
   // Artworks ophalen (blijft hetzelfde)
   useEffect(() => {
@@ -139,15 +173,9 @@ const UpdateCollection = ({
     fetchArtworks();
   }, []);
 
-  // Genre opties (blijft hetzelfde)
-  const genreOptions = [
-    { _id: "000000000000000000000001", name: "Low-Poly" },
-    { _id: "000000000000000000000002", name: "Stylized" },
-    { _id: "000000000000000000000003", name: "Pixel Art" },
-  ];
-
-  const selectedGenre = genreOptions.find((g) => g.name === genre);
-  const genreId = selectedGenre?._id;
+  const [allGenres, setAllGenres] = useState<Genre[]>([]);
+  const [selectedGenres, setSelectedGenres] = useState<Genre[]>([]);
+  const [showGenreDropdown, setShowGenreDropdown] = useState(false);
 
   // Validaties en stappenlogica blijven hetzelfde
   const handlePriceChange = (
@@ -238,17 +266,28 @@ const UpdateCollection = ({
       formData.append("coverImage", coverImageFile);
     }
 
+    formData.append("title", title.trim());
+    formData.append("description", description.trim());
+    formData.append("city", cityOrLocation.trim());
+    formData.append("price", price.toString());
+    formData.append("type", mode);
+    formData.append("_id", collId);
+    formData.append("status", isDraft ? "draft" : "published");
+
+    if (coverImageFile) {
+      formData.append("coverImage", coverImageFile);
+    }
+
     formData.append(
       "collection",
       JSON.stringify({
         collection: {
-          _id: collId,
           title: title.trim(),
           description: description.trim(),
           city: cityOrLocation.trim(),
           price: parseFloat(price),
           type: mode,
-          genres: genreId ? [] : [],
+          genres: selectedGenres.map((g) => g._id),
           objects: selectedArtworks,
           status: isDraft ? "draft" : "published",
         },
@@ -264,26 +303,25 @@ const UpdateCollection = ({
         method,
         headers: {
           Authorization: `Bearer ${token}`,
-          // Content-Type niet zetten voor multipart/form-data
         },
         body: formData,
       });
 
-      const text = await res.text();
-      console.log("Response status:", res.status);
-      console.log("Response text:", text);
-
       if (res.ok) {
         window.location.href = "/collections";
       } else {
-        let error;
+        // Probeer JSON te parsen uit de tekst
+        let text = "";
         try {
-          error = JSON.parse(text);
+          text = await res.text();
+          console.log("Response text:", text);
+          const error = JSON.parse(text);
+          alert("Fout: " + JSON.stringify(error, null, 2));
         } catch (parseErr) {
-          error = { message: "Could not parse error response", raw: text };
+          console.error("Fout tijdens parsen:", parseErr);
+          console.error("Raw response:", text);
+          alert("Onverwachte fout: " + text);
         }
-        console.error("Backend error response:", error);
-        alert("Fout: " + JSON.stringify(error, null, 2));
       }
     } catch (err) {
       console.error("Error:", err);
@@ -508,12 +546,49 @@ const UpdateCollection = ({
                 className="w-full font-text h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
               />
 
-              <div className="flex flex-col">
-                <label className="block text-sm font-text mb-1">Genre</label>
-                <div className="w-full h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 flex items-center gap-3 cursor-pointer">
-                  <img src={plusGenreIcon} alt="Plus genre" />
-                  <span className="font-text text-sm text-white">{genre}</span>
+              <div className="w-full mt-6 relative">
+                <p className="text-sm text-left mb-2">Genre</p>
+                <div className="flex items-center gap-2 flex-wrap">
+                  {selectedGenres.map((genre) => (
+                    <span
+                      key={genre._id}
+                      className="flex items-center text-sm font-text font-medium text-[#00B69B] bg-[#00B69B33] px-3 py-1 rounded-lg"
+                    >
+                      {genre.name}
+                      <button
+                        onClick={() => handleRemoveGenre(genre._id)}
+                        className="ml-2 text-xs text-red-400 hover:text-red-600"
+                      >
+                        ✕
+                      </button>
+                    </span>
+                  ))}
+
+                  <button
+                    onClick={() => setShowGenreDropdown(!showGenreDropdown)}
+                  >
+                    <img
+                      src={plusGenreIcon}
+                      alt="Add genre"
+                      className="w-5 h-5"
+                    />
+                  </button>
                 </div>
+
+                {/* Dropdown menu */}
+                {showGenreDropdown && (
+                  <div className="absolute z-10 mt-2 bg-secondary-700 text-white border border-neutral-600 rounded-lg shadow-md p-2 w-48">
+                    {allGenres.map((genre) => (
+                      <div
+                        key={genre._id}
+                        onClick={() => handleSelectGenre(genre)}
+                        className="cursor-pointer px-2 py-1 hover:bg-secondary-600 rounded"
+                      >
+                        {genre.name}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
             <div className="w-full flex justify-end gap-4 mt-6">
@@ -678,12 +753,19 @@ const UpdateCollection = ({
                     <span className="text-neutral-50">{price}</span>
                   </div>
                   <div className="flex flex-col items-center">
-                    <span className="font-medium font-textx mb-1 text-[#B3B3B3]">
+                    <span className="font-medium font-text mb-1 text-[#B3B3B3]">
                       Genre
                     </span>
-                    <span className="text-sm font-medium font-text text-[#00B69B] bg-[#00B69B33] px-3 py-1 rounded-lg">
-                      {genre}
-                    </span>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedGenres.map((genre) => (
+                        <span
+                          key={genre._id}
+                          className="text-sm font-medium font-text text-[#00B69B] bg-[#00B69B33] px-3 py-1 rounded-lg"
+                        >
+                          {genre.name}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>

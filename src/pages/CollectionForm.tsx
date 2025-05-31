@@ -26,6 +26,13 @@ interface StepTwoFormProps {
   };
 }
 
+type Genre = {
+  _id: string;
+  name: string;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
 type CityAutocompleteProps = {
   value: string;
   onChange: (v: string) => void;
@@ -44,7 +51,9 @@ const CollectionForm = () => {
   const [price, setPrice] = useState("");
   const [selectedArtworks, setSelectedArtworks] = useState<string[]>([]);
   const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
-  const [genre, setGenre] = useState("Low-Poly");
+  const [allGenres, setAllGenres] = useState<Genre[]>([]);
+  const [selectedGenres, setSelectedGenres] = useState<Genre[]>([]);
+  const [showGenreDropdown, setShowGenreDropdown] = useState<boolean>(false);
 
   const [titleError, setTitleError] = useState(false);
   const [descriptionError, setDescriptionError] = useState(false);
@@ -138,6 +147,36 @@ const CollectionForm = () => {
   };
 
   useEffect(() => {
+    const fetchGenres = async () => {
+      try {
+        const token = localStorage.getItem("token"); // pas aan hoe jij het opslaat
+        const res = await fetch("http://localhost:3000/api/v1/genres", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await res.json();
+        setAllGenres(data.data.genres);
+      } catch (err) {
+        console.error("Failed to fetch genres", err);
+      }
+    };
+
+    fetchGenres();
+  }, []);
+
+  const handleSelectGenre = (genre: Genre) => {
+    if (!selectedGenres.find((g) => g._id === genre._id)) {
+      setSelectedGenres([...selectedGenres, genre]);
+    }
+    setShowGenreDropdown(false);
+  };
+
+  const handleRemoveGenre = (id: string) => {
+    setSelectedGenres(selectedGenres.filter((g) => g._id !== id));
+  };
+
+  useEffect(() => {
     const fetchArtworks = async () => {
       try {
         const res = await api.get("/objects");
@@ -157,15 +196,6 @@ const CollectionForm = () => {
 
     fetchArtworks();
   }, []);
-
-  const genreOptions = [
-    { _id: "000000000000000000000001", name: "Low-Poly" },
-    { _id: "000000000000000000000002", name: "Stylized" },
-    { _id: "000000000000000000000003", name: "Pixel Art" },
-  ];
-
-  const selectedGenre = genreOptions.find((g) => g.name === genre);
-  const genreId = selectedGenre?._id;
 
   const handlePriceChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -249,9 +279,8 @@ const CollectionForm = () => {
           description: description.trim(),
           city: cityOrLocation.trim(),
           price: parseFloat(price),
-
           type: mode,
-          genres: [],
+          genres: selectedGenres.map((g) => g._id),
           objects: selectedArtworks,
           status: isDraft ? "draft" : "published",
         },
@@ -448,14 +477,49 @@ const CollectionForm = () => {
               )}
             </div>
 
-            <div className="w-full mt-6">
+            <div className="w-full mt-6 relative">
               <p className="text-sm text-left mb-2">Genre</p>
-              <div className="flex items-center gap-4">
-                <span className="text-sm font-text font-medium text-[#00B69B] bg-[#00B69B33] px-3 py-1 rounded-lg">
-                  Low-Poly
-                </span>
-                <img src={plusGenreIcon} alt="Add genre" className="w-5 h-5" />
+              <div className="flex items-center gap-2 flex-wrap">
+                {selectedGenres.map((genre) => (
+                  <span
+                    key={genre._id}
+                    className="flex items-center text-sm font-text font-medium text-[#00B69B] bg-[#00B69B33] px-3 py-1 rounded-lg"
+                  >
+                    {genre.name}
+                    <button
+                      onClick={() => handleRemoveGenre(genre._id)}
+                      className="ml-2 text-xs text-red-400 hover:text-red-600"
+                    >
+                      ✕
+                    </button>
+                  </span>
+                ))}
+
+                <button
+                  onClick={() => setShowGenreDropdown(!showGenreDropdown)}
+                >
+                  <img
+                    src={plusGenreIcon}
+                    alt="Add genre"
+                    className="w-5 h-5"
+                  />
+                </button>
               </div>
+
+              {/* Dropdown menu */}
+              {showGenreDropdown && (
+                <div className="absolute z-10 mt-2 bg-secondary-700 text-white border border-neutral-600 rounded-lg shadow-md p-2 w-48">
+                  {allGenres.map((genre) => (
+                    <div
+                      key={genre._id}
+                      onClick={() => handleSelectGenre(genre)}
+                      className="cursor-pointer px-2 py-1 hover:bg-secondary-600 rounded"
+                    >
+                      {genre.name}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="w-full flex justify-end gap-4 mt-6">
@@ -607,9 +671,16 @@ const CollectionForm = () => {
                     <span className="font-medium font-text mb-1 text-[#B3B3B3]">
                       Genre
                     </span>
-                    <span className="text-sm font-medium font-text text-[#00B69B] bg-[#00B69B33] px-3 py-1 rounded-lg">
-                      {genre}
-                    </span>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedGenres.map((genre) => (
+                        <span
+                          key={genre._id}
+                          className="text-sm font-medium font-text text-[#00B69B] bg-[#00B69B33] px-3 py-1 rounded-lg"
+                        >
+                          {genre.name}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
