@@ -15,8 +15,8 @@ const Navigation = () => {
   const { clearAuth } = useAuthStorage();
 
   const logout = () => {
-    clearAuth(); // Verwijder token en user
-    navigate("/signin"); // Navigeer naar de signin pagina
+    clearAuth();
+    navigate("/signin");
   };
 
   return (

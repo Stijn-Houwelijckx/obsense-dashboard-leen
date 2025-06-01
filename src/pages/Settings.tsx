@@ -6,6 +6,7 @@ import backIcon from "../assets/img/back.svg";
 import arrowIcon from "../assets/img/arrow.svg";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { useAuthStorage } from "../store/authStorage";
 
 import Navigation from "components/Navigation";
 import NavigationDesktop from "components/NavigationDesktop";
@@ -28,9 +29,37 @@ const Settings = () => {
     dribbble: "",
   });
 
+  const navigate = useNavigate();
+  const { clearAuth } = useAuthStorage();
+
+  const handleDeleteAccount = async () => {
+    const token = localStorage.getItem("token");
+
+    if (!token) return;
+
+    try {
+      const response = await fetch("http://localhost:3000/api/v1/users/me", {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        useAuthStorage.getState().clearAuth();
+
+        navigate("/signin");
+      } else {
+        console.error("Failed to delete account");
+      }
+    } catch (error) {
+      console.error("Error deleting account:", error);
+    }
+  };
+
   useEffect(() => {
     if (activeTab === "General") {
-      fetch("/api/v1/users") // jouw echte endpoint
+      fetch("http://localhost:3000/api/v1/users")
         .then((res) => res.json())
         .then((data) => {
           setProfileData({
@@ -48,8 +77,8 @@ const Settings = () => {
   }, [activeTab]);
 
   const handleSaveChanges = () => {
-    fetch("/api/v1/users", {
-      method: "PUT", // of POST, afhankelijk van je API
+    fetch("http://localhost:3000/api/v1/users", {
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
@@ -229,9 +258,11 @@ const Settings = () => {
                       </React.Fragment>
                     ))}
                   </div>
-
                   <div className="mt-4 lg:mt-0">
-                    <button className="text-sm font-text text-red-400 border border-red-600 rounded px-4 py-2 hover:opacity-90 bg-[#FCA5A5]">
+                    <button
+                      onClick={handleDeleteAccount}
+                      className="text-sm font-text text-red-400 border border-red-600 rounded px-4 py-2 hover:opacity-90 bg-[#FCA5A5]"
+                    >
                       Delete account
                     </button>
                   </div>
