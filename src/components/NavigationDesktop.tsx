@@ -136,10 +136,11 @@ const NavigationDesktop = () => {
           >
             <div className="flex items-center gap-3">
               <img
-                src={profilePic}
+                src={user?.profilePicture?.filePath || profilePic}
                 alt="Profile"
                 className="w-10 h-10 rounded-full object-cover flex-shrink-0"
               />
+
               <div className="flex flex-col transition-all duration-300 max-w-0 group-hover:max-w-[160px] overflow-hidden">
                 <span className="text-xs font-text text-neutral-50 whitespace-nowrap">
                   Welcome back

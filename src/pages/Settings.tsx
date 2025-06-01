@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import profilePic from "assets/img/profilepic.png";
 import InputField from "components/InputField";
 import searchIcon from "../assets/img/search.svg";
@@ -202,6 +202,67 @@ const Settings = () => {
         ...prev,
         server: "Network error: " + (error.message || error.toString()),
       }));
+    }
+  };
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [profilePic, setProfilePic] = useState<string | null>(null);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    const file = e.target.files[0];
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setProfilePic(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    const formData = new FormData();
+    formData.append("profilePicture", file);
+
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch(
+        "http://localhost:3000/api/v1/users/me/profile-picture",
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        }
+      );
+      const data = await response.json();
+      if (data.status !== "success") {
+        // Optioneel error afhandelen
+        alert("Failed to upload image: " + data.message);
+      }
+    } catch (error) {
+      alert("Network error uploading image");
+    }
+  };
+
+  const handleDeleteProfileImage = async () => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch(
+        "http://localhost:3000/api/v1/users/me/profile-picture",
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = await response.json();
+      if (data.status === "success") {
+        setProfilePic(null);
+      } else {
+        alert("Failed to delete profile image: " + data.message);
+      }
+    } catch (error) {
+      alert("Network error deleting image");
     }
   };
 
@@ -415,11 +476,35 @@ const Settings = () => {
                 <h2 className="text-lg font-title font-semibold mb-4">
                   Your Profile
                 </h2>
-                <div className="flex justify-start mb-6">
+                <div className="items-center gap-4 mb-4">
                   <img
-                    src={profilePic}
+                    src={profilePic || "/default-profile.png"}
                     alt="Profile"
-                    className="w-[96px] h-[96px] rounded-full object-cover"
+                    className="w-24 h-24 rounded-full object-cover"
+                  />
+
+                  <div className="flex flex-row gap-2 mt-8 mb-8">
+                    <button
+                      onClick={() => fileInputRef.current?.click()}
+                      className="bg-primary-500 font-text text-neutral-50 text-sm font-semibold rounded px-3 py-2 hover:opacity-90 cursor-pointer"
+                    >
+                      Choose Profile Image
+                    </button>
+
+                    <button
+                      onClick={handleDeleteProfileImage}
+                      className="text-sm font-text font-semibold text-red-400 border border-red-600 rounded px-3 py-2 bg-[#FCA5A5] hover:opacity-90"
+                    >
+                      Delete
+                    </button>
+                  </div>
+
+                  <input
+                    type="file"
+                    accept="image/*"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    className="hidden"
                   />
                 </div>
 
