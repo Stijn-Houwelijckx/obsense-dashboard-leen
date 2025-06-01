@@ -13,9 +13,23 @@ import NavigationDesktop from "components/NavigationDesktop";
 
 const tabs = ["General", "Notification", "Wallet", "Security"];
 
+interface Errors {
+  currentPassword?: string;
+  newPassword?: string;
+  confirmNewPassword?: string;
+  server?: string;
+}
+
 const Settings = () => {
   const [activeTab, setActiveTab] = useState("General");
   const [securityPage, setSecurityPage] = useState("main");
+
+  const [currentPassword, setCurrentPassword] = React.useState("");
+  const [newPassword, setNewPassword] = React.useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = React.useState("");
+  const [errors, setErrors] = React.useState<Errors>({});
+
+  const [success, setSuccess] = React.useState(false);
 
   const handleBack = () => setSecurityPage("main");
   const [profileData, setProfileData] = useState({
@@ -59,18 +73,25 @@ const Settings = () => {
 
   useEffect(() => {
     if (activeTab === "General") {
-      fetch("http://localhost:3000/api/v1/users")
+      const token = localStorage.getItem("token");
+      fetch("http://localhost:3000/api/v1/users/me", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
         .then((res) => res.json())
         .then((data) => {
+          // data.data.user bevat de user info zoals in je API response
+          const user = data.data.user || {};
           setProfileData({
-            firstName: data.firstName || "",
-            lastName: data.lastName || "",
-            artistName: data.artistName || "",
-            email: data.email || "",
-            phoneNumber: data.phoneNumber || "",
-            instagram: data.instagram || "",
-            behance: data.behance || "",
-            dribbble: data.dribbble || "",
+            firstName: user.firstName || "",
+            lastName: user.lastName || "",
+            artistName: user.username || "", // username ipv artistName want dat heet zo in de db
+            email: user.email || "",
+            phoneNumber: user.phoneNumber || "", // check of je dit veld hebt in DB
+            instagram: "", // deze data haal je niet uit API, dus leeg laten
+            behance: "",
+            dribbble: "",
           });
         });
     }
@@ -95,6 +116,93 @@ const Settings = () => {
         alert("Error saving profile");
         console.error(err);
       });
+  };
+
+  const newErrors: Errors = {};
+
+  const handleChangePassword = async () => {
+    // Reset errors
+    setErrors({
+      currentPassword: "",
+      newPassword: "",
+      confirmNewPassword: "",
+      server: "",
+    });
+
+    let hasError = false;
+    const newErrors: { [key: string]: string } = {};
+
+    if (!currentPassword) {
+      newErrors.currentPassword = "Please enter your current password.";
+      hasError = true;
+    }
+
+    if (!newPassword) {
+      newErrors.newPassword = "Please enter a new password.";
+      hasError = true;
+    } else if (newPassword.length < 8) {
+      newErrors.newPassword = "New password must be at least 8 characters.";
+      hasError = true;
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      newErrors.confirmNewPassword = "Passwords do not match.";
+      hasError = true;
+    }
+
+    if (hasError) {
+      setErrors((prev) => ({ ...prev, ...newErrors }));
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+
+    try {
+      const response = await fetch(
+        "http://localhost:3000/api/v1/users/change-password",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            user: {
+              oldPassword: currentPassword,
+              newPassword: newPassword,
+            },
+          }),
+        }
+      );
+
+      const data = await response.json(); // <-- hier declareer je data!
+
+      if (data.status === "success") {
+        setSuccess(true);
+        navigate("/settings/security");
+      } else {
+        // Check of error message iets zegt over current password
+        if (
+          data.message &&
+          data.message.toLowerCase().includes("current password")
+        ) {
+          setErrors((prev) => ({
+            ...prev,
+            currentPassword: data.message,
+          }));
+        } else {
+          setErrors((prev) => ({
+            ...prev,
+            server: data.message || "Error changing password.",
+          }));
+        }
+      }
+    } catch (error: any) {
+      setErrors((prev) => ({
+        ...prev,
+        server: "Network error: " + (error.message || error.toString()),
+      }));
+    }
   };
 
   const renderSecuritySubPage = () => (
@@ -152,24 +260,54 @@ const Settings = () => {
               label="Current password"
               placeholder="Current password"
               type="password"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
               className="w-full font-text lg:w-1/3 h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
             />
+            {errors.currentPassword && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.currentPassword}
+              </p>
+            )}
+
             <InputField
               label="New password"
               placeholder="New password"
               type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
               className="w-full font-text lg:w-1/3 h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
             />
+            {errors.newPassword && (
+              <p className="text-red-500 text-sm mt-1">{errors.newPassword}</p>
+            )}
+
             <InputField
               label="Retype new password"
               placeholder="Retype new password"
               type="password"
+              value={confirmNewPassword}
+              onChange={(e) => setConfirmNewPassword(e.target.value)}
               className="w-full font-text lg:w-1/3 h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
             />
+            {errors.confirmNewPassword && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.confirmNewPassword}
+              </p>
+            )}
+
+            {errors.server && (
+              <p className="text-red-500 text-sm mt-1">{errors.server}</p>
+            )}
+
             <button className="text-sm font-text text-primary-500 text-left hover:underline">
               Forgot password?
             </button>
-            <button className="bg-primary-500 font-text text-white px-4 py-2 rounded-lg lg:w-1/5 w-full font-medium hover:opacity-90 transition">
+
+            <button
+              onClick={handleChangePassword}
+              className="bg-primary-500 font-text text-white px-4 py-2 rounded-lg lg:w-1/5 w-full font-medium hover:opacity-90 transition"
+            >
               Change password
             </button>
           </>

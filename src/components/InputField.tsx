@@ -19,6 +19,7 @@ const InputField: React.FC<InputFieldProps> = ({
   value,
   onChange,
   textarea = false,
+  type = "text",
 }) => {
   return (
     <div className="flex flex-col gap-1 w-full">
@@ -32,7 +33,7 @@ const InputField: React.FC<InputFieldProps> = ({
         />
       ) : (
         <input
-          type="text"
+          type={type || "text"}
           placeholder={placeholder}
           value={value}
           onChange={onChange}
