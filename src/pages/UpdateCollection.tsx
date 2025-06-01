@@ -290,7 +290,7 @@ const UpdateCollection = ({
           type: mode,
           genres: selectedGenres.map((g) => g._id),
           objects: selectedArtworks,
-          status: isDraft ? "draft" : "published",
+          isPublished: !isDraft,
         },
       })
     );

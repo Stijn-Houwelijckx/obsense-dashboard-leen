@@ -3,7 +3,8 @@ import { jwtDecode } from "jwt-decode";
 import { useAuthStorage } from "../store/authStorage";
 
 export const useAuthToken = () => {
-  const { token, clearToken } = useAuthStorage();
+  const { token } = useAuthStorage();
+  const { clearAuth } = useAuthStorage();
 
   const getUserIdFromToken = (token: string | null) => {
     if (!token) return null;
@@ -12,7 +13,7 @@ export const useAuthToken = () => {
       const decoded = jwtDecode<{ id: string }>(token);
       return decoded.id;
     } catch {
-      clearToken();
+      clearAuth();
       return null;
     }
   };

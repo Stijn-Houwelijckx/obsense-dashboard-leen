@@ -3,6 +3,7 @@ import hamburgerIcon from "assets/img/hamburger.svg";
 import closeIcon from "assets/img/close.svg";
 import profilePic from "assets/img/profilepic.png";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useAuthStorage } from "../store/authStorage";
 
 const Navigation = () => {
   const location = useLocation();
@@ -11,9 +12,11 @@ const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/signin");
+  const { clearAuth } = useAuthStorage();
+
+  const logout = () => {
+    clearAuth(); // Verwijder token en user
+    navigate("/signin"); // Navigeer naar de signin pagina
   };
 
   return (
@@ -100,7 +103,7 @@ const Navigation = () => {
               Settings
             </Link>
             <button
-              onClick={handleLogout}
+              onClick={logout}
               className="w-full font-text flex justify-center py-4 text-white hover:text-primary-500"
             >
               Logout

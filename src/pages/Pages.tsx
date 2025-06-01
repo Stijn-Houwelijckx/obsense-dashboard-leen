@@ -25,13 +25,13 @@ const Pages = () => {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/artworks" element={<Artworks />} />
           <Route path="/upload" element={<ArtworkUpload />} />
-          <Route path="/artworkform" element={<ArtworkForm />} />
+          <Route path="/artwork" element={<ArtworkForm />} />
           <Route path="/collections" element={<Collections />} />
-          <Route path="/create" element={<CreateCollection />} />
+          <Route path="/choose" element={<CreateCollection />} />
           <Route path="/edit" element={<UpdateCollection />} />
           <Route path="/settings" element={<Settings />} />
           <Route
-            path="/form"
+            path="/create"
             element={
               <CollectionForm
               // mode="tour"
