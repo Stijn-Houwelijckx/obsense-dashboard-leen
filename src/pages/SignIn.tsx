@@ -44,7 +44,7 @@ const SignIn = () => {
 
     try {
       const response = await authService.login(data);
-      const { token, ...user } = response.data.data;
+      const { token, ...user } = response.data;
 
       setToken(token);
       localStorage.setItem("token", token);
@@ -58,6 +58,7 @@ const SignIn = () => {
         navigate(targetPath, { replace: true });
       }
     } catch (error) {
+      console.error("Login error:", error);
       if (error instanceof AxiosError) {
         const fallbackError: ErrorResponse = {
           code: error.response?.status || 500,
