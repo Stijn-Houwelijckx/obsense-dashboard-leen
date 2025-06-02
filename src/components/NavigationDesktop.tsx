@@ -10,12 +10,21 @@ import logoutIcon from "assets/img/logout.svg";
 import arrowIcon from "assets/img/arrow.svg";
 import profilePic from "assets/img/profilepic.png";
 import { useAuthStorage } from "store/authStorage";
+import { useNavigate } from "react-router-dom";
 
 const NavigationDesktop = () => {
   const location = useLocation();
   const authState = useAuthStorage();
+  const navigate = useNavigate();
   // @ts-ignore
   const user = authState.user?.user;
+
+  const { clearAuth } = useAuthStorage();
+
+  const logout = () => {
+    clearAuth();
+    navigate("/signin");
+  };
 
   const isActive = (path: string) => location.pathname === path;
 

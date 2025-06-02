@@ -10,7 +10,7 @@ const CreateCollection = () => {
   const navigate = useNavigate();
 
   const handleCreate = (type: "tour" | "exposition") => {
-    navigate("/form", { state: { mode: type } });
+    navigate("/create", { state: { mode: type } });
   };
 
   return (

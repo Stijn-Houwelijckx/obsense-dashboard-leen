@@ -8,7 +8,7 @@ interface ArtworkCardProps {
   _id: string;
   title: string;
   thumbnailUrl?: string;
-  onRequestDelete: (id: string) => void; // anders dan onDelete: hier vraag je om bevestiging
+  onRequestDelete: (id: string) => void;
 }
 
 const ArtworkCard = ({
@@ -45,7 +45,7 @@ const ArtworkCard = ({
               alt="Edit"
               className="w-5 cursor-pointer"
               onClick={() => {
-                navigate("/artworkform", { state: { objectId: _id } });
+                navigate("/artwork", { state: { objectId: _id } });
               }}
             />
           </button>

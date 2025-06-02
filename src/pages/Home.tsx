@@ -7,7 +7,7 @@ interface CollectionType {
   _id: string;
   title: string;
   status: "draft" | "published";
-  bought?: number; // als je dat hebt, zo niet, fallback
+  bought?: number;
   likes?: number;
   views?: number;
 }
@@ -21,7 +21,6 @@ const Home = () => {
         const res = await api.get("/artist/collections");
         const collectionsData = res.data.data.collections as CollectionType[];
 
-        // Als bought, likes, views niet in API zitten, hier dummy data toevoegen
         const collectionsWithStats = collectionsData.map((c) => ({
           ...c,
           bought: c.bought ?? 0,

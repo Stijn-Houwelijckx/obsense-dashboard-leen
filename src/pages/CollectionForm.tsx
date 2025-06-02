@@ -149,7 +149,7 @@ const CollectionForm = () => {
   useEffect(() => {
     const fetchGenres = async () => {
       try {
-        const token = localStorage.getItem("token"); // pas aan hoe jij het opslaat
+        const token = localStorage.getItem("token");
         const res = await fetch("http://localhost:3000/api/v1/genres", {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -295,7 +295,6 @@ const CollectionForm = () => {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
-            // GEEN Content-Type hier — laat browser dat doen voor multipart/form-data
           },
           body: formData,
         }
@@ -506,7 +505,6 @@ const CollectionForm = () => {
                 </button>
               </div>
 
-              {/* Dropdown menu */}
               {showGenreDropdown && (
                 <div className="absolute z-10 mt-2 bg-secondary-700 text-white border border-neutral-600 rounded-lg shadow-md p-2 w-48">
                   {allGenres.map((genre) => (

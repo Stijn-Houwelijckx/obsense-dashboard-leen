@@ -120,7 +120,6 @@ const ArtworkForm = () => {
       if (result.thumbnail && result.thumbnail.filePath) {
         setThumbnailUrl(result.thumbnail.filePath);
       } else {
-        // fallback: tijdelijk URL uit lokale file
         const tempUrl = URL.createObjectURL(file);
         setThumbnailUrl(tempUrl);
       }

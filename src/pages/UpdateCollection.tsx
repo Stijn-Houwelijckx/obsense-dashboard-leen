@@ -111,7 +111,6 @@ const UpdateCollection = ({
         const data = await res.json();
         const coll = data.data.collection;
 
-        // Vul de state
         setSelectedArtworks((coll.objects || []).map((id: any) => String(id)));
         setTitle(coll.title || "");
         setDescription(coll.description || "");
@@ -136,7 +135,6 @@ const UpdateCollection = ({
   }, [collId]);
 
   const handleSelectGenre = (genre: Genre) => {
-    // Voeg alleen toe als nog niet geselecteerd
     if (!selectedGenres.find((g) => g._id === genre._id)) {
       setSelectedGenres([...selectedGenres, genre]);
     }
@@ -147,7 +145,6 @@ const UpdateCollection = ({
     setSelectedGenres(selectedGenres.filter((g) => g._id !== id));
   };
 
-  // Artworks ophalen (blijft hetzelfde)
   useEffect(() => {
     const fetchArtworks = async () => {
       try {
@@ -178,7 +175,6 @@ const UpdateCollection = ({
   const [selectedGenres, setSelectedGenres] = useState<Genre[]>([]);
   const [showGenreDropdown, setShowGenreDropdown] = useState(false);
 
-  // Validaties en stappenlogica blijven hetzelfde
   const handlePriceChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -220,7 +216,6 @@ const UpdateCollection = ({
     }
 
     if (!coverImageFile && !coverImageUrl) {
-      // Ook geen bestaande coverImage? Dan error
       setCoverImageError(true);
       hasError = true;
     } else {
@@ -311,7 +306,6 @@ const UpdateCollection = ({
       if (res.ok) {
         window.location.href = "/collections";
       } else {
-        // Probeer JSON te parsen uit de tekst
         let text = "";
         try {
           text = await res.text();
@@ -445,7 +439,16 @@ const UpdateCollection = ({
               : "Step 3: Overview"}
           </h1>
 
-          {/* Navigation components can be added here */}
+          <div className="flex items-center justify-between mb-10">
+            <div className="flex gap-2">
+              <div className="md:hidden">
+                <Navigation />
+              </div>
+            </div>
+            <div className="hidden md:block w-[250px]">
+              <NavigationDesktop />
+            </div>
+          </div>
         </div>
         {step === 2 && (
           <p className="text-sm font-text text-neutral-300 font-medium mt-2">
@@ -576,7 +579,6 @@ const UpdateCollection = ({
                   </button>
                 </div>
 
-                {/* Dropdown menu */}
                 {showGenreDropdown && (
                   <div className="absolute z-10 mt-2 bg-secondary-700 text-white border border-neutral-600 rounded-lg shadow-md p-2 w-48">
                     {allGenres.map((genre) => (
@@ -772,7 +774,6 @@ const UpdateCollection = ({
               </div>
             </div>
 
-            {/* Artworks */}
             <div className="w-full mb-10 mt-6">
               <h6 className="mb-4 font-title font-semibold">Artworks</h6>
               <div className="flex flex-col gap-4">
@@ -826,7 +827,7 @@ const UpdateCollection = ({
                       className="bg-primary-500 font-text text-white px-6 py-2 rounded-lg hover:opacity-90 transition"
                       onClick={() => {
                         setShowPublishConfirm(false);
-                        handlePublish(false); // publish als 'published'
+                        handlePublish(false);
                       }}
                     >
                       Yes, I'm sure

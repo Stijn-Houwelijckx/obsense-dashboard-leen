@@ -81,15 +81,14 @@ const Settings = () => {
       })
         .then((res) => res.json())
         .then((data) => {
-          // data.data.user bevat de user info zoals in je API response
           const user = data.data.user || {};
           setProfileData({
             firstName: user.firstName || "",
             lastName: user.lastName || "",
-            artistName: user.username || "", // username ipv artistName want dat heet zo in de db
+            artistName: user.username || "",
             email: user.email || "",
-            phoneNumber: user.phoneNumber || "", // check of je dit veld hebt in DB
-            instagram: "", // deze data haal je niet uit API, dus leeg laten
+            phoneNumber: user.phoneNumber || "",
+            instagram: "",
             behance: "",
             dribbble: "",
           });
@@ -121,7 +120,6 @@ const Settings = () => {
   const newErrors: Errors = {};
 
   const handleChangePassword = async () => {
-    // Reset errors
     setErrors({
       currentPassword: "",
       newPassword: "",
@@ -175,13 +173,12 @@ const Settings = () => {
         }
       );
 
-      const data = await response.json(); // <-- hier declareer je data!
+      const data = await response.json();
 
       if (data.status === "success") {
         setSuccess(true);
         navigate("/settings/security");
       } else {
-        // Check of error message iets zegt over current password
         if (
           data.message &&
           data.message.toLowerCase().includes("current password")
@@ -235,7 +232,6 @@ const Settings = () => {
       );
       const data = await response.json();
       if (data.status !== "success") {
-        // Optioneel error afhandelen
         alert("Failed to upload image: " + data.message);
       }
     } catch (error) {
@@ -765,7 +761,7 @@ const Settings = () => {
                 </p>
                 <button
                   onClick={() => {
-                    navigate("/create");
+                    navigate("/choose");
                   }}
                   className="bg-primary-500 font-text text-white px-6 py-3 rounded-lg font-medium hover:opacity-90 transition"
                 >

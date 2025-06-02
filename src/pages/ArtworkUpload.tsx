@@ -62,7 +62,7 @@ const ArtworkUpload = () => {
 
       const objectId = response.data.data.object._id;
       setIsUploading(false);
-      navigate("/artworkform", { state: { objectId } });
+      navigate("/artwork", { state: { objectId } });
     } catch (err: any) {
       setIsUploading(false);
       setError("Something went wrong during upload.");
@@ -100,7 +100,6 @@ const ArtworkUpload = () => {
 
     setFiles(selectedFiles);
 
-    // Upload meteen de eerste file
     console.log("Files ready to upload:", selectedFiles[0]);
 
     await uploadFile(selectedFiles[0]);

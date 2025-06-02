@@ -58,6 +58,11 @@ export const authService = {
     const response = await api.get("/users/me");
     return response.data;
   },
+
+  makeArtist: async () => {
+    const response = await api.patch("/users/me/make-artist");
+    return response.data;
+  },
 };
 
 export default api;

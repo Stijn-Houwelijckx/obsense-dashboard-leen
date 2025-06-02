@@ -95,7 +95,6 @@ const Collections = () => {
         <h1 className="text-2xl font-title font-bold">Your Collections</h1>
 
         <div className="flex items-center gap-2">
-          {/* Mobile search */}
           <div className="lg:hidden w-full" ref={searchRef}>
             {!isSearchOpen ? (
               <div
@@ -116,7 +115,6 @@ const Collections = () => {
             )}
           </div>
 
-          {/* Desktop search */}
           <div className="hidden lg:flex items-center w-[300px] bg-secondary-800 border border-neutral-500 rounded-[10px] px-[18px] py-[8px]">
             <img
               src={searchIcon}
@@ -144,7 +142,7 @@ const Collections = () => {
       {filteredCollections.length > 0 ? (
         <div className="grid gap-5 justify-items-center grid-cols-[repeat(auto-fit,minmax(250px,1fr))] pb-8">
           <div
-            onClick={() => navigate("/create")}
+            onClick={() => navigate("/choose")}
             className="w-full h-[350px] p-[11px] bg-secondary-800 rounded-lg flex flex-col items-center justify-center text-center cursor-pointer"
           >
             <div className="relative w-full h-[328px] p-[11px] rounded-lg bg-secondary-700 flex flex-col items-center justify-center text-center">

@@ -23,10 +23,9 @@ type SignUpData = Omit<User, "isArtist" | "profilePicture" | "tokens">;
 const SignUp = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  // console.log("location.state:", location.state);
 
   const targetPath = "/";
-  const { setToken, setUser } = useAuthStorage(); // <-- setUser toegevoegd
+  const { setToken, setUser } = useAuthStorage();
 
   const {
     register,
@@ -80,7 +79,6 @@ const SignUp = () => {
         isArtist: true,
       };
 
-      // Signup aanroepen
       const response = await authService.signup(userData);
       console.log("Signup response:", response);
 
@@ -325,7 +323,6 @@ const SignUp = () => {
                 <LogoButton icon={FacebookIcon} type="button" />
               </div>
 
-              {/* Mobile only sign-in link */}
               <div className="flex justify-center pt-12 lg:hidden">
                 <Link to="/signin" className="text-neutral-50 opacity-75">
                   Already have an account?{" "}
