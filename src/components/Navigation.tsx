@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import hamburgerIcon from "assets/img/hamburger.svg";
 import closeIcon from "assets/img/close.svg";
 import profilePic from "assets/img/profilepic.png";
@@ -18,6 +18,32 @@ const Navigation = () => {
     clearAuth();
     navigate("/signin");
   };
+
+  const [userData, setUserData] = useState<{
+    firstName: string;
+    profilePicture?: { filePath: string };
+  }>({ firstName: "Guest" });
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      fetch("http://localhost:3000/api/v1/users/me", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          const user = data.data?.user;
+          if (user) {
+            setUserData({
+              firstName: user.firstName || "Guest",
+              profilePicture: user.profilePicture,
+            });
+          }
+        });
+    }
+  }, []);
 
   return (
     <>
@@ -110,9 +136,9 @@ const Navigation = () => {
             </button>
             <div className="mt-6">
               <img
-                src={profilePic}
+                src={userData.profilePicture?.filePath || profilePic}
                 alt="Profile"
-                className="w-14 h-14 rounded-full object-cover"
+                className="w-10 h-10 rounded-full object-cover flex-shrink-0"
               />
             </div>
           </div>

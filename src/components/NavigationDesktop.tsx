@@ -57,7 +57,6 @@ const NavigationDesktop = () => {
     { icon: logoutIcon, path: "#", alt: "Logout", label: "Logout" },
   ];
 
-  // ✅ State to hold user info
   const [userData, setUserData] = useState<{
     firstName: string;
     profilePicture?: { filePath: string };
