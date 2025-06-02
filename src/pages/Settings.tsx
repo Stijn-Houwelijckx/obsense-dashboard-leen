@@ -177,7 +177,7 @@ const Settings = () => {
 
       if (data.status === "success") {
         setSuccess(true);
-        navigate("/settings/security");
+        navigate("/settings");
       } else {
         if (
           data.message &&

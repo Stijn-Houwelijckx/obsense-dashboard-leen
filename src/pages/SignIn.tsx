@@ -24,6 +24,10 @@ const SignIn = () => {
     return !!error?.data?.message?.toLowerCase().includes("email");
   };
 
+  const isPasswordError = (error: ErrorResponse | null): boolean => {
+    return !!error?.data?.message?.toLowerCase().includes("password");
+  };
+
   const [showArtistConfirm, setShowArtistConfirm] = useState(false);
   const [tempUser, setTempUser] = useState<any>(null);
   const {
@@ -36,12 +40,15 @@ const SignIn = () => {
   const [signInError, setSignInError] = useState<ErrorResponse | null>(null);
 
   const onSubmit = async (data: SignInData) => {
+    setSignInError(null);
+
     try {
       const response = await authService.login(data);
-      setToken(response.data.token);
-      localStorage.setItem("token", response.data.token);
+      const { token, ...user } = response.data.data;
 
-      const user = response.data.user?.user ?? response.data.user;
+      setToken(token);
+      localStorage.setItem("token", token);
+
       setUser(user);
 
       if (!user.isArtist) {
@@ -79,35 +86,35 @@ const SignIn = () => {
     reset();
   };
 
-  if (signInError) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-secondary-900 px-4">
-        <div className="w-full max-w-[650px] bg-secondary-800 p-8 rounded-2xl text-center">
-          <h2 className="font-title font-medium text-2xl text-neutral-50 mb-4">
-            {signInError.data.message}
-          </h2>
-          <img className="mx-auto w-1/2 mb-4" src={errorImage} alt="Error" />
-          <div className="flex flex-col items-center gap-4 mt-6">
-            <span className="uppercase text-xs text-neutral-200 bg-secondary-700 px-2.5 py-1.5 rounded-md tracking-wide">
-              {signInError.status}_{signInError.code}
-            </span>
-            {signInError.data.details && (
-              <p className="text-sm text-neutral-200 p-5 text-center bg-secondary-700 rounded-lg">
-                {signInError.data.details}
-              </p>
-            )}
-          </div>
-          <div className="mt-6">
-            <Button
-              label="Try Again"
-              type="button"
-              onClick={handleErrorReset}
-            />
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // if (signInError) {
+  //   return (
+  //     <div className="min-h-screen flex items-center justify-center bg-secondary-900 px-4">
+  //       <div className="w-full max-w-[650px] bg-secondary-800 p-8 rounded-2xl text-center">
+  //         <h2 className="font-title font-medium text-2xl text-neutral-50 mb-4">
+  //           {signInError.data.message}
+  //         </h2>
+  //         <img className="mx-auto w-1/2 mb-4" src={errorImage} alt="Error" />
+  //         <div className="flex flex-col items-center gap-4 mt-6">
+  //           <span className="uppercase text-xs text-neutral-200 bg-secondary-700 px-2.5 py-1.5 rounded-md tracking-wide">
+  //             {signInError.status}_{signInError.code}
+  //           </span>
+  //           {signInError.data.details && (
+  //             <p className="text-sm text-neutral-200 p-5 text-center bg-secondary-700 rounded-lg">
+  //               {signInError.data.details}
+  //             </p>
+  //           )}
+  //         </div>
+  //         <div className="mt-6">
+  //           <Button
+  //             label="Try Again"
+  //             type="button"
+  //             onClick={handleErrorReset}
+  //           />
+  //         </div>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-secondary-900 px-4 relative overflow-hidden">
@@ -177,7 +184,7 @@ const SignIn = () => {
               inputClassName="text-neutral-50"
               errorMessage={
                 isEmailError(signInError)
-                  ? signInError!.data.message
+                  ? signInError?.data.message
                   : undefined
               }
             />
@@ -193,8 +200,8 @@ const SignIn = () => {
               labelClassName="text-neutral-50"
               inputClassName="text-neutral-50"
               errorMessage={
-                isEmailError(signInError)
-                  ? signInError!.data.message
+                isPasswordError(signInError)
+                  ? signInError?.data.message
                   : undefined
               }
             />
@@ -208,6 +215,13 @@ const SignIn = () => {
               type="submit"
               onClick={handleSubmit(onSubmit)}
             />
+            {signInError &&
+              !isEmailError(signInError) &&
+              !isPasswordError(signInError) && (
+                <p className="text-red-500 text-sm pt-2">
+                  {signInError.data.message}
+                </p>
+              )}
           </form>
 
           <div className="flex items-center py-6">
