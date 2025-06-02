@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import favicon from "assets/img/favicon.svg";
 import homeIcon from "assets/img/home.svg";
 import collectionsIcon from "assets/img/collections.svg";
@@ -10,7 +10,6 @@ import logoutIcon from "assets/img/logout.svg";
 import arrowIcon from "assets/img/arrow.svg";
 import profilePic from "assets/img/profilepic.png";
 import { useAuthStorage } from "store/authStorage";
-import { useNavigate } from "react-router-dom";
 
 const NavigationDesktop = () => {
   const location = useLocation();
@@ -48,16 +47,6 @@ const NavigationDesktop = () => {
       alt: "Insights",
       label: "Insights",
     },
-  ];
-
-  const bottomItems = [
-    {
-      icon: settingsIcon,
-      path: "/settings",
-      alt: "Settings",
-      label: "Settings",
-    },
-    { icon: logoutIcon, path: "#", alt: "Logout", label: "Logout" },
   ];
 
   return (
@@ -105,37 +94,29 @@ const NavigationDesktop = () => {
         </div>
 
         <div className="flex flex-col px-4 items-start gap-6">
-          {bottomItems.map(({ icon, path, alt, label }) => {
-            const active = isActive(path);
-            return (
-              <Link
-                to={path}
-                key={alt}
-                className={`flex font-text items-center gap-3 pl-2 pr-4 py-2 rounded-[10px] transition-colors duration-300 w-full ${
-                  active
-                    ? "bg-primary-500/20 text-primary-500"
-                    : "text-neutral-50"
-                }`}
-              >
-                <img
-                  src={icon}
-                  alt={alt}
-                  className={`w-6 h-6 transition-colors ${
-                    active ? "filter-primary" : ""
-                  }`}
-                />
-                <span
-                  className={`text-sm font-text transition-all duration-300 whitespace-nowrap overflow-hidden ${
-                    active
-                      ? "text-primary-500 max-w-[200px]"
-                      : "max-w-0 group-hover:max-w-[200px]"
-                  }`}
-                >
-                  {label}
-                </span>
-              </Link>
-            );
-          })}
+          <Link
+            to="/settings"
+            className={`flex font-text items-center gap-3 pl-2 pr-4 py-2 rounded-[10px] transition-colors duration-300 w-full ${
+              isActive("/settings")
+                ? "bg-primary-500/20 text-primary-500"
+                : "text-neutral-50"
+            }`}
+          >
+            <img src={settingsIcon} alt="Settings" className="w-6 h-6" />
+            <span className="text-sm font-text transition-all duration-300 whitespace-nowrap overflow-hidden max-w-0 group-hover:max-w-[200px]">
+              Settings
+            </span>
+          </Link>
+
+          <button
+            onClick={logout}
+            className="flex font-text items-center gap-3 pl-2 pr-4 py-2 rounded-[10px] transition-colors duration-300 w-full text-neutral-50 hover:text-primary-500"
+          >
+            <img src={logoutIcon} alt="Logout" className="w-6 h-6" />
+            <span className="text-sm font-text transition-all duration-300 whitespace-nowrap overflow-hidden max-w-0 group-hover:max-w-[200px]">
+              Logout
+            </span>
+          </button>
 
           <div className="h-[1px] bg-secondary-700 w-full my-6" />
 
@@ -149,7 +130,6 @@ const NavigationDesktop = () => {
                 alt="Profile"
                 className="w-10 h-10 rounded-full object-cover flex-shrink-0"
               />
-
               <div className="flex flex-col transition-all duration-300 max-w-0 group-hover:max-w-[160px] overflow-hidden">
                 <span className="text-xs font-text text-neutral-50 whitespace-nowrap">
                   Welcome back
@@ -159,7 +139,6 @@ const NavigationDesktop = () => {
                 </span>
               </div>
             </div>
-
             <img
               src={arrowIcon}
               alt="Arrow"
