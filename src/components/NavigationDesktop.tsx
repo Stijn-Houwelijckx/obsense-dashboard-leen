@@ -65,7 +65,7 @@ const NavigationDesktop = () => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      fetch("http://localhost:3000/api/v1/users/me", {
+      fetch("VITE_API_URL/users/me", {
         headers: {
           Authorization: `Bearer ${token}`,
         },

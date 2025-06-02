@@ -94,7 +94,7 @@ const ArtworkForm = () => {
       console.log("Sending token:", token);
 
       const response = await fetch(
-        `http://localhost:3000/api/v1/objects/${objectId}/thumbnail`,
+        `VITE_API_URL/objects/${objectId}/thumbnail`,
         {
           method: "POST",
           headers: {
@@ -139,7 +139,7 @@ const ArtworkForm = () => {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        `http://localhost:3000/api/v1/objects/${objectId}/thumbnail`,
+        `VITE_API_URL/objects/${objectId}/thumbnail`,
         {
           method: "DELETE",
           headers: {

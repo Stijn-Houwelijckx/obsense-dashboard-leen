@@ -52,7 +52,7 @@ const Settings = () => {
     if (!token) return;
 
     try {
-      const response = await fetch("http://localhost:3000/api/v1/users/me", {
+      const response = await fetch("VITE_API_URL/users/me", {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -74,7 +74,7 @@ const Settings = () => {
   useEffect(() => {
     if (activeTab === "General") {
       const token = localStorage.getItem("token");
-      fetch("http://localhost:3000/api/v1/users/me", {
+      fetch("VITE_API_URL/users/me", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -97,7 +97,7 @@ const Settings = () => {
   }, [activeTab]);
 
   const handleSaveChanges = () => {
-    fetch("http://localhost:3000/api/v1/users", {
+    fetch("VITE_API_URL/users", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -156,22 +156,19 @@ const Settings = () => {
     const token = localStorage.getItem("token");
 
     try {
-      const response = await fetch(
-        "http://localhost:3000/api/v1/users/change-password",
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+      const response = await fetch("VITE_API_URL/users/change-password", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          user: {
+            oldPassword: currentPassword,
+            newPassword: newPassword,
           },
-          body: JSON.stringify({
-            user: {
-              oldPassword: currentPassword,
-              newPassword: newPassword,
-            },
-          }),
-        }
-      );
+        }),
+      });
 
       const data = await response.json();
 
@@ -220,16 +217,13 @@ const Settings = () => {
 
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(
-        "http://localhost:3000/api/v1/users/me/profile-picture",
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: formData,
-        }
-      );
+      const response = await fetch("VITE_API_URL/users/me/profile-picture", {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
       const data = await response.json();
       if (data.status !== "success") {
         alert("Failed to upload image: " + data.message);
@@ -242,15 +236,12 @@ const Settings = () => {
   const handleDeleteProfileImage = async () => {
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(
-        "http://localhost:3000/api/v1/users/me/profile-picture",
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await fetch("VITE_API_URL/users/me/profile-picture", {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const data = await response.json();
       if (data.status === "success") {
         setProfilePic(null);
