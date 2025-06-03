@@ -26,6 +26,8 @@ interface StepTwoFormProps {
   };
 }
 
+type Artwork = { _id: string };
+
 type Genre = {
   _id: string;
   name: string;
@@ -58,6 +60,7 @@ const UpdateCollection = ({
   const [cityOrLocation, setCityOrLocation] = useState("");
   const [price, setPrice] = useState("");
   const [selectedArtworks, setSelectedArtworks] = useState<string[]>([]);
+
   const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
   const [coverImageUrl, setCoverImageUrl] = useState<string | null>(null);
   const [genre, setGenre] = useState("Low-Poly");
@@ -111,7 +114,9 @@ const UpdateCollection = ({
         const data = await res.json();
         const coll = data.data.collection;
 
-        setSelectedArtworks((coll.objects || []).map((id: any) => String(id)));
+        setSelectedArtworks(
+          (coll.objects || []).map((artwork: any) => artwork._id)
+        );
         setTitle(coll.title || "");
         setDescription(coll.description || "");
         setCityOrLocation(coll.city || "");
@@ -129,6 +134,7 @@ const UpdateCollection = ({
         console.error("Error loading collection:", err);
         alert("Failed to load collection data.");
       }
+      setLoadingCollection(false);
     };
 
     fetchCollection();
@@ -144,6 +150,9 @@ const UpdateCollection = ({
   const handleRemoveGenre = (id: string) => {
     setSelectedGenres(selectedGenres.filter((g) => g._id !== id));
   };
+
+  const [loadingArtworks, setLoadingArtworks] = useState(true);
+  const [loadingCollection, setLoadingCollection] = useState(true);
 
   useEffect(() => {
     const fetchArtworks = async () => {
@@ -166,6 +175,7 @@ const UpdateCollection = ({
         console.error("Failed to load artworks", err);
         setArtworks([]);
       }
+      setLoadingArtworks(false);
     };
 
     fetchArtworks();
@@ -228,10 +238,8 @@ const UpdateCollection = ({
   };
 
   const toggleArtwork = (id: string) => {
-    setSelectedArtworks((prevSelected) =>
-      prevSelected.includes(id)
-        ? prevSelected.filter((artworkId) => artworkId !== id)
-        : [...prevSelected, id]
+    setSelectedArtworks((prev) =>
+      prev.includes(id) ? prev.filter((a) => a !== id) : [...prev, id]
     );
   };
 
@@ -256,68 +264,115 @@ const UpdateCollection = ({
       return;
     }
 
-    const formData = new FormData();
-
-    if (coverImageFile) {
-      formData.append("coverImage", coverImageFile);
-    }
-
-    formData.append("title", title.trim());
-    formData.append("description", description.trim());
-    formData.append("city", cityOrLocation.trim());
-    formData.append("price", price.toString());
-    formData.append("type", mode);
-    formData.append("_id", collId);
-    formData.append("status", isDraft ? "draft" : "published");
-
-    if (coverImageFile) {
-      formData.append("coverImage", coverImageFile);
-    }
-
-    formData.append(
-      "collection",
-      JSON.stringify({
-        collection: {
-          title: title.trim(),
-          description: description.trim(),
-          city: cityOrLocation.trim(),
-          price: parseFloat(price),
-          type: mode,
-          genres: selectedGenres.map((g) => g._id),
-          objects: selectedArtworks,
-          isPublished: !isDraft,
-        },
-      })
-    );
-
     try {
       const token = localStorage.getItem("token");
-      const url = `http://localhost:3000/api/v1/artist/collections/${collId}`;
-      const method = "PUT";
+      const formData = new FormData();
 
+      if (coverImageFile) {
+        formData.append("coverImage", coverImageFile);
+      }
+
+      formData.append("title", title.trim());
+      formData.append("description", description.trim());
+      formData.append("city", cityOrLocation.trim());
+      formData.append("price", price.toString());
+      formData.append("type", mode);
+      formData.append("_id", collId);
+      formData.append("status", isDraft ? "draft" : "published");
+
+      // De collectie update zonder artworks (of met lege array)
+      formData.append(
+        "collection",
+        JSON.stringify({
+          collection: {
+            title: title.trim(),
+            description: description.trim(),
+            city: cityOrLocation.trim(),
+            price: parseFloat(price),
+            type: mode,
+            genres: selectedGenres.map((g) => g._id),
+            objects: [], // eerst zonder artworks
+            isPublished: !isDraft,
+          },
+        })
+      );
+
+      // 1. PUT update collectie
+      const url = `http://localhost:3000/api/v1/artist/collections/${collId}`;
       const res = await fetch(url, {
-        method,
+        method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
         },
         body: formData,
       });
 
-      if (res.ok) {
-        window.location.href = "/collections";
-      } else {
-        let text = "";
+      if (!res.ok) {
+        const text = await res.text();
         try {
-          text = await res.text();
-          console.log("Response text:", text);
           const error = JSON.parse(text);
           alert("Fout: " + JSON.stringify(error, null, 2));
-        } catch (parseErr) {
-          console.error("Fout tijdens parsen:", parseErr);
-          console.error("Raw response:", text);
+        } catch {
           alert("Onverwachte fout: " + text);
         }
+        return;
       }
+
+      const selectedArtworkIds = selectedArtworks.filter(Boolean);
+
+      console.log("Artwork IDs to add:", selectedArtworkIds);
+
+      if (selectedArtworkIds.length > 0) {
+        const patchRes = await fetch(
+          `http://localhost:3000/api/v1/artist/collections/${collId}/add-objects`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              objects: { objectIds: selectedArtworkIds },
+            }),
+          }
+        );
+
+        if (!patchRes.ok) {
+          const patchText = await patchRes.text();
+          try {
+            const patchError = JSON.parse(patchText);
+            alert(
+              "Fout bij toevoegen artworks: " +
+                JSON.stringify(patchError, null, 2)
+            );
+          } catch {
+            alert("Onverwachte fout bij toevoegen artworks: " + patchText);
+          }
+          return;
+        }
+      }
+
+      // 3. Indien niet draft, toggle publish via aparte endpoint
+      if (!isDraft) {
+        const publishRes = await fetch(
+          `http://localhost:3000/api/v1/artist/collections/${collId}/toggle-publish`,
+          {
+            method: "PATCH",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (!publishRes.ok) {
+          const publishText = await publishRes.text();
+          alert("Fout bij publiceren: " + publishText);
+          return;
+        }
+      }
+
+      // 4. Navigeren
+      window.location.href = "/collections";
     } catch (err) {
       console.error("Error:", err);
       alert("Something went wrong.");
@@ -613,7 +668,7 @@ const UpdateCollection = ({
       )}
 
       {/* Step 2: Artwork Selection */}
-      {step === 2 && (
+      {step === 2 && !loadingArtworks && !loadingCollection && (
         <>
           {artworks.length === 0 ? (
             <div className="w-full font-text h-[350px] flex items-center justify-center text-neutral-400 text-lg font-semibold">
@@ -633,7 +688,14 @@ const UpdateCollection = ({
                 );
 
                 console.log("Artworks:", artworks);
-                console.log("SelectedArtworks:", selectedArtworks);
+                console.log("SelectedArtworks (raw):", selectedArtworks);
+
+                console.log(
+                  "SelectedArtworks (stringified):",
+                  selectedArtworks.map((a) =>
+                    typeof a === "string" ? a : JSON.stringify(a)
+                  )
+                );
 
                 return (
                   <div
