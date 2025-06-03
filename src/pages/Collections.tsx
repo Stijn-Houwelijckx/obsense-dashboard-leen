@@ -162,7 +162,7 @@ const Collections = () => {
               _id={collection._id}
               title={collection.title}
               image={collection.coverImage?.filePath || ""}
-              status={collection.status}
+              status={collection.isPublished ? "published" : "draft"}
               collectionId={collection._id}
               onRequestDelete={handleRequestDelete}
             />

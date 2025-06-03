@@ -285,7 +285,6 @@ const UpdateCollection = ({
       formData.append("_id", collId);
       formData.append("status", isDraft ? "draft" : "published");
 
-      // De collectie update zonder artworks (of met lege array)
       formData.append(
         "collection",
         JSON.stringify({
@@ -296,13 +295,12 @@ const UpdateCollection = ({
             price: parseFloat(price),
             type: mode,
             genres: selectedGenres.map((g) => g._id),
-            objects: [], // eerst zonder artworks
+            objects: [],
             isPublished: !isDraft,
           },
         })
       );
 
-      // 1. PUT update collectie
       const url = `http://localhost:3000/api/v1/artist/collections/${collId}`;
       const res = await fetch(url, {
         method: "PUT",
@@ -325,7 +323,6 @@ const UpdateCollection = ({
 
       const selectedArtworkIds = selectedArtworks.filter(Boolean);
 
-      // Vergelijk met originele lijst
       const newArtworkIds = selectedArtworkIds.filter(
         (id) => !originalArtworks.includes(id)
       );
@@ -362,7 +359,6 @@ const UpdateCollection = ({
         }
       }
 
-      // 3. Indien niet draft, toggle publish via aparte endpoint
       if (!isDraft) {
         const publishRes = await fetch(
           `http://localhost:3000/api/v1/artist/collections/${collId}/toggle-publish`,
