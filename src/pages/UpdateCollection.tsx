@@ -72,6 +72,8 @@ const UpdateCollection = ({
   const [priceError, setPriceError] = useState(false);
   const [coverImageError, setCoverImageError] = useState(false);
 
+  const [originalArtworks, setOriginalArtworks] = useState<string[]>([]);
+
   const [artworks, setArtworks] = useState<
     { _id: string; title: string; image: string }[]
   >([]);
@@ -114,9 +116,12 @@ const UpdateCollection = ({
         const data = await res.json();
         const coll = data.data.collection;
 
-        setSelectedArtworks(
-          (coll.objects || []).map((artwork: any) => artwork._id)
+        const artworkIds = (coll.objects || []).map(
+          (artwork: any) => artwork._id
         );
+        setSelectedArtworks(artworkIds);
+        setOriginalArtworks(artworkIds);
+
         setTitle(coll.title || "");
         setDescription(coll.description || "");
         setCityOrLocation(coll.city || "");
@@ -320,9 +325,14 @@ const UpdateCollection = ({
 
       const selectedArtworkIds = selectedArtworks.filter(Boolean);
 
-      console.log("Artwork IDs to add:", selectedArtworkIds);
+      // Vergelijk met originele lijst
+      const newArtworkIds = selectedArtworkIds.filter(
+        (id) => !originalArtworks.includes(id)
+      );
 
-      if (selectedArtworkIds.length > 0) {
+      console.log("Nieuwe artwork IDs om toe te voegen:", newArtworkIds);
+
+      if (newArtworkIds.length > 0) {
         const patchRes = await fetch(
           `http://localhost:3000/api/v1/artist/collections/${collId}/add-objects`,
           {
@@ -332,7 +342,7 @@ const UpdateCollection = ({
               Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify({
-              objects: { objectIds: selectedArtworkIds },
+              objects: { objectIds: newArtworkIds },
             }),
           }
         );
