@@ -268,9 +268,6 @@ const CollectionForm = () => {
     const formData = new FormData();
     formData.append("coverImage", coverImageFile);
 
-    console.log("mode (type):", mode);
-    console.log("mode before send:", mode);
-
     formData.append(
       "collection",
       JSON.stringify({
@@ -281,7 +278,9 @@ const CollectionForm = () => {
           price: parseFloat(price),
           type: mode,
           genres: selectedGenres.map((g) => g._id),
-          objects: selectedArtworks,
+          // Je stuurt hier alvast selectedArtworks mee, maar dat is volgens jou pas patch call
+          // Dus je kunt hier eventueel [] laten of niet meesturen
+          objects: [],
           status: isDraft ? "draft" : "published",
         },
       })
@@ -289,6 +288,8 @@ const CollectionForm = () => {
 
     try {
       const token = localStorage.getItem("token");
+
+      // 1. POST call collection aanmaken
       const res = await fetch(
         "http://localhost:3000/api/v1/artist/collections",
         {
@@ -301,20 +302,51 @@ const CollectionForm = () => {
       );
 
       if (!res.ok) {
-        let errorJson: any;
-        try {
-          errorJson = await res.json();
-        } catch (err) {
-          const fallbackText = await res.text();
-          console.error("Server returned non-JSON error:", fallbackText);
-          alert("Unexpected server error:\n" + fallbackText);
-          return;
-        }
-
-        console.error("Backend error:", errorJson);
-        alert("Fout:\n" + JSON.stringify(errorJson, null, 2));
+        const errorJson = await res.json().catch(() => null);
+        alert(
+          "Fout:\n" + JSON.stringify(errorJson || (await res.text()), null, 2)
+        );
+        return;
       }
 
+      const data = await res.json();
+
+      // Veronderstel dat de nieuwe collectie ID hier zit
+      const collectionId = data.data.collection._id;
+      if (!collectionId) {
+        alert("Collection ID not returned from server.");
+        return;
+      }
+
+      // 2. PATCH call om artworks toe te voegen (indien artworks aanwezig)
+      if (selectedArtworks.length > 0) {
+        const patchRes = await fetch(
+          `http://localhost:3000/api/v1/artist/collections/${collectionId}/add-objects`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              objects: {
+                objectIds: selectedArtworks,
+              },
+            }),
+          }
+        );
+
+        if (!patchRes.ok) {
+          const patchError = await patchRes.json().catch(() => null);
+          alert(
+            "Fout bij toevoegen van artworks:\n" +
+              JSON.stringify(patchError || (await patchRes.text()), null, 2)
+          );
+          return;
+        }
+      }
+
+      // 3. Navigeren naar collectie overzicht
       navigate("/collections");
     } catch (err) {
       console.error("Error:", err);
