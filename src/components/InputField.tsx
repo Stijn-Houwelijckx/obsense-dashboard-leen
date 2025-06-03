@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from "react";
+import React, { ChangeEvent, forwardRef } from "react";
 
 interface InputFieldProps {
   label: string;
@@ -12,16 +12,22 @@ interface InputFieldProps {
   autoComplete?: string;
 }
 
-const InputField: React.FC<InputFieldProps> = ({
-  label,
-  placeholder,
-  className = "",
-  value,
-  onChange,
-  textarea = false,
-  type = "text",
-}) => {
-  return (
+const InputField = forwardRef<
+  HTMLInputElement | HTMLTextAreaElement,
+  InputFieldProps
+>(
+  (
+    {
+      label,
+      placeholder,
+      className = "",
+      value,
+      onChange,
+      textarea = false,
+      type = "text",
+    },
+    ref
+  ) => (
     <div className="flex flex-col gap-1 w-full">
       <label className="text-sm font-medium">{label}</label>
       {textarea ? (
@@ -30,18 +36,20 @@ const InputField: React.FC<InputFieldProps> = ({
           value={value}
           onChange={onChange}
           className={className}
+          ref={ref as React.Ref<HTMLTextAreaElement>}
         />
       ) : (
         <input
-          type={type || "text"}
+          type={type}
           placeholder={placeholder}
           value={value}
           onChange={onChange}
           className={className}
+          ref={ref as React.Ref<HTMLInputElement>}
         />
       )}
     </div>
-  );
-};
+  )
+);
 
 export default InputField;

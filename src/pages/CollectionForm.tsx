@@ -73,6 +73,7 @@ const CollectionForm = () => {
     const [suggestions, setSuggestions] = useState<string[]>([]);
     const [showDropdown, setShowDropdown] = useState(false);
     const containerRef = React.useRef<HTMLDivElement>(null);
+    const inputRef = React.useRef<HTMLInputElement>(null);
 
     useEffect(() => {
       if (value.length < 2) {
@@ -120,11 +121,12 @@ const CollectionForm = () => {
     return (
       <div className="relative w-full" ref={containerRef}>
         <InputField
+          ref={inputRef} // <-- ref toevoegen
           label={mode === "tour" ? "City" : "Location"}
           placeholder={mode === "tour" ? "City" : "Location"}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
+          className={`w-full h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white ${className}`}
         />
         {showDropdown && suggestions.length > 0 && (
           <ul className="absolute top-full left-0 right-0 bg-white text-black rounded shadow max-h-48 overflow-auto z-10">
@@ -134,6 +136,8 @@ const CollectionForm = () => {
                 onClick={() => {
                   onChange(city);
                   setShowDropdown(false);
+                  // Focus terugzetten op input na selectie
+                  inputRef.current?.focus();
                 }}
                 className="cursor-pointer hover:bg-gray-200 px-3 py-1"
               >

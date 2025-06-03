@@ -413,6 +413,7 @@ const UpdateCollection = ({
     const [suggestions, setSuggestions] = useState<string[]>([]);
     const [showDropdown, setShowDropdown] = useState(false);
     const containerRef = React.useRef<HTMLDivElement>(null);
+    const inputRef = React.useRef<HTMLInputElement>(null); // hier je input ref
 
     useEffect(() => {
       if (value.length < 2) {
@@ -465,6 +466,7 @@ const UpdateCollection = ({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           className="w-full h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
+          ref={inputRef}
         />
         {showDropdown && suggestions.length > 0 && (
           <ul className="absolute top-full left-0 right-0 bg-white text-black rounded shadow max-h-48 overflow-auto z-10">
@@ -474,6 +476,7 @@ const UpdateCollection = ({
                 onClick={() => {
                   onChange(city);
                   setShowDropdown(false);
+                  inputRef.current?.focus();
                 }}
                 className="cursor-pointer hover:bg-gray-200 px-3 py-1"
               >
