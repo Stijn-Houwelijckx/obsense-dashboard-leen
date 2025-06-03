@@ -94,8 +94,8 @@ const Collections = () => {
       <div className="flex items-center justify-between mb-10 w-full">
         <h1 className="text-2xl font-title font-bold">Your Collections</h1>
 
-        <div className="flex items-center gap-2">
-          <div className="lg:hidden w-full" ref={searchRef}>
+        <div className="flex justify-end gap-2">
+          <div className="lg:hidden" ref={searchRef}>
             {!isSearchOpen ? (
               <div
                 className="w-10 h-10 bg-secondary-800 rounded-full flex items-center justify-center cursor-pointer"
@@ -109,7 +109,7 @@ const Collections = () => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search collections"
-                className="w-full text-sm text-neutral-50 bg-secondary-800 border border-neutral-500 rounded-[10px] px-4 py-2 focus:outline-none"
+                className="text-sm text-neutral-50 bg-secondary-800 border border-neutral-500 rounded-[10px] px-4 py-2 focus:outline-none"
                 autoFocus
               />
             )}
@@ -130,10 +130,13 @@ const Collections = () => {
             />
           </div>
 
-          <div className="md:hidden">
-            <Navigation />
+          <div className="flex gap-2">
+            <div className="md:hidden">
+              <Navigation />
+            </div>
           </div>
-          <div className="hidden md:block w-[250px]">
+
+          <div className="hidden md:block w-[250px] w-0 h-0 p-0 m-0 overflow-hidden">
             <NavigationDesktop />
           </div>
         </div>

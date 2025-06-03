@@ -117,11 +117,13 @@ const Artworks = () => {
             />
           </div>
 
-          <div className="md:hidden">
-            <Navigation />
+          <div className="flex gap-2">
+            <div className="md:hidden">
+              <Navigation />
+            </div>
           </div>
 
-          <div className="hidden md:block w-[250px]">
+          <div className="hidden md:block w-[250px] w-0 h-0 p-0 m-0 overflow-hidden">
             <NavigationDesktop />
           </div>
         </div>

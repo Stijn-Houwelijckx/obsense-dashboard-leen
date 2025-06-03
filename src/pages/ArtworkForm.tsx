@@ -31,7 +31,7 @@ const ArtworkForm = () => {
 
     setLoading(true);
     api
-      .get(`/objects/${id}`)
+      .get(`http://localhost:3000/api/v1/objects/${id}`)
       .then((res) => {
         const object = res.data.data.object;
         console.log("Backend response object:", object);
@@ -55,7 +55,7 @@ const ArtworkForm = () => {
 
   const handleSave = async () => {
     try {
-      await api.put(`/objects/${objectId}`, {
+      await api.put(`http://localhost:3000/api/v1/objects/${objectId}`, {
         object: {
           title,
           description,
@@ -94,7 +94,7 @@ const ArtworkForm = () => {
       console.log("Sending token:", token);
 
       const response = await fetch(
-        `VITE_API_URL/objects/${objectId}/thumbnail`,
+        `http://localhost:3000/api/v1/objects/${objectId}/thumbnail`,
         {
           method: "POST",
           headers: {
@@ -139,7 +139,7 @@ const ArtworkForm = () => {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        `VITE_API_URL/objects/${objectId}/thumbnail`,
+        `http://localhost:3000/api/v1/objects/${objectId}/thumbnail`,
         {
           method: "DELETE",
           headers: {

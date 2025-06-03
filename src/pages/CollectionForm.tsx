@@ -150,7 +150,7 @@ const CollectionForm = () => {
     const fetchGenres = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch("VITE_API_URL/genres", {
+        const res = await fetch("http://localhost:3000/api/v1/genres", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -289,13 +289,16 @@ const CollectionForm = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("VITE_API_URL/artist/collections", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      });
+      const res = await fetch(
+        "http://localhost:3000/api/v1/artist/collections",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        }
+      );
 
       if (!res.ok) {
         let errorJson: any;
