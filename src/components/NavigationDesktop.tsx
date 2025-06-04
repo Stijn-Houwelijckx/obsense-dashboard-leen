@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import favicon from "assets/img/favicon.svg";
 import homeIcon from "assets/img/home.svg";
@@ -13,7 +13,6 @@ import { useAuthStorage } from "store/authStorage";
 
 const NavigationDesktop = () => {
   const location = useLocation();
-  const authState = useAuthStorage();
   const navigate = useNavigate();
 
   const { clearAuth } = useAuthStorage();
@@ -38,12 +37,6 @@ const NavigationDesktop = () => {
       path: "/artworks",
       alt: "Artworks",
       label: "Artworks",
-    },
-    {
-      icon: insightsIcon,
-      path: "/insights",
-      alt: "Insights",
-      label: "Insights",
     },
   ];
 

@@ -1,0 +1,9 @@
+RewriteEngine On
+
+# Redirect index.html to root for dashboard-leen.obsense.be
+RewriteCond %{HTTP_HOST} ^(www\.)?dashboard-leen\.obsense\.be$ [NC]
+RewriteRule ^index\.html$ https://dashboard-leen.obsense.be/ [L,R=301]
+
+# Add MIME types for favicons
+AddType image/x-icon .ico
+AddType image/svg+xml .svg

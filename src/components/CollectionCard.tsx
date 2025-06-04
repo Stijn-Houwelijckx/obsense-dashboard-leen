@@ -1,4 +1,3 @@
-import React from "react";
 import artworkImg from "assets/img/artwork.png";
 import editIcon from "assets/img/edit.svg";
 import { useNavigate } from "react-router-dom";
@@ -18,7 +17,6 @@ const CollectionCard = ({
   title,
   image,
   status,
-  collectionId,
   onRequestDelete,
 }: CollectionCardProps) => {
   const navigate = useNavigate();

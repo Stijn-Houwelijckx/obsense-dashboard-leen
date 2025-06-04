@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import api from "../services/api";
 import Navigation from "components/Navigation";
 import NavigationDesktop from "components/NavigationDesktop";

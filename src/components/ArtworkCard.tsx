@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import artworkImg from "assets/img/artwork.png";
 import deleteIcon from "assets/img/delete.svg";
 import editIcon from "assets/img/edit.svg";

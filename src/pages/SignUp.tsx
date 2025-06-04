@@ -1,4 +1,3 @@
-import errorImage from "assets/img/error.png";
 import { AxiosError } from "axios";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -8,12 +7,13 @@ import { useAuthStorage } from "store/authStorage";
 import { ErrorResponse } from "types/error-response.types";
 import { User } from "types/user.types";
 import api from "../services/api";
+import circleBig from "assets/img/circle_big.png";
+import circleSmall from "assets/img/circle_small.png";
 
 import { AppleIcon, FacebookIcon, GoogleIcon } from "components/@icons";
 import Button from "components/Button";
 import FormInput from "components/FormInput";
 import LogoButton from "components/LogoButton";
-import IconButton from "components/IconButton";
 import MainContainer from "components/MainContainer";
 
 const TOTAL_FORM_STEPS = 3;
@@ -22,7 +22,6 @@ type SignUpData = Omit<User, "isArtist" | "profilePicture" | "tokens">;
 
 const SignUp = () => {
   const navigate = useNavigate();
-  const location = useLocation();
 
   const targetPath = "/";
   const { setToken, setUser } = useAuthStorage();
@@ -80,7 +79,6 @@ const SignUp = () => {
       };
 
       const response = await authService.signup(userData);
-      console.log("Signup response:", response);
 
       const token = response.data.token;
       if (!token) {
@@ -170,7 +168,7 @@ const SignUp = () => {
         <div className="relative z-10 w-full flex justify-center items-center">
           <div className="hidden lg:block absolute top-0 left-0 w-1/2 h-full bg-[#2B2B30] z-0">
             <img
-              src="src/assets/img/circle_small.png"
+              src={circleSmall}
               alt="Circle Small"
               className="absolute top-4 left-[-90px] w-64 h-64 z-10"
             />
@@ -178,7 +176,7 @@ const SignUp = () => {
 
           <div className="w-full max-w-[650px] border-0 lg:border-4 lg:border-primary-500 rounded-2xl bg-secondary-800 p-8 relative">
             <img
-              src="src/assets/img/circle_big.png"
+              src={circleBig}
               alt="Circle Big"
               className="absolute bottom-4 right-[-550px] w-80 h-80 z-10"
             />

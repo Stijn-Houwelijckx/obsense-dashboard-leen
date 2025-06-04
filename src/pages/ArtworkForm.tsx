@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef, ChangeEvent } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import treeImage from "../assets/img/tree.png";
-import Button from "components/Button";
 import InputField from "components/InputField";
 import Navigation from "components/Navigation";
 import NavigationDesktop from "components/NavigationDesktop";
@@ -11,7 +10,7 @@ const ArtworkForm = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [objectId, setObjectId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
 
@@ -19,8 +18,6 @@ const ArtworkForm = () => {
   const location = useLocation();
 
   useEffect(() => {
-    console.log("location.state:", location.state);
-
     if (!location.state || !location.state.objectId) {
       alert("Geen artwork ID meegegeven via locatie!");
       return;
@@ -29,12 +26,11 @@ const ArtworkForm = () => {
     const id = location.state.objectId;
     setObjectId(id);
 
-    setLoading(true);
+    // setLoading(true);
     api
       .get(`https://obsense-api-om3s.onrender.com/api/v1/objects/${id}`)
       .then((res) => {
         const object = res.data.data.object;
-        console.log("Backend response object:", object);
 
         setTitle(res.data.data.object.title || "");
         setDescription(res.data.data.object.description || "");
@@ -45,8 +41,8 @@ const ArtworkForm = () => {
       .catch((err) => {
         console.error("Failed to load artwork metadata", err);
         alert("Kon artwork data niet laden.");
-      })
-      .finally(() => setLoading(false));
+      });
+    // .finally(() => setLoading(false));
   }, [location.state]);
 
   if (!location.state) {
@@ -80,7 +76,6 @@ const ArtworkForm = () => {
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    console.log("hey", file);
     if (!file) return;
 
     if (!objectId) {
@@ -94,7 +89,6 @@ const ArtworkForm = () => {
 
     try {
       const token = localStorage.getItem("token");
-      console.log("Sending token:", token);
 
       const response = await fetch(
         `https://obsense-api-om3s.onrender.com/api/v1/objects/${objectId}/thumbnail`,
@@ -107,7 +101,6 @@ const ArtworkForm = () => {
         }
       );
 
-      console.log("Response status:", response);
       if (!response.ok) {
         const text = await response.text();
         console.error("Upload mislukt:", response.status, text);
@@ -119,7 +112,6 @@ const ArtworkForm = () => {
       setThumbnailUrl(tempUrl);
 
       const result = await response.json();
-      console.log("Upload resultaat:", result);
       if (result.thumbnail && result.thumbnail.filePath) {
         setThumbnailUrl(result.thumbnail.filePath);
       } else {

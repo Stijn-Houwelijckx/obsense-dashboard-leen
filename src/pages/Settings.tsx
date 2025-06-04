@@ -1,7 +1,5 @@
 import React, { useState, useRef } from "react";
-import profilePic from "assets/img/profilepic.png";
 import InputField from "components/InputField";
-import searchIcon from "../assets/img/search.svg";
 import backIcon from "../assets/img/back.svg";
 import arrowIcon from "../assets/img/arrow.svg";
 import { useNavigate } from "react-router-dom";
@@ -44,7 +42,6 @@ const Settings = () => {
   });
 
   const navigate = useNavigate();
-  const { clearAuth } = useAuthStorage();
 
   const handleDeleteAccount = async () => {
     const token = localStorage.getItem("token");
@@ -116,8 +113,6 @@ const Settings = () => {
         console.error(err);
       });
   };
-
-  const newErrors: Errors = {};
 
   const handleChangePassword = async () => {
     setErrors({

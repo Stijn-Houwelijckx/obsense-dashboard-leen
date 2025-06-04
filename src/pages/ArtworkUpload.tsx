@@ -77,8 +77,6 @@ const ArtworkUpload = () => {
   };
 
   const validateAndSetFiles = async (selectedFiles: FileList) => {
-    console.log("validateAndSetFiles called with files:", selectedFiles);
-
     setError(null);
     if (selectedFiles.length === 0) return;
 
@@ -100,15 +98,11 @@ const ArtworkUpload = () => {
 
     setFiles(selectedFiles);
 
-    console.log("Files ready to upload:", selectedFiles[0]);
-
     await uploadFile(selectedFiles[0]);
   };
 
   const onFilesSelected = (event: ChangeEvent<HTMLInputElement>) => {
-    console.log("onFilesSelected triggered");
     const selectedFiles = event.target.files;
-    console.log("Selected files:", selectedFiles);
     if (selectedFiles) {
       validateAndSetFiles(selectedFiles);
     }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import hamburgerIcon from "assets/img/hamburger.svg";
 import closeIcon from "assets/img/close.svg";
 import profilePic from "assets/img/profilepic.png";
@@ -102,17 +102,6 @@ const Navigation = () => {
               }`}
             >
               Artworks
-            </Link>
-            <Link
-              to="/insights"
-              onClick={() => setIsOpen(false)}
-              className={`w-1/2 font-text flex justify-center py-4 rounded-[10px]  ${
-                isActive("/insights")
-                  ? "bg-primary-500/20 text-primary-500"
-                  : "text-white"
-              }`}
-            >
-              Insights
             </Link>
           </div>
 

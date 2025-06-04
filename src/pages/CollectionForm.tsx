@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import hamburgerIcon from "assets/img/hamburger.svg";
 import treeImage from "assets/img/tree.png";
 import plusGenreIcon from "assets/img/plus_genre.svg";
 import artworkImg from "assets/img/tree.png";
@@ -9,22 +8,22 @@ import Navigation from "components/Navigation";
 import NavigationDesktop from "components/NavigationDesktop";
 import api from "../services/api";
 
-interface StepTwoFormProps {
-  mode: "tour" | "exposition";
-  onCancel?: () => void;
-  onNext?: () => void;
-  collectionId?: string;
-  initialData?: {
-    title: string;
-    description: string;
-    cityOrLocation: string;
-    price: string;
-    selectedArtworks: string[];
-    coverImageFile?: File | null;
-    coverImageUrl?: string | null;
-    genre?: string;
-  };
-}
+// interface StepTwoFormProps {
+//   mode: "tour" | "exposition";
+//   onCancel?: () => void;
+//   onNext?: () => void;
+//   collectionId?: string;
+//   initialData?: {
+//     title: string;
+//     description: string;
+//     cityOrLocation: string;
+//     price: string;
+//     selectedArtworks: string[];
+//     coverImageFile?: File | null;
+//     coverImageUrl?: string | null;
+//     genre?: string;
+//   };
+// }
 
 type Genre = {
   _id: string;
@@ -56,9 +55,9 @@ const CollectionForm = () => {
   const [showGenreDropdown, setShowGenreDropdown] = useState<boolean>(false);
 
   const [titleError, setTitleError] = useState(false);
-  const [descriptionError, setDescriptionError] = useState(false);
+  // const [descriptionError, setDescriptionError] = useState(false);
   const [cityOrLocationError, setCityOrLocationError] = useState(false);
-  const [priceError, setPriceError] = useState(false);
+  // const [priceError, setPriceError] = useState(false);
   const [coverImageError, setCoverImageError] = useState(false);
 
   const [artworks, setArtworks] = useState<
@@ -121,7 +120,7 @@ const CollectionForm = () => {
     return (
       <div className="relative w-full" ref={containerRef}>
         <InputField
-          ref={inputRef} // <-- ref toevoegen
+          ref={inputRef}
           label={mode === "tour" ? "City" : "Location"}
           placeholder={mode === "tour" ? "City" : "Location"}
           value={value}
@@ -136,7 +135,6 @@ const CollectionForm = () => {
                 onClick={() => {
                   onChange(city);
                   setShowDropdown(false);
-                  // Focus terugzetten op input na selectie
                   inputRef.current?.focus();
                 }}
                 className="cursor-pointer hover:bg-gray-200 px-3 py-1"
@@ -223,12 +221,12 @@ const CollectionForm = () => {
       setTitleError(false);
     }
 
-    if (!description.trim()) {
-      setDescriptionError(true);
-      hasError = true;
-    } else {
-      setDescriptionError(false);
-    }
+    // if (!description.trim()) {
+    //   setDescriptionError(true);
+    //   hasError = true;
+    // } else {
+    //   setDescriptionError(false);
+    // }
 
     if (!cityOrLocation.trim()) {
       setCityOrLocationError(true);
@@ -237,12 +235,12 @@ const CollectionForm = () => {
       setCityOrLocationError(false);
     }
 
-    if (!price || Number(price) <= 0) {
-      setPriceError(true);
-      hasError = true;
-    } else {
-      setPriceError(false);
-    }
+    // if (!price || Number(price) <= 0) {
+    //   setPriceError(true);
+    //   hasError = true;
+    // } else {
+    //   setPriceError(false);
+    // }
 
     if (!coverImageFile) {
       setCoverImageError(true);
@@ -285,8 +283,6 @@ const CollectionForm = () => {
           price: parseFloat(price),
           type: mode,
           genres: selectedGenres.map((g) => g._id),
-          // Je stuurt hier alvast selectedArtworks mee, maar dat is volgens jou pas patch call
-          // Dus je kunt hier eventueel [] laten of niet meesturen
           objects: [],
           status: isDraft ? "draft" : "published",
         },
@@ -296,7 +292,6 @@ const CollectionForm = () => {
     try {
       const token = localStorage.getItem("token");
 
-      // 1. POST call collection aanmaken
       const res = await fetch(
         "https://obsense-api-om3s.onrender.com/api/v1/artist/collections",
         {

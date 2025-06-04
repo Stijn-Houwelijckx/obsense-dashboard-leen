@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import hamburgerIcon from "assets/img/hamburger.svg";
 import treeImage from "assets/img/tree.png";
 import plusGenreIcon from "assets/img/plus_genre.svg";
 import artworkImg from "assets/img/tree.png";
@@ -41,13 +40,8 @@ type CityAutocompleteProps = {
   className?: string;
 };
 
-const UpdateCollection = ({
-  onCancel,
-  onNext,
-  collectionId,
-}: StepTwoFormProps) => {
+const UpdateCollection = ({ collectionId }: StepTwoFormProps) => {
   const location = useLocation();
-  const navigate = useNavigate();
   const mode = location.state?.mode || "tour";
 
   const collId =
@@ -63,7 +57,6 @@ const UpdateCollection = ({
 
   const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
   const [coverImageUrl, setCoverImageUrl] = useState<string | null>(null);
-  const [genre, setGenre] = useState("Low-Poly");
   const [showPublishConfirm, setShowPublishConfirm] = useState(false);
 
   const [titleError, setTitleError] = useState(false);
@@ -71,6 +64,7 @@ const UpdateCollection = ({
   const [cityOrLocationError, setCityOrLocationError] = useState(false);
   const [priceError, setPriceError] = useState(false);
   const [coverImageError, setCoverImageError] = useState(false);
+  const navigate = useNavigate();
 
   const [originalArtworks, setOriginalArtworks] = useState<string[]>([]);
 
@@ -280,14 +274,6 @@ const UpdateCollection = ({
         formData.append("coverImage", coverImageFile);
       }
 
-      formData.append("title", title.trim());
-      formData.append("description", description.trim());
-      formData.append("city", cityOrLocation.trim());
-      formData.append("price", price.toString());
-      formData.append("type", mode);
-      formData.append("_id", collId);
-      formData.append("status", isDraft ? "draft" : "published");
-
       formData.append(
         "collection",
         JSON.stringify({
@@ -329,8 +315,6 @@ const UpdateCollection = ({
       const newArtworkIds = selectedArtworkIds.filter(
         (id) => !originalArtworks.includes(id)
       );
-
-      console.log("Nieuwe artwork IDs om toe te voegen:", newArtworkIds);
 
       if (newArtworkIds.length > 0) {
         const patchRes = await fetch(
@@ -380,8 +364,7 @@ const UpdateCollection = ({
         }
       }
 
-      // 4. Navigeren
-      window.location.href = "/collections";
+      navigate("/collections");
     } catch (err) {
       console.error("Error:", err);
       alert("Something went wrong.");
@@ -408,11 +391,7 @@ const UpdateCollection = ({
     );
   };
 
-  const CityAutocomplete = ({
-    value,
-    onChange,
-    className,
-  }: CityAutocompleteProps) => {
+  const CityAutocomplete = ({ value, onChange }: CityAutocompleteProps) => {
     const [suggestions, setSuggestions] = useState<string[]>([]);
     const [showDropdown, setShowDropdown] = useState(false);
     const containerRef = React.useRef<HTMLDivElement>(null);
@@ -690,24 +669,6 @@ const UpdateCollection = ({
             <div className="w-full flex flex-wrap gap-5 mt-4">
               {artworks.map(({ _id, title, image }) => {
                 const isSelected = selectedArtworks.includes(_id);
-                console.log(
-                  "Artwork ID:",
-                  _id,
-                  "isSelected?",
-                  isSelected,
-                  "selectedArtworks:",
-                  selectedArtworks
-                );
-
-                console.log("Artworks:", artworks);
-                console.log("SelectedArtworks (raw):", selectedArtworks);
-
-                console.log(
-                  "SelectedArtworks (stringified):",
-                  selectedArtworks.map((a) =>
-                    typeof a === "string" ? a : JSON.stringify(a)
-                  )
-                );
 
                 return (
                   <div

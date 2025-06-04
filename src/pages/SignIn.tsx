@@ -1,12 +1,13 @@
-import errorImage from "assets/img/error.png";
 import { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuthStorage } from "store/authStorage";
 import { ErrorResponse } from "types/error-response.types";
 import { User } from "types/user.types";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { authService } from "services/api";
+import circleBig from "assets/img/circle_big.png";
+import circleSmall from "assets/img/circle_small.png";
 
 import { AppleIcon, FacebookIcon, GoogleIcon } from "components/@icons";
 import Button from "components/Button";
@@ -87,36 +88,6 @@ const SignIn = () => {
     reset();
   };
 
-  // if (signInError) {
-  //   return (
-  //     <div className="min-h-screen flex items-center justify-center bg-secondary-900 px-4">
-  //       <div className="w-full max-w-[650px] bg-secondary-800 p-8 rounded-2xl text-center">
-  //         <h2 className="font-title font-medium text-2xl text-neutral-50 mb-4">
-  //           {signInError.data.message}
-  //         </h2>
-  //         <img className="mx-auto w-1/2 mb-4" src={errorImage} alt="Error" />
-  //         <div className="flex flex-col items-center gap-4 mt-6">
-  //           <span className="uppercase text-xs text-neutral-200 bg-secondary-700 px-2.5 py-1.5 rounded-md tracking-wide">
-  //             {signInError.status}_{signInError.code}
-  //           </span>
-  //           {signInError.data.details && (
-  //             <p className="text-sm text-neutral-200 p-5 text-center bg-secondary-700 rounded-lg">
-  //               {signInError.data.details}
-  //             </p>
-  //           )}
-  //         </div>
-  //         <div className="mt-6">
-  //           <Button
-  //             label="Try Again"
-  //             type="button"
-  //             onClick={handleErrorReset}
-  //           />
-  //         </div>
-  //       </div>
-  //     </div>
-  //   );
-  // }
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-secondary-900 px-4 relative overflow-hidden">
       <div className="hidden lg:block absolute top-0 left-0 w-1/2 h-full bg-[#2B2B30] z-0" />
@@ -124,7 +95,7 @@ const SignIn = () => {
       <div className="relative z-10 w-full flex justify-center items-center">
         <div className="hidden lg:block absolute top-0 left-0 w-1/2 h-full bg-[#2B2B30] z-0">
           <img
-            src="src/assets/img/circle_small.png"
+            src={circleSmall}
             alt="Circle Small"
             className="absolute top-4 left-[-90px] w-64 h-64 z-10"
           />
@@ -132,7 +103,7 @@ const SignIn = () => {
 
         <div className="w-full max-w-[650px] border-0 lg:border-4 lg:border-primary-500 rounded-2xl bg-secondary-800 p-8 relative">
           <img
-            src="src/assets/img/circle_big.png"
+            src={circleSmall}
             alt="Circle Big"
             className="absolute bottom-4 right-[-550px] w-80 h-80 z-10"
           />

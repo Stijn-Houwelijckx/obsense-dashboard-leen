@@ -6,7 +6,7 @@ import plusIcon from "../assets/img/plus.svg";
 import { useNavigate } from "react-router-dom";
 import Navigation from "components/Navigation";
 import NavigationDesktop from "components/NavigationDesktop";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import api from "../services/api";
 import { useRef } from "react";
 
@@ -23,6 +23,7 @@ interface CollectionType {
   description?: string;
   coverImage: FileData | null;
   status: "draft" | "published";
+  isPublished: boolean;
 }
 
 const Collections = () => {

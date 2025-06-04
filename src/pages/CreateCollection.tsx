@@ -1,5 +1,3 @@
-import React from "react";
-import hamburgerIcon from "assets/img/hamburger.svg";
 import tourImg from "assets/img/tour.png";
 import expoImg from "assets/img/expo.png";
 import { useNavigate } from "react-router-dom";
