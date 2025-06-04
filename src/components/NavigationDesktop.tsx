@@ -65,7 +65,7 @@ const NavigationDesktop = () => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      fetch("VITE_API_URL/users/me", {
+      fetch("https://obsense-api-om3s.onrender.com/api/v1/users/me", {
         headers: {
           Authorization: `Bearer ${token}`,
         },

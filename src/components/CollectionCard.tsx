@@ -28,7 +28,7 @@ const CollectionCard = ({
 
   return (
     <div className="w-full h-[350px] bg-secondary-800 rounded-lg p-[11px]">
-      <div className="w-full h-[330px] bg-secondary-700 rounded-lg flex flex-col">
+      <div className="w-full h-[330px]  bg-secondary-700 rounded-lg flex flex-col">
         <div className="relative w-full h-[264px] rounded-lg bg-secondary-700 overflow-hidden">
           <img
             src={image || artworkImg}

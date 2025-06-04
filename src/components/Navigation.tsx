@@ -27,7 +27,7 @@ const Navigation = () => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      fetch("http://localhost:3000/api/v1/users/me", {
+      fetch("https://obsense-api-om3s.onrender.com/api/v1/users/me", {
         headers: {
           Authorization: `Bearer ${token}`,
         },

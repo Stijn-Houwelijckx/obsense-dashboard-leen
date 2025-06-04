@@ -154,11 +154,14 @@ const CollectionForm = () => {
     const fetchGenres = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch("http://localhost:3000/api/v1/genres", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const res = await fetch(
+          "https://obsense-api-om3s.onrender.com/api/v1/genres",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         const data = await res.json();
         setAllGenres(data.data.genres);
       } catch (err) {
@@ -295,7 +298,7 @@ const CollectionForm = () => {
 
       // 1. POST call collection aanmaken
       const res = await fetch(
-        "http://localhost:3000/api/v1/artist/collections",
+        "https://obsense-api-om3s.onrender.com/api/v1/artist/collections",
         {
           method: "POST",
           headers: {
@@ -325,7 +328,7 @@ const CollectionForm = () => {
       // 2. PATCH call om artworks toe te voegen (indien artworks aanwezig)
       if (selectedArtworks.length > 0) {
         const patchRes = await fetch(
-          `http://localhost:3000/api/v1/artist/collections/${collectionId}/add-objects`,
+          `https://obsense-api-om3s.onrender.com/api/v1/artist/collections/${collectionId}/add-objects`,
           {
             method: "PATCH",
             headers: {

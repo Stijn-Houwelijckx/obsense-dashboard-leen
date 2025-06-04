@@ -136,7 +136,7 @@ const Collections = () => {
             </div>
           </div>
 
-          <div className="hidden md:block w-[250px] w-0 h-0 p-0 m-0 overflow-hidden">
+          <div className="hidden md:block w-0 h-0 p-0 m-0 overflow-hidden">
             <NavigationDesktop />
           </div>
         </div>
@@ -176,7 +176,11 @@ const Collections = () => {
           </h6>
           <p className="text-neutral-300 font-text mb-6">Start here</p>
           <div className="w-full max-w-xs">
-            <Button label="Upload" type="button" onClick={() => {}} />
+            <Button
+              label="Upload"
+              type="button"
+              onClick={() => navigate("/choose")}
+            />
           </div>
         </div>
       )}

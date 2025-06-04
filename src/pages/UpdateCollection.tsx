@@ -83,11 +83,14 @@ const UpdateCollection = ({
 
     const fetchGenres = async () => {
       try {
-        const res = await fetch("http://localhost:3000/api/v1/genres", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const res = await fetch(
+          "https://obsense-api-om3s.onrender.com/api/v1/genres",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         const data = await res.json();
         setAllGenres(data.data.genres);
       } catch (err) {
@@ -106,7 +109,7 @@ const UpdateCollection = ({
     const fetchCollection = async () => {
       try {
         const res = await fetch(
-          `http://localhost:3000/api/v1/artist/collections/${collId}`,
+          `https://obsense-api-om3s.onrender.com/api/v1/artist/collections/${collId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -301,7 +304,7 @@ const UpdateCollection = ({
         })
       );
 
-      const url = `http://localhost:3000/api/v1/artist/collections/${collId}`;
+      const url = `https://obsense-api-om3s.onrender.com/api/v1/artist/collections/${collId}`;
       const res = await fetch(url, {
         method: "PUT",
         headers: {
@@ -331,7 +334,7 @@ const UpdateCollection = ({
 
       if (newArtworkIds.length > 0) {
         const patchRes = await fetch(
-          `http://localhost:3000/api/v1/artist/collections/${collId}/add-objects`,
+          `https://obsense-api-om3s.onrender.com/api/v1/artist/collections/${collId}/add-objects`,
           {
             method: "PATCH",
             headers: {
@@ -361,7 +364,7 @@ const UpdateCollection = ({
 
       if (!isDraft) {
         const publishRes = await fetch(
-          `http://localhost:3000/api/v1/artist/collections/${collId}/toggle-publish`,
+          `https://obsense-api-om3s.onrender.com/api/v1/artist/collections/${collId}/toggle-publish`,
           {
             method: "PATCH",
             headers: {

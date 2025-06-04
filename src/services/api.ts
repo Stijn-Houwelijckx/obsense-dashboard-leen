@@ -2,7 +2,9 @@ import axios from "axios";
 import { useAuthStorage } from "store/authStorage";
 import { User } from "types/user.types";
 
-const apiUrl = import.meta.env.VITE_API_URL ?? "http://localhost:3000/api/v1";
+const apiUrl =
+  import.meta.env.VITE_API_URL ??
+  "https://obsense-api-om3s.onrender.com/api/v1";
 
 const api = axios.create({
   baseURL: apiUrl,

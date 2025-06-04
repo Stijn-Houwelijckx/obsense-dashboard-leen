@@ -31,7 +31,7 @@ const ArtworkForm = () => {
 
     setLoading(true);
     api
-      .get(`http://localhost:3000/api/v1/objects/${id}`)
+      .get(`https://obsense-api-om3s.onrender.com/api/v1/objects/${id}`)
       .then((res) => {
         const object = res.data.data.object;
         console.log("Backend response object:", object);
@@ -55,15 +55,18 @@ const ArtworkForm = () => {
 
   const handleSave = async () => {
     try {
-      await api.put(`http://localhost:3000/api/v1/objects/${objectId}`, {
-        object: {
-          title,
-          description,
-          file: {
-            url: thumbnailUrl,
+      await api.put(
+        `https://obsense-api-om3s.onrender.com/api/v1/objects/${objectId}`,
+        {
+          object: {
+            title,
+            description,
+            file: {
+              url: thumbnailUrl,
+            },
           },
-        },
-      });
+        }
+      );
       navigate("/artworks");
     } catch (err) {
       console.error("Fout bij opslaan artwork:", err);
@@ -94,7 +97,7 @@ const ArtworkForm = () => {
       console.log("Sending token:", token);
 
       const response = await fetch(
-        `http://localhost:3000/api/v1/objects/${objectId}/thumbnail`,
+        `https://obsense-api-om3s.onrender.com/api/v1/objects/${objectId}/thumbnail`,
         {
           method: "POST",
           headers: {
@@ -139,7 +142,7 @@ const ArtworkForm = () => {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        `http://localhost:3000/api/v1/objects/${objectId}/thumbnail`,
+        `https://obsense-api-om3s.onrender.com/api/v1/objects/${objectId}/thumbnail`,
         {
           method: "DELETE",
           headers: {
