@@ -235,7 +235,7 @@ const CollectionForm = () => {
         const patchRes = await fetch(
           `${apiUrl}/artist/collections/${collectionId}/add-objects`,
           {
-            method: "PATCH",
+            method: "PUT",
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,

@@ -316,7 +316,7 @@ const UpdateCollection = ({ collectionId }: StepTwoFormProps) => {
         const patchRes = await fetch(
           `${apiUrl}/artist/collections/${collId}/add-objects`,
           {
-            method: "PATCH",
+            method: "PUT",
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
