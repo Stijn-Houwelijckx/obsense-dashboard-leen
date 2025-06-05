@@ -188,13 +188,13 @@ const SignIn = () => {
               type="submit"
               onClick={handleSubmit(onSubmit)}
             />
-            {signInError &&
-              !isEmailError(signInError) &&
-              !isPasswordError(signInError) && (
-                <p className="text-red-500 text-sm pt-2">
-                  {signInError.data.message}
-                </p>
-              )}
+            {signInError && (
+              // !isEmailError(signInError) &&
+              // !isPasswordError(signInError) && (
+              <p className="text-red-500 text-sm pt-2">
+                {signInError.data.message}
+              </p>
+            )}
           </form>
 
           <div className="flex items-center py-6">
