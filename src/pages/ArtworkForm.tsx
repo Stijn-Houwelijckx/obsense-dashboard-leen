@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, ChangeEvent } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import treeImage from "../assets/img/tree.png";
+import treeImage from "../assets/img/fallback.jpeg";
 import InputField from "components/InputField";
 import Navigation from "components/Navigation";
 import NavigationDesktop from "components/NavigationDesktop";
@@ -14,6 +14,7 @@ const ArtworkForm = () => {
   // const [loading, setLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
+  const [thumbnailError, setThumbnailError] = useState<string | null>(null);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -76,6 +77,15 @@ const ArtworkForm = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    if (file.size > 1024 * 1024) {
+      // Bestand is groter dan 1MB
+      setThumbnailUrl(null);
+      setThumbnailError("Thumbnail must be less than 1MB.");
+    } else {
+      setThumbnailUrl(URL.createObjectURL(file));
+      setThumbnailError(null);
+    }
+
     if (!objectId) {
       alert("Geen objectId beschikbaar!");
       return;
@@ -115,7 +125,6 @@ const ArtworkForm = () => {
       }
     } catch (err) {
       console.error("Upload error:", err);
-      alert("Er ging iets mis bij uploaden");
     }
   };
 
@@ -192,13 +201,13 @@ const ArtworkForm = () => {
             >
               Choose cover
             </button>
-            <button
-              onClick={handleDelete}
-              className="text-sm font-text font-semibold text-red-400 border border-red-600 rounded px-3 py-2 bg-[#FCA5A5] hover:opacity-90"
-            >
-              Delete
-            </button>
           </div>
+
+          {thumbnailError && (
+            <p className="text-sm text-red-500 mt-2 text-left w-full">
+              {thumbnailError}
+            </p>
+          )}
         </div>
 
         <div className="lg:w-1/2 lg:mt-16 w-full flex flex-col justify-between">

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import treeImage from "assets/img/tree.png";
+import treeImage from "assets/img/fallback.jpeg";
 import plusGenreIcon from "assets/img/plus_genre.svg";
-import artworkImg from "assets/img/tree.png";
+import artworkImg from "assets/img/fallback.jpeg";
 import InputField from "components/InputField";
 import Navigation from "components/Navigation";
 import NavigationDesktop from "components/NavigationDesktop";
@@ -51,6 +51,7 @@ const CollectionForm = () => {
   const [price, setPrice] = useState("");
   const [selectedArtworks, setSelectedArtworks] = useState<string[]>([]);
   const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
+  const [coverImageUrl, setCoverImageUrl] = useState<string | null>(null);
   const [allGenres, setAllGenres] = useState<Genre[]>([]);
   const [selectedGenres, setSelectedGenres] = useState<Genre[]>([]);
   const [showGenreDropdown, setShowGenreDropdown] = useState<boolean>(false);
@@ -59,7 +60,7 @@ const CollectionForm = () => {
   const [descriptionError, setDescriptionError] = useState(false);
   const [cityOrLocationError, setCityOrLocationError] = useState(false);
   const [priceError, setPriceError] = useState(false);
-  const [coverImageError, setCoverImageError] = useState(false);
+  const [coverImageError, setCoverImageError] = useState<string | null>(null);
 
   const [artworks, setArtworks] = useState<
     { _id: string; title: string; image: string }[]
@@ -156,11 +157,11 @@ const CollectionForm = () => {
       setPriceError(false);
     }
 
-    if (!coverImageFile) {
-      setCoverImageError(true);
+    if (!coverImageFile && !coverImageUrl) {
+      setCoverImageError("Please upload a cover image.");
       hasError = true;
     } else {
-      setCoverImageError(false);
+      setCoverImageError(null);
     }
 
     if (!hasError) {
@@ -347,8 +348,15 @@ const CollectionForm = () => {
                   type="file"
                   accept="image/*"
                   onChange={(e) => {
-                    if (e.target.files && e.target.files.length > 0) {
-                      setCoverImageFile(e.target.files[0]);
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+
+                    if (file.size > 1024 * 1024) {
+                      setCoverImageFile(null);
+                      setCoverImageError("Cover image must be less than 1MB.");
+                    } else {
+                      setCoverImageFile(file);
+                      setCoverImageError(null);
                     }
                   }}
                   className="hidden"
@@ -357,7 +365,7 @@ const CollectionForm = () => {
             </div>
             {coverImageError && (
               <p className="text-sm text-red-500 mt-2 text-left w-full">
-                Please upload a cover image.
+                {coverImageError}
               </p>
             )}
           </div>

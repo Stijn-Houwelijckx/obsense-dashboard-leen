@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import treeImage from "assets/img/tree.png";
+import treeImage from "assets/img/fallback.jpeg";
 import plusGenreIcon from "assets/img/plus_genre.svg";
-import artworkImg from "assets/img/tree.png";
+import artworkImg from "assets/img/fallback.jpeg";
 import InputField from "components/InputField";
 import Navigation from "components/Navigation";
 import NavigationDesktop from "components/NavigationDesktop";
@@ -65,7 +65,7 @@ const UpdateCollection = ({ collectionId }: StepTwoFormProps) => {
   const [descriptionError, setDescriptionError] = useState(false);
   const [cityOrLocationError, setCityOrLocationError] = useState(false);
   const [priceError, setPriceError] = useState(false);
-  const [coverImageError, setCoverImageError] = useState(false);
+  const [coverImageError, setCoverImageError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const [originalArtworks, setOriginalArtworks] = useState<string[]>([]);
@@ -224,10 +224,10 @@ const UpdateCollection = ({ collectionId }: StepTwoFormProps) => {
     }
 
     if (!coverImageFile && !coverImageUrl) {
-      setCoverImageError(true);
+      setCoverImageError("Please upload a cover image.");
       hasError = true;
     } else {
-      setCoverImageError(false);
+      setCoverImageError(null);
     }
 
     if (!hasError) {
@@ -433,7 +433,7 @@ const UpdateCollection = ({ collectionId }: StepTwoFormProps) => {
                     : treeImage
                 }
                 alt="Cover"
-                className="w-full aspect-square "
+                className="w-full aspect-square"
               />
             </div>
 
@@ -445,17 +445,28 @@ const UpdateCollection = ({ collectionId }: StepTwoFormProps) => {
                   accept="image/*"
                   onChange={(e) => {
                     if (e.target.files && e.target.files.length > 0) {
-                      setCoverImageFile(e.target.files[0]);
-                      setCoverImageUrl(null);
+                      const file = e.target.files[0];
+                      if (file.size > 1024 * 1024) {
+                        setCoverImageFile(null);
+                        setCoverImageUrl(null);
+                        setCoverImageError(
+                          "Cover image must be less than 1MB."
+                        );
+                      } else {
+                        setCoverImageFile(file);
+                        setCoverImageUrl(null);
+                        setCoverImageError(null);
+                      }
                     }
                   }}
                   className="hidden"
                 />
               </label>
             </div>
+
             {coverImageError && (
               <p className="text-sm text-red-500 mt-2 text-left w-full">
-                Please upload a cover image.
+                {coverImageError}
               </p>
             )}
           </div>

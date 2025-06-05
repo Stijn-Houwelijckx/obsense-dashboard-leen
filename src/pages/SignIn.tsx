@@ -65,7 +65,8 @@ const SignIn = () => {
           code: error.response?.status || 500,
           status: error.response?.statusText || "error",
           data: {
-            message: error.response?.data?.message || "Invalid credentials.",
+            message: "email/password does not exist. Try again",
+
             details: error.response?.data?.details || "",
           },
         };
