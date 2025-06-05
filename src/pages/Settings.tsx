@@ -8,6 +8,7 @@ import { useAuthStorage } from "../store/authStorage";
 
 import Navigation from "components/Navigation";
 import NavigationDesktop from "components/NavigationDesktop";
+const apiUrl = import.meta.env.VITE_API_URL;
 
 const tabs = ["General", "Notification", "Wallet", "Security"];
 
@@ -49,7 +50,7 @@ const Settings = () => {
     if (!token) return;
 
     try {
-      const response = await fetch("VITE_API_URL/users/me", {
+      const response = await fetch(`${apiUrl}/users/me`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -71,7 +72,7 @@ const Settings = () => {
   useEffect(() => {
     if (activeTab === "General") {
       const token = localStorage.getItem("token");
-      fetch("VITE_API_URL/users/me", {
+      fetch(`${apiUrl}/users/me`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -94,7 +95,7 @@ const Settings = () => {
   }, [activeTab]);
 
   const handleSaveChanges = () => {
-    fetch("VITE_API_URL/users", {
+    fetch(`${apiUrl}/users`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -151,7 +152,7 @@ const Settings = () => {
     const token = localStorage.getItem("token");
 
     try {
-      const response = await fetch("VITE_API_URL/users/change-password", {
+      const response = await fetch(`${apiUrl}/users/change-password`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -212,7 +213,7 @@ const Settings = () => {
 
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch("VITE_API_URL/users/me/profile-picture", {
+      const response = await fetch(`${apiUrl}/users/me/profile-picture`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -231,7 +232,7 @@ const Settings = () => {
   const handleDeleteProfileImage = async () => {
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch("VITE_API_URL/users/me/profile-picture", {
+      const response = await fetch(`${apiUrl}/users/me/profile-picture`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,

@@ -5,6 +5,8 @@ import profilePic from "assets/img/profilepic.png";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuthStorage } from "../store/authStorage";
 
+const apiUrl = import.meta.env.VITE_API_URL;
+
 const Navigation = () => {
   const location = useLocation();
   const currentPath = location.pathname;
@@ -27,7 +29,7 @@ const Navigation = () => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      fetch("https://obsense-api-om3s.onrender.com/api/v1/users/me", {
+      fetch(`${apiUrl}/users/me`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

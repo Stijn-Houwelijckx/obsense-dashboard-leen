@@ -10,6 +10,7 @@ import logoutIcon from "assets/img/logout.svg";
 import arrowIcon from "assets/img/arrow.svg";
 import profilePic from "assets/img/profilepic.png";
 import { useAuthStorage } from "store/authStorage";
+const apiUrl = import.meta.env.VITE_API_URL;
 
 const NavigationDesktop = () => {
   const location = useLocation();
@@ -58,7 +59,7 @@ const NavigationDesktop = () => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      fetch("https://obsense-api-om3s.onrender.com/api/v1/users/me", {
+      fetch(`${apiUrl}/users/me`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

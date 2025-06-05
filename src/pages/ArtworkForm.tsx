@@ -5,6 +5,7 @@ import InputField from "components/InputField";
 import Navigation from "components/Navigation";
 import NavigationDesktop from "components/NavigationDesktop";
 import api from "../services/api";
+const apiUrl = import.meta.env.VITE_API_URL;
 
 const ArtworkForm = () => {
   const [title, setTitle] = useState("");
@@ -28,7 +29,7 @@ const ArtworkForm = () => {
 
     // setLoading(true);
     api
-      .get(`https://obsense-api-om3s.onrender.com/api/v1/objects/${id}`)
+      .get(`${apiUrl}/objects/${id}`)
       .then((res) => {
         const object = res.data.data.object;
 
@@ -51,18 +52,15 @@ const ArtworkForm = () => {
 
   const handleSave = async () => {
     try {
-      await api.put(
-        `https://obsense-api-om3s.onrender.com/api/v1/objects/${objectId}`,
-        {
-          object: {
-            title,
-            description,
-            file: {
-              url: thumbnailUrl,
-            },
+      await api.put(`${apiUrl}/objects/${objectId}`, {
+        object: {
+          title,
+          description,
+          file: {
+            url: thumbnailUrl,
           },
-        }
-      );
+        },
+      });
       navigate("/artworks");
     } catch (err) {
       console.error("Fout bij opslaan artwork:", err);
@@ -90,16 +88,13 @@ const ArtworkForm = () => {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await fetch(
-        `https://obsense-api-om3s.onrender.com/api/v1/objects/${objectId}/thumbnail`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: formData,
-        }
-      );
+      const response = await fetch(`${apiUrl}/objects/${objectId}/thumbnail`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
 
       if (!response.ok) {
         const text = await response.text();
@@ -133,16 +128,13 @@ const ArtworkForm = () => {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await fetch(
-        `https://obsense-api-om3s.onrender.com/api/v1/objects/${objectId}/thumbnail`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(`${apiUrl}/objects/${objectId}/thumbnail`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
       if (!response.ok) {
         const text = await response.text();

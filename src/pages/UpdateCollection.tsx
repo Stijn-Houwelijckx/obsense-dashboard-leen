@@ -8,6 +8,8 @@ import Navigation from "components/Navigation";
 import NavigationDesktop from "components/NavigationDesktop";
 import api from "../services/api";
 
+const apiUrl = import.meta.env.VITE_API_URL;
+
 interface StepTwoFormProps {
   mode: "tour" | "exposition";
   onCancel?: () => void;
@@ -77,14 +79,11 @@ const UpdateCollection = ({ collectionId }: StepTwoFormProps) => {
 
     const fetchGenres = async () => {
       try {
-        const res = await fetch(
-          "https://obsense-api-om3s.onrender.com/api/v1/genres",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const res = await fetch(`${apiUrl}/genres`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const data = await res.json();
         setAllGenres(data.data.genres);
       } catch (err) {
@@ -102,14 +101,11 @@ const UpdateCollection = ({ collectionId }: StepTwoFormProps) => {
 
     const fetchCollection = async () => {
       try {
-        const res = await fetch(
-          `https://obsense-api-om3s.onrender.com/api/v1/artist/collections/${collId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const res = await fetch(`${apiUrl}/artist/collections/${collId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const data = await res.json();
         const coll = data.data.collection;
 
@@ -290,7 +286,7 @@ const UpdateCollection = ({ collectionId }: StepTwoFormProps) => {
         })
       );
 
-      const url = `https://obsense-api-om3s.onrender.com/api/v1/artist/collections/${collId}`;
+      const url = `${apiUrl}/artist/collections/${collId}`;
       const res = await fetch(url, {
         method: "PUT",
         headers: {
@@ -318,7 +314,7 @@ const UpdateCollection = ({ collectionId }: StepTwoFormProps) => {
 
       if (newArtworkIds.length > 0) {
         const patchRes = await fetch(
-          `https://obsense-api-om3s.onrender.com/api/v1/artist/collections/${collId}/add-objects`,
+          `${apiUrl}/artist/collections/${collId}/add-objects`,
           {
             method: "PATCH",
             headers: {
@@ -348,7 +344,7 @@ const UpdateCollection = ({ collectionId }: StepTwoFormProps) => {
 
       if (!isDraft) {
         const publishRes = await fetch(
-          `https://obsense-api-om3s.onrender.com/api/v1/artist/collections/${collId}/toggle-publish`,
+          `${apiUrl}/artist/collections/${collId}/toggle-publish`,
           {
             method: "PATCH",
             headers: {
@@ -387,86 +383,6 @@ const UpdateCollection = ({ collectionId }: StepTwoFormProps) => {
             style={{ width }}
           />
         </div>
-      </div>
-    );
-  };
-
-  const CityAutocomplete = ({ value, onChange }: CityAutocompleteProps) => {
-    const [suggestions, setSuggestions] = useState<string[]>([]);
-    const [showDropdown, setShowDropdown] = useState(false);
-    const containerRef = React.useRef<HTMLDivElement>(null);
-    const inputRef = React.useRef<HTMLInputElement>(null); // hier je input ref
-
-    useEffect(() => {
-      if (value.length < 2) {
-        setSuggestions([]);
-        setShowDropdown(false);
-        return;
-      }
-
-      const fetchCities = async () => {
-        try {
-          const res = await fetch(
-            `https://nominatim.openstreetmap.org/search?city=${encodeURIComponent(
-              value
-            )}&format=json&limit=5`
-          );
-          const data = await res.json();
-          const cityNames = data.map((item: any) => item.display_name);
-          setSuggestions(cityNames);
-          setShowDropdown(true);
-        } catch (err) {
-          console.error(err);
-          setSuggestions([]);
-          setShowDropdown(false);
-        }
-      };
-
-      fetchCities();
-    }, [value]);
-
-    useEffect(() => {
-      const handleClickOutside = (event: MouseEvent) => {
-        if (
-          containerRef.current &&
-          !containerRef.current.contains(event.target as Node)
-        ) {
-          setShowDropdown(false);
-        }
-      };
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => {
-        document.removeEventListener("mousedown", handleClickOutside);
-      };
-    }, []);
-
-    return (
-      <div className="relative w-full" ref={containerRef}>
-        <InputField
-          label={mode === "tour" ? "City" : "Location"}
-          placeholder={mode === "tour" ? "City" : "Location"}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="w-full h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white"
-          ref={inputRef}
-        />
-        {showDropdown && suggestions.length > 0 && (
-          <ul className="absolute top-full left-0 right-0 bg-white text-black rounded shadow max-h-48 overflow-auto z-10">
-            {suggestions.map((city, i) => (
-              <li
-                key={i}
-                onClick={() => {
-                  onChange(city);
-                  setShowDropdown(false);
-                  inputRef.current?.focus();
-                }}
-                className="cursor-pointer hover:bg-gray-200 px-3 py-1"
-              >
-                {city}
-              </li>
-            ))}
-          </ul>
-        )}
       </div>
     );
   };
@@ -517,6 +433,7 @@ const UpdateCollection = ({ collectionId }: StepTwoFormProps) => {
                     : treeImage
                 }
                 alt="Cover"
+                className="w-full aspect-square "
               />
             </div>
 
@@ -535,16 +452,6 @@ const UpdateCollection = ({ collectionId }: StepTwoFormProps) => {
                   className="hidden"
                 />
               </label>
-
-              <button
-                className="text-sm font-text font-semibold text-red-400 border border-red-600 rounded px-3 py-2 bg-[#FCA5A5] hover:opacity-90"
-                onClick={() => {
-                  setCoverImageFile(null);
-                  setCoverImageUrl(null);
-                }}
-              >
-                Delete
-              </button>
             </div>
             {coverImageError && (
               <p className="text-sm text-red-500 mt-2 text-left w-full">
@@ -578,14 +485,15 @@ const UpdateCollection = ({ collectionId }: StepTwoFormProps) => {
                 placeholder="Description"
               />
 
-              <CityAutocomplete
+              <InputField
+                label={mode === "tour" ? "City" : "Location"}
+                placeholder={mode === "tour" ? "Enter city" : "Enter location"}
                 value={cityOrLocation}
-                onChange={setCityOrLocation}
-                className="w-full"
+                onChange={(e) => setCityOrLocation(e.target.value)}
+                className={`w-full font-text h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white ${
+                  cityOrLocationError ? "border-red-500" : "border-neutral-100"
+                }`}
               />
-              {cityOrLocationError && (
-                <p className="text-sm text-red-500">City is required.</p>
-              )}
 
               <InputField
                 label="Price"

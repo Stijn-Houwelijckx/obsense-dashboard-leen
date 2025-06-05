@@ -25,7 +25,7 @@ const ArtworkCard = ({
           <img
             src={thumbnailUrl || artworkImg}
             alt={title}
-            className="w-cover object-cover rounded-lg mx-auto"
+            className="w-cover w-full h-full object-cover rounded-lg mx-auto"
           />
           <button
             onClick={() => onRequestDelete(_id)}

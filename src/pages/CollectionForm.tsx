@@ -7,23 +7,24 @@ import InputField from "components/InputField";
 import Navigation from "components/Navigation";
 import NavigationDesktop from "components/NavigationDesktop";
 import api from "../services/api";
+const apiUrl = import.meta.env.VITE_API_URL;
 
-// interface StepTwoFormProps {
-//   mode: "tour" | "exposition";
-//   onCancel?: () => void;
-//   onNext?: () => void;
-//   collectionId?: string;
-//   initialData?: {
-//     title: string;
-//     description: string;
-//     cityOrLocation: string;
-//     price: string;
-//     selectedArtworks: string[];
-//     coverImageFile?: File | null;
-//     coverImageUrl?: string | null;
-//     genre?: string;
-//   };
-// }
+interface StepTwoFormProps {
+  mode: "tour" | "exposition";
+  onCancel?: () => void;
+  onNext?: () => void;
+  collectionId?: string;
+  initialData?: {
+    title: string;
+    description: string;
+    cityOrLocation: string;
+    price: string;
+    selectedArtworks: string[];
+    coverImageFile?: File | null;
+    coverImageUrl?: string | null;
+    genre?: string;
+  };
+}
 
 type Genre = {
   _id: string;
@@ -55,111 +56,24 @@ const CollectionForm = () => {
   const [showGenreDropdown, setShowGenreDropdown] = useState<boolean>(false);
 
   const [titleError, setTitleError] = useState(false);
-  // const [descriptionError, setDescriptionError] = useState(false);
+  const [descriptionError, setDescriptionError] = useState(false);
   const [cityOrLocationError, setCityOrLocationError] = useState(false);
-  // const [priceError, setPriceError] = useState(false);
+  const [priceError, setPriceError] = useState(false);
   const [coverImageError, setCoverImageError] = useState(false);
 
   const [artworks, setArtworks] = useState<
     { _id: string; title: string; image: string }[]
   >([]);
 
-  const CityAutocomplete = ({
-    value,
-    onChange,
-    className,
-  }: CityAutocompleteProps) => {
-    const [suggestions, setSuggestions] = useState<string[]>([]);
-    const [showDropdown, setShowDropdown] = useState(false);
-    const containerRef = React.useRef<HTMLDivElement>(null);
-    const inputRef = React.useRef<HTMLInputElement>(null);
-
-    useEffect(() => {
-      if (value.length < 2) {
-        setSuggestions([]);
-        setShowDropdown(false);
-        return;
-      }
-
-      const fetchCities = async () => {
-        try {
-          const res = await fetch(
-            `https://nominatim.openstreetmap.org/search?city=${encodeURIComponent(
-              value
-            )}&format=json&limit=5`
-          );
-          const data = await res.json();
-          const cityNames = data.map((item: any) => item.display_name);
-          setSuggestions(cityNames);
-          setShowDropdown(true);
-        } catch (err) {
-          console.error(err);
-          setSuggestions([]);
-          setShowDropdown(false);
-        }
-      };
-
-      fetchCities();
-    }, [value]);
-
-    useEffect(() => {
-      const handleClickOutside = (event: MouseEvent) => {
-        if (
-          containerRef.current &&
-          !containerRef.current.contains(event.target as Node)
-        ) {
-          setShowDropdown(false);
-        }
-      };
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => {
-        document.removeEventListener("mousedown", handleClickOutside);
-      };
-    }, []);
-
-    return (
-      <div className="relative w-full" ref={containerRef}>
-        <InputField
-          ref={inputRef}
-          label={mode === "tour" ? "City" : "Location"}
-          placeholder={mode === "tour" ? "City" : "Location"}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className={`w-full h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white ${className}`}
-        />
-        {showDropdown && suggestions.length > 0 && (
-          <ul className="absolute top-full left-0 right-0 bg-white text-black rounded shadow max-h-48 overflow-auto z-10">
-            {suggestions.map((city, i) => (
-              <li
-                key={i}
-                onClick={() => {
-                  onChange(city);
-                  setShowDropdown(false);
-                  inputRef.current?.focus();
-                }}
-                className="cursor-pointer hover:bg-gray-200 px-3 py-1"
-              >
-                {city}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    );
-  };
-
   useEffect(() => {
     const fetchGenres = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch(
-          "https://obsense-api-om3s.onrender.com/api/v1/genres",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const res = await fetch(`${apiUrl}/genres`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const data = await res.json();
         setAllGenres(data.data.genres);
       } catch (err) {
@@ -221,12 +135,12 @@ const CollectionForm = () => {
       setTitleError(false);
     }
 
-    // if (!description.trim()) {
-    //   setDescriptionError(true);
-    //   hasError = true;
-    // } else {
-    //   setDescriptionError(false);
-    // }
+    if (!description.trim()) {
+      setDescriptionError(true);
+      hasError = true;
+    } else {
+      setDescriptionError(false);
+    }
 
     if (!cityOrLocation.trim()) {
       setCityOrLocationError(true);
@@ -235,12 +149,12 @@ const CollectionForm = () => {
       setCityOrLocationError(false);
     }
 
-    // if (!price || Number(price) <= 0) {
-    //   setPriceError(true);
-    //   hasError = true;
-    // } else {
-    //   setPriceError(false);
-    // }
+    if (!price || Number(price) <= 0) {
+      setPriceError(true);
+      hasError = true;
+    } else {
+      setPriceError(false);
+    }
 
     if (!coverImageFile) {
       setCoverImageError(true);
@@ -292,16 +206,13 @@ const CollectionForm = () => {
     try {
       const token = localStorage.getItem("token");
 
-      const res = await fetch(
-        "https://obsense-api-om3s.onrender.com/api/v1/artist/collections",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: formData,
-        }
-      );
+      const res = await fetch(`${apiUrl}/artist/collections`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
 
       if (!res.ok) {
         const errorJson = await res.json().catch(() => null);
@@ -313,17 +224,15 @@ const CollectionForm = () => {
 
       const data = await res.json();
 
-      // Veronderstel dat de nieuwe collectie ID hier zit
       const collectionId = data.data.collection._id;
       if (!collectionId) {
         alert("Collection ID not returned from server.");
         return;
       }
 
-      // 2. PATCH call om artworks toe te voegen (indien artworks aanwezig)
       if (selectedArtworks.length > 0) {
         const patchRes = await fetch(
-          `https://obsense-api-om3s.onrender.com/api/v1/artist/collections/${collectionId}/add-objects`,
+          `${apiUrl}/artist/collections/${collectionId}/add-objects`,
           {
             method: "PATCH",
             headers: {
@@ -348,7 +257,6 @@ const CollectionForm = () => {
         }
       }
 
-      // 3. Navigeren naar collectie overzicht
       navigate("/collections");
     } catch (err) {
       console.error("Error:", err);
@@ -428,6 +336,7 @@ const CollectionForm = () => {
                     ? URL.createObjectURL(coverImageFile)
                     : treeImage
                 }
+                className="w-full aspect-square object-cover rounded-lg"
               />
             </div>
 
@@ -445,13 +354,6 @@ const CollectionForm = () => {
                   className="hidden"
                 />
               </label>
-
-              <button
-                className="text-sm font-text font-semibold text-red-400 border border-red-600 rounded px-3 py-2 bg-[#FCA5A5] hover:opacity-90"
-                onClick={() => setCoverImageFile(null)}
-              >
-                Delete
-              </button>
             </div>
             {coverImageError && (
               <p className="text-sm text-red-500 mt-2 text-left w-full">
@@ -486,14 +388,15 @@ const CollectionForm = () => {
                 <p className="text-sm text-red-500">Description is required.</p>
               )}
 
-              <CityAutocomplete
+              <InputField
+                label={mode === "tour" ? "City" : "Location"}
+                placeholder={mode === "tour" ? "Enter city" : "Enter location"}
                 value={cityOrLocation}
-                onChange={(val) => setCityOrLocation(val)}
-                className={cityOrLocationError ? "border-red-500" : ""}
+                onChange={(e) => setCityOrLocation(e.target.value)}
+                className={`w-full font-text h-[48px] bg-secondary-700 border border-neutral-100 rounded-lg px-3 text-sm text-white ${
+                  cityOrLocationError ? "border-red-500" : "border-neutral-100"
+                }`}
               />
-              {cityOrLocationError && (
-                <p className="text-sm text-red-500">Location is required.</p>
-              )}
 
               <InputField
                 label="Price (€)"

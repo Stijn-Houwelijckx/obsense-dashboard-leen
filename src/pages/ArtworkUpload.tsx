@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import closeIcon from "../assets/img/close.svg";
 
-const MAX_FILE_SIZE = 20 * 1024 * 1024;
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
 const ArtworkUpload = () => {
   const [clicked, setClicked] = useState(false);
@@ -22,7 +22,7 @@ const ArtworkUpload = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const isValidFile = (file: File) => {
-    const validExtensions = [".glb", ".gltf"];
+    const validExtensions = [".glb"];
     const extension = file.name.slice(file.name.lastIndexOf(".")).toLowerCase();
     return validExtensions.includes(extension);
   };
@@ -84,13 +84,13 @@ const ArtworkUpload = () => {
       const file = selectedFiles[i];
 
       if (!isValidFile(file)) {
-        setError("Wrong file type. Only GLB or GLTF");
+        setError("Wrong file type. Only GLB");
         setFiles(null);
         return;
       }
 
       if (file.size > MAX_FILE_SIZE) {
-        setError("File too big. Max. 20MB");
+        setError("File too big. Max. 10MB");
         setFiles(null);
         return;
       }
@@ -170,7 +170,7 @@ const ArtworkUpload = () => {
               Drag and drop a file to upload
             </p>
             <p className="text-sm font-text text-neutral-400 mb-4">
-              GLB, GLTF up to 20MB.
+              GLB up to 10MB.
             </p>
             <span className="text-sm font-text text-neutral-400 mb-4">OR</span>
             <div className="w-full px-4">
@@ -185,7 +185,7 @@ const ArtworkUpload = () => {
               type="file"
               ref={fileInputRef}
               onChange={onFilesSelected}
-              accept=".glb,.gltf"
+              accept=".glb"
               style={{ display: "none" }}
             />
           </div>
