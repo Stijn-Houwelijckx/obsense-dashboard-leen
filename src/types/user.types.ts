@@ -3,9 +3,9 @@ export type User = {
   lastName: string;
   username: string;
   email: string;
-  password: string;
-  confirmPassword: string;
   isArtist?: boolean;
+  password?: string;
+  confirmPassword?: string;
   phoneNumber?: string;
   profilePicture?: {
     fileName: string;

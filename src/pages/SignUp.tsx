@@ -79,24 +79,31 @@ const SignUp = () => {
       };
 
       const response = await authService.signup(userData);
+      const { token } = response.data;
+      if (!token) throw new Error("Token ontbreekt in response!");
 
-      const token = response.data.token;
-      if (!token) {
-        throw new Error("Token ontbreekt in response!");
-      }
+      const user = {
+        id: response.data._id,
+        firstName: response.data.firstName,
+        lastName: response.data.lastName,
+        username: response.data.username,
+        email: response.data.email,
+        isArtist: response.data.isArtist,
+      };
 
       setToken(token);
       api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-
-      const currentUserResponse = await authService.getCurrentUser();
-      setUser(response.data.user?.user ?? response.data.user);
+      setUser(user);
 
       navigate(targetPath, { replace: true });
     } catch (error) {
+      console.error("SIGNUP ERROR", error);
       if (error instanceof AxiosError) {
-        const message = error.response?.data?.message?.toLowerCase() || "";
+        const message =
+          error.response?.data?.message?.toLowerCase() ||
+          error.response?.data?.error?.toLowerCase() ||
+          "";
 
-        // Inject veldspecifieke foutmelding
         if (message.includes("email")) {
           setFormStep(2);
           setError("email", {
@@ -123,7 +130,6 @@ const SignUp = () => {
           });
         }
       } else {
-        // Fallback
         setFormStep(1);
         setError("firstName", {
           type: "manual",
