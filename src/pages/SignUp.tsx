@@ -94,6 +94,7 @@ const SignUp = () => {
       setToken(token);
       api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       setUser(user);
+      localStorage.setItem("token", token);
 
       navigate(targetPath, { replace: true });
     } catch (error) {
