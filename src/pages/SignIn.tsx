@@ -65,7 +65,7 @@ const SignIn = () => {
           code: error.response?.status || 500,
           status: error.response?.statusText || "error",
           data: {
-            message: "email/password does not exist. Try again",
+            message: "email and/or password does not exist. Try again",
 
             details: error.response?.data?.details || "",
           },
