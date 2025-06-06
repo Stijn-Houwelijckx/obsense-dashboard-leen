@@ -308,38 +308,32 @@ const UpdateCollection = ({ collectionId }: StepTwoFormProps) => {
 
       const selectedArtworkIds = selectedArtworks.filter(Boolean);
 
-      const newArtworkIds = selectedArtworkIds.filter(
-        (id) => !originalArtworks.includes(id)
+      const patchRes = await fetch(
+        `${apiUrl}/artist/collections/${collId}/add-objects`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            objects: { objectIds: selectedArtworkIds },
+          }),
+        }
       );
 
-      if (newArtworkIds.length > 0) {
-        const patchRes = await fetch(
-          `${apiUrl}/artist/collections/${collId}/add-objects`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-              objects: { objectIds: newArtworkIds },
-            }),
-          }
-        );
-
-        if (!patchRes.ok) {
-          const patchText = await patchRes.text();
-          try {
-            const patchError = JSON.parse(patchText);
-            alert(
-              "Fout bij toevoegen artworks: " +
-                JSON.stringify(patchError, null, 2)
-            );
-          } catch {
-            alert("Onverwachte fout bij toevoegen artworks: " + patchText);
-          }
-          return;
+      if (!patchRes.ok) {
+        const patchText = await patchRes.text();
+        try {
+          const patchError = JSON.parse(patchText);
+          alert(
+            "Fout bij toevoegen artworks: " +
+              JSON.stringify(patchError, null, 2)
+          );
+        } catch {
+          alert("Onverwachte fout bij toevoegen artworks: " + patchText);
         }
+        return;
       }
 
       if (!isDraft) {
